@@ -64,4 +64,23 @@ export default class Top {
         }
         return await this.invoke("alibaba.benefit.send", params);
     }
+
+    /**
+     * 打标
+     * @param sku_id
+     * @param item_id
+     * @return 参考：https://open.taobao.com/api.htm?spm=a219a.7386797.0.0.6344669azYA9UM&source=search&docId=51296&docType=2
+     */
+    async opentradeSpecialUsersMark(sku_id, item_id) {
+        return await this.invoke(
+            "taobao.opentrade.special.users.mark",
+            {
+                status: "MARK",
+                sku_id: sku_id,
+                item_id: item_id,
+                open_user_ids: this.context.openId,
+                hit: "true",
+            }
+        );
+    }
 }
