@@ -10,8 +10,8 @@ export default class ErrorLogService extends BaseService<ErrorLogDao, ErrorLog> 
 
     async add(errorLog) {
         Object.assign(errorLog, {
-            time: Utils.time().base,
-            date: Utils.time().YYYYMMDD,
+            time: this.time.base,
+            date: this.time.YYYYMMDD,
             mixNick: this.mixNick,
             userNick: this.nick
         });

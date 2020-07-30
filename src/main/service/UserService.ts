@@ -1,7 +1,6 @@
 import UserDao from "../dao/UserDao";
 import User from "../entity/User";
 import BaseService from "./abstract/BaseService";
-import Utils from "../utils/Utils";
 
 export default class UserService extends BaseService<UserDao, User> {
     constructor(context) {
@@ -19,7 +18,7 @@ export default class UserService extends BaseService<UserDao, User> {
         if (!user) {
             user = new User();
             user.activityId = this.activityId;
-            user.creatTime = Utils.time().base;
+            user.creatTime = this.time.base;
             user.nick = this.nick;
             user.mixNick = this.mixNick;
             user.openId = this.openId;

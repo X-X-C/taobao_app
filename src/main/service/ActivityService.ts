@@ -14,8 +14,6 @@ export default class ActivityService extends BaseService<ActivityDao, {}> {
     async get(id: string = "") {
         //活动
         let activity = null;
-        //时间
-        let time = Utils.time();
         //返回值
         let result: any = {};
         //过滤参数
@@ -31,11 +29,11 @@ export default class ActivityService extends BaseService<ActivityDao, {}> {
             return result;
         }
         //活动未开始
-        if (time.base < activity.startTime) {
+        if (this.time.base < activity.startTime) {
             result.code = 0;
         }
         //活动已结束
-        else if (time.base > activity.endTime) {
+        else if (this.time.base > activity.endTime) {
             result.code = 2;
         }
         //活动正常
