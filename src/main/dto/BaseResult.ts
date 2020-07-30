@@ -13,11 +13,6 @@ export default class BaseResult {
     //成功码
     public static readonly STATUS_SUCCESS = 0; //成功码
     public static readonly STATUS_FAIL = 1; //服务器错误码
-    public static readonly ACTIVITY_NOT_START = 2; //活动未开始
-    public static readonly ACTIVITY_END = 3; //活动已结束
-    public static readonly ACTIVITY_NOT_IN = 4; //不在活动时间范围内
-    public static readonly ALREADY_ASSIST = 5; //已经 [应援 || 助力] 过了
-    public static readonly NOT_MEMBER = 6; //不是店铺会员
 
 
     //基础成功返回对象
