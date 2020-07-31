@@ -87,25 +87,24 @@ export default class Utils {
         workbook = xlsx.read(buffer, {type: "buffer"});
         //读取表的数据
         data = workbook.Sheets[workbook.SheetNames[who]];
-        //读取表头
-        header = xlsx.utils.sheet_to_json(data, {header: 1})[0];
-        //判断表头是否拥有所有字段
-        for (let key in defineHeader) {
-            let v = defineHeader[key];
-            if (header.indexOf(v) == -1) {
-                return false;
-            }
-        }
         data = xlsx.utils.sheet_to_json(data);
-        //映射对应的键
-        data = data.map(v => {
-            for (let key in defineHeader) {
-                let targetKey = defineHeader[key];
-                v[key] = v[targetKey];
-                delete v[targetKey];
-            }
-            return v;
-        });
+        try {
+            //映射对应的键
+            data = data.map(v => {
+                let o = {};
+                for (let key in defineHeader) {
+                    let targetKey = defineHeader[key];
+                    //如果表中没有对应的键
+                    if (typeof v[targetKey] === "undefined") {
+                        throw "缺少字段" + targetKey
+                    }
+                    o[key] = v[targetKey];
+                }
+                return o;
+            });
+        } catch (e) {
+            return false;
+        }
         return data;
     }
 
