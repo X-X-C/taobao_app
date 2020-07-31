@@ -1,6 +1,5 @@
 import BaseDao from "../../dao/abstract/BaseDao";
 import BaseEntity from "../../entity/abstract/BaseEntity";
-import {utils} from "xlsx";
 import Utils from "../../utils/Utils";
 
 export default abstract class BaseService<T extends BaseDao, E extends BaseEntity> {
