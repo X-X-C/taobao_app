@@ -25,6 +25,8 @@ export default abstract class BaseService<T extends BaseDao, E extends BaseEntit
     protected mixNick: string;
     protected activityId: string;
     protected time: any = Utils.time();
+    protected activity: any = {};
+    protected user: any;
 
     /**
      * 新增
