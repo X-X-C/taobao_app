@@ -7,8 +7,11 @@ export default class UserService extends BaseService<UserDao, User> {
         super(new UserDao(context));
     }
 
+    private user;
+
     /**
-     * 获取单个用户
+     * 获取用户
+     * @param openId
      */
     async get(openId: string) {
         //如果是获取当前用户,如果已经获取过了直接返回

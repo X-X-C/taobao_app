@@ -6,6 +6,8 @@ export default class ActivityService extends BaseService<ActivityDao, {}> {
         super(new ActivityDao(context));
     }
 
+    private activity;
+
     /**
      * 查询活动
      * @param id 活动ID
