@@ -4,6 +4,6 @@
 
 # IntelliJ project files
 .idea
-*/test
+test
 *.iml
 *.js
