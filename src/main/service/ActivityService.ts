@@ -6,7 +6,7 @@ export default class ActivityService extends BaseService<ActivityDao, {}> {
         super(new ActivityDao(context));
     }
 
-    private activity;
+    private activity: any;
 
     /**
      * 查询活动
@@ -14,7 +14,7 @@ export default class ActivityService extends BaseService<ActivityDao, {}> {
      */
     async get(id: string = "") {
         //如果目标活动已经被实例化
-        if (this.activity.code !== -1 && this.activity.data._id === id) {
+        if (this.activity && this.activity.code !== -1 && this.activity.data._id === id) {
             return this.activity;
         } else {
             //活动

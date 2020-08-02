@@ -7,7 +7,7 @@ export default class UserService extends BaseService<UserDao, User> {
         super(new UserDao(context));
     }
 
-    private user;
+    private user: User;
 
     /**
      * 获取用户
