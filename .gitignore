@@ -7,3 +7,5 @@
 *.iml
 *.js
 node_modules
+test
+test/*.*
