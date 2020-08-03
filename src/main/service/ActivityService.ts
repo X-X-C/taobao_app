@@ -12,7 +12,7 @@ export default class ActivityService extends BaseService<ActivityDao, {}> {
      * 查询活动
      * @param id 活动ID
      */
-    async get(id: string = "") {
+    async get(id: string = this.activityId) {
         //如果目标活动已经被实例化
         if (this.activity && this.activity.code !== -1 && this.activity.data._id === id) {
             return this.activity;

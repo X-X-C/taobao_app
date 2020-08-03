@@ -13,7 +13,7 @@ export default class UserService extends BaseService<UserDao, User> {
      * 获取用户
      * @param openId
      */
-    async get(openId: string) {
+    async get(openId: string = this.openId) {
         //如果是获取当前用户,如果已经获取过了直接返回
         if (this.user && openId === this.openId) {
             return this.user;
