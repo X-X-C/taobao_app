@@ -4,6 +4,8 @@
             "ES2015",
             "dom"
         ],
-        "target": "ES5"
+        "target": "ES5",
+        //set map支持
+        "downlevelIteration": true
     }
 }
