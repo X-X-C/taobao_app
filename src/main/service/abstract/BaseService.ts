@@ -1,6 +1,7 @@
 import BaseDao from "../../dao/abstract/BaseDao";
 import BaseEntity from "../../entity/abstract/BaseEntity";
 import Utils from "../../utils/Utils";
+import Time from "../../utils/Time";
 
 export default abstract class BaseService<T extends BaseDao, E extends BaseEntity> {
     protected constructor(Dao: T) {
@@ -24,7 +25,7 @@ export default abstract class BaseService<T extends BaseDao, E extends BaseEntit
     protected openId: string;
     protected mixNick: string;
     protected activityId: string;
-    protected time: any = Utils.time();
+    protected time: Time = new Time();
 
     /**
      * 新增

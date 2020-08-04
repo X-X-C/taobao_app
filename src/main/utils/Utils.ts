@@ -3,10 +3,7 @@ import BaseResult from "../dto/BaseResult";
 import * as xlsx from "xlsx";
 // @ts-ignore
 import * as randombyweights from "randombyweights";
-//@ts-ignore
-import * as moment from "moment-timezone"
-//设置时区
-moment.tz.setDefault("Asia/Shanghai");
+
 
 export default class Utils {
     /**
@@ -32,26 +29,6 @@ export default class Utils {
      */
     static isBlank(any: any) {
         return any === null || any === undefined || any === "" || JSON.stringify(any) === "[]" || JSON.stringify(any) === "{}";
-    }
-
-
-    /**
-     * 获取时间对象
-     * @param date
-     */
-    static time(date = new Date()) {
-        return {
-            base: moment(date).format("YYYY-MM-DD HH:mm:ss"),
-            YYYYMMDD: moment(date).format("YYYYMMDD"),
-            X: moment(date).format("X"),
-            x: moment(date).format("x"),
-            bean: moment(date),
-            to: (number = 0, string = "d") => {
-                // @ts-ignore
-                return Utils.time(moment(date).add(number, string));
-            },
-            format: (str) => moment(date).format(str),
-        };
     }
 
 
@@ -134,14 +111,6 @@ export default class Utils {
         xlsx.utils.book_append_sheet(workbook, sheet, "sheet");
         //返回写出的工作簿buffer
         return xlsx.write(workbook, {type: "buffer"});
-    }
-
-    /**
-     * 获取对象类型
-     * @param any
-     */
-    static getType(any) {
-        return Object.prototype.toString.call(any);
     }
 
     /**
