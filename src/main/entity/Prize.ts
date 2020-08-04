@@ -15,7 +15,7 @@ export default class Prize extends BaseEntity {
     //获奖时间
     time: object = new Time();
     //获奖日期
-    date = new Time().format("YYYY/MM/DD")
+    date = (new Time()).format("YYYY/MM/DD")
     //获奖类型
     type: string;
     //领取时间
