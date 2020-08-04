@@ -2,7 +2,7 @@ import Dao from "./Dao";
 
 export default class BaseDao extends Dao {
 
-    protected constructor(public context: any, public table: string) {
+    constructor(public context: any, public table: string) {
         super(context, table);
         try {
             this.db = context.cloud.db.collection(table);
@@ -11,7 +11,7 @@ export default class BaseDao extends Dao {
         }
     }
 
-    protected db;
+    db;
 
     async delete(filter: object) {
         return await this.db.deleteMany(filter);
