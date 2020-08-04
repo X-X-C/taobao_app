@@ -1,6 +1,6 @@
 import Dao from "./Dao";
 
-export default abstract class BaseDao extends Dao {
+export default class BaseDao extends Dao {
 
     protected constructor(public context: any, public table: string) {
         super(context, table);
