@@ -100,10 +100,13 @@ export default class Utils {
     /**
      * 将json转化为excel buffer
      * @param excelJson
+     * @param ext {
+     *     header: []
+     * }
      */
-    static jsonToExcelBuffer(excelJson) {
+    static jsonToExcelBuffer(excelJson, ext = {}) {
         //将json转换为xlsx的sheet格式
-        let sheet = xlsx.utils.json_to_sheet(excelJson);
+        let sheet = xlsx.utils.json_to_sheet(excelJson, ext);
         //新建一个xlsx工作薄
         let workbook = xlsx.utils.book_new();
         //将json的sheet添加到新的工作簿中
