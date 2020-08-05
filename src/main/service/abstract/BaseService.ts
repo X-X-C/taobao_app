@@ -60,7 +60,7 @@ export default abstract class BaseService<T extends BaseDao, E extends BaseEntit
         return await this.dao.count(filter);
     }
 
-    async aggregate(pipe: []) {
+    async aggregate(pipe: Array<any>) {
         return await this.dao.aggregate(pipe);
     }
 
