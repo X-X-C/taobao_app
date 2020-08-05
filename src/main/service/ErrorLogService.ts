@@ -1,6 +1,5 @@
 import ErrorLogDao from "../dao/ErrorLogDao";
 import ErrorLog from "../entity/ErrorLog";
-import Utils from "../utils/Utils";
 import BaseService from "./abstract/BaseService";
 
 export default class ErrorLogService extends BaseService<ErrorLogDao, ErrorLog> {

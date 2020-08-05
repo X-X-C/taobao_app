@@ -32,6 +32,7 @@ export default class Top {
         let params = {
             fields: "tid,type,status,payment,orders,rx_audit_status",
             buyer_open_id: this.context.openId,
+            page_size: 100,
             ...data
         }
         return await this.invoke("taobao.open.trades.sold.get", params);

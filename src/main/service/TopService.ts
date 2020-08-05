@@ -20,11 +20,30 @@ export default class TopService {
     }
 
     /**
-     * 查询订单信息
+     * 查找所有订单
+     * @param start
+     * @param end
+     * @param page
+     */
+    async selectAllOrder(start, end, page = 1) {
+        let result = await this.selectOrder(start, end, page);
+        //如果有下一页
+        if (result.total_results > 0 && result.has_next === true) {
+            let rs: any = await this.selectAllOrder(start, end, page + 1);
+            result.trades.trade = result.trades.trade.concat(rs.trades.trade);
+            return result;
+        } else {
+            return result;
+        }
+    }
+
+    /**
+     * 查询一页订单信息
      * @param startTime
      * @param endTime
+     * @param page  多少页 默认查询第一页
      */
-    async selectOrder(startTime = false, endTime = false) {
+    async selectOrder(startTime = false, endTime = false, page = 1) {
         let params: any = {};
         if (startTime) {
             params.start_created = startTime;
@@ -32,6 +51,7 @@ export default class TopService {
         if (endTime) {
             params.end_created = endTime;
         }
+        params.page_no = page;
         return await this.top.selectOrder(params);
     }
 

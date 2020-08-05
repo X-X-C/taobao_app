@@ -1,6 +1,5 @@
 import BaseDao from "../../dao/abstract/BaseDao";
 import BaseEntity from "../../entity/abstract/BaseEntity";
-import Utils from "../../utils/Utils";
 import Time from "../../utils/Time";
 
 export default abstract class BaseService<T extends BaseDao, E extends BaseEntity> {
