@@ -81,11 +81,6 @@ export default class Utils {
                         if (typeof v[targetKey] === "undefined") {
                             throw "缺少字段" + targetKey
                         }
-                        let regex = /(time|时间)/i;
-                        //如果包含时间
-                        if (regex.test(key) || regex.test(targetKey)) {
-                            v[targetKey] = this.parseExcelDate(v[targetKey]) || v[targetKey];
-                        }
                     }
                     o[key] = v[targetKey];
                 }
