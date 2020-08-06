@@ -3,7 +3,8 @@ import BaseResult from "../dto/BaseResult";
 import * as xlsx from "xlsx";
 // @ts-ignore
 import * as randombyweights from "randombyweights";
-
+// @ts-ignore
+import * as qr from "qr-image";
 
 export default class Utils {
     /**
@@ -158,5 +159,14 @@ export default class Utils {
                 target[key] = v;
             }
         }
+    }
+
+
+    /**
+     * 解析url为base64二维码
+     * @param url
+     */
+    static qrImage(url) {
+        return 'data:image/png;base64,' + Buffer.from(qr.imageSync(url), 'utf8').toString('base64');
     }
 }

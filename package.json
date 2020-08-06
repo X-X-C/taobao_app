@@ -11,7 +11,8 @@
         "randombyweights": "*",
         "xlsx": "*",
         "moment-timezone": "*",
-        "gmtaobao": "*"
+        "gmtaobao": "*",
+        "qr-image": "*"
     },
     "author": "",
     "license": "ISC"
