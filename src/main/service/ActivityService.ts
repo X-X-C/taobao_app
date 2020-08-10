@@ -17,8 +17,6 @@ export default class ActivityService extends BaseService<ActivityDao, {}> {
         if (this.activity && this.activity.code !== -1 && this.activity.data._id === id) {
             return this.activity;
         } else {
-            //活动
-            let activity = null;
             //返回值
             let result: any = {};
             //过滤参数
@@ -27,7 +25,7 @@ export default class ActivityService extends BaseService<ActivityDao, {}> {
                 filter._id = id;
             }
             //查询活动
-            activity = await super.get(filter);
+            let activity = await super.get(filter);
             //没有活动
             if (!activity) {
                 result.code = -1;
