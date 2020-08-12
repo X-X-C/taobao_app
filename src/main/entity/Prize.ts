@@ -1,10 +1,8 @@
-import BaseEntity from "./abstract/BaseEntity";
 import User from "./User";
 import Time from "../utils/Time";
 
-export default class Prize extends BaseEntity {
+export default class Prize {
     constructor(props = {}) {
-        super();
         Object.assign(this, props)
     }
 

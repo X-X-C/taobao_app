@@ -1,8 +1,5 @@
-import BaseEntity from "./abstract/BaseEntity";
-
-export default class ErrorLog extends BaseEntity {
+export default class ErrorLog {
     constructor(prototype: object = {}) {
-        super();
         Object.assign(this, prototype);
     }
 
