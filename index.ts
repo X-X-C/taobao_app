@@ -15,7 +15,7 @@ App.errorDo = async function (rs) {
 // @ts-ignore
 exports.main = async (context) => {
     const app = new App(context, "main");
-    App.config.needParams = {};
+    // App.config.needParams = {};
     return await app.run(async function () {
         // do...
     });
