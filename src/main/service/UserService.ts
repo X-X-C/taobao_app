@@ -22,7 +22,7 @@ export default class UserService extends BaseService<UserDao, User> {
                 openId: openId || this.openId,
                 activityId: this.activityId
             })
-            if (!user) {
+            if (!user && openId === this.openId) {
                 user = new User();
                 user.activityId = this.activityId;
                 user.creatTime = this.time.base;
@@ -37,6 +37,16 @@ export default class UserService extends BaseService<UserDao, User> {
             }
             return user;
         }
+    }
+
+    async edit(user: User) {
+        let filter = {
+            openId: user.openId || this.openId,
+            activityId: this.activityId
+        }
+        return await super.edit(filter, {
+            $set: user
+        })
     }
 
     async add(user) {

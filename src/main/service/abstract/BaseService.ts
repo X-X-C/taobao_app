@@ -1,8 +1,7 @@
 import BaseDao from "../../dao/abstract/BaseDao";
-import BaseEntity from "../../entity/abstract/BaseEntity";
 import Time from "../../utils/Time";
 
-export default abstract class BaseService<T extends BaseDao, E extends BaseEntity> {
+export default abstract class BaseService<T extends BaseDao, E extends {}> {
     protected constructor(Dao: T) {
         this.dao = Dao;
         this.context = this.dao.context;
