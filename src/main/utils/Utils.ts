@@ -156,6 +156,18 @@ export default class Utils {
         }
     }
 
+    /**
+     * 清除对象里的空白值
+     * @param obj
+     */
+    static cleanObj(obj): boolean {
+        for (let key in obj) {
+            if (Utils.isBlank(obj[key])) {
+                delete obj[key];
+            }
+        }
+        return !Utils.isBlank(obj);
+    }
 
     /**
      * 解析url为base64二维码

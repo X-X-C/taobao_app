@@ -6,18 +6,7 @@ export default class ActivityService extends BaseService<ActivityDao, {}> {
         super(new ActivityDao(context));
     }
 
-    private _activity: any;
-
-    get activity() {
-        if (this._activity && this._activity.code !== -1 && this._activity.data._id === this.activityId) {
-            return this._activity;
-        }
-        return false;
-    }
-
-    set activity(_activity) {
-        this._activity = _activity;
-    }
+    private activity: any;
 
     /**
      * 查询活动
@@ -32,7 +21,7 @@ export default class ActivityService extends BaseService<ActivityDao, {}> {
             let result: any = {};
             //过滤参数
             let filter: any = {};
-            if (id !== "") {
+            if (id) {
                 filter._id = id;
             }
             //查询活动

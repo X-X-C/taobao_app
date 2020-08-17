@@ -39,14 +39,19 @@ export default class UserService extends BaseService<UserDao, User> {
         }
     }
 
-    async edit(user: User) {
-        let filter = {
-            openId: user.openId || this.openId,
-            activityId: this.activityId
-        }
-        return await super.edit(filter, {
-            $set: user
-        })
+    /**
+     * 修改用户
+     * @param options
+     * @param openId
+     */
+    async edit(options, openId = this.openId) {
+        return await super.edit(
+            {
+                openId,
+                activityId: this.activityId
+            },
+            options
+        );
     }
 
     async add(user) {
