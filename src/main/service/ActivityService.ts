@@ -13,23 +13,24 @@ export default class ActivityService extends BaseService<ActivityDao, {}> {
      * @param id
      */
     async getStatus(id: string = this.activityId) {
+        let activity;
         //如果当前活动存在
         if (this.activity) {
-            return this.getSActivityStatus(this.activity.data);
+            activity = this.activity.data;
         }
         //否则查询活动
         else {
             let filter: any = {};
             !id || (filter._id = id);
-            let activity = await super.get(filter, {
+            activity = await super.get(filter, {
                 projection: {
                     _id: 0,
                     startTime: 1,
                     endTime: 1
                 }
             });
-            return this.getSActivityStatus(activity);
         }
+        return this.getSActivityStatus(activity);
     }
 
     /**
