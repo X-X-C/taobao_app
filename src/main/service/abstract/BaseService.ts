@@ -91,7 +91,8 @@ export default abstract class BaseService<T extends BaseDao, E extends {}> {
      * @param filter
      * @param options
      */
-    async get(filter = {}, options = {}) {
+    async get(filter = {}, options: any = {}) {
+        options.limit = 1;
         return (await this.list(filter, options, false)).data[0];
     }
 
