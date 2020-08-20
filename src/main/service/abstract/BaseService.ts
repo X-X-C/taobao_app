@@ -104,30 +104,4 @@ export default abstract class BaseService<T extends BaseDao, E extends {}> {
         return (await this.list(filter, options, false)).data;
     }
 
-    /**
-     * 从云端下载文件
-     * @param fileId
-     */
-    async downloadFile(fileId) {
-        return await this.cloud.file.downloadFile({fileId});
-    }
-
-    /**
-     * 上传文件到云端并返回可访问连接
-     * @param buffer
-     * @param fileName
-     */
-    async uploadFile(buffer: any, fileName: string) {
-        //上传文件
-        let result = await this.cloud.file.uploadFile({
-            fileContent: buffer,
-            fileName: fileName
-        });
-        //获取链接
-        let url = await this.cloud.file.getTempFileURL({
-            fileId: [result.fileId]
-        })
-        //返回链接
-        return url[0].url.replace(/-internal/g, "");
-    }
 }

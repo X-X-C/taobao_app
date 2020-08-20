@@ -1,3 +1,4 @@
+// @ts-ignore
 import * as moment from "moment-timezone";
 //设置时区
 moment.tz.setDefault("Asia/Shanghai");
