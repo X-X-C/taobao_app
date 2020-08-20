@@ -104,4 +104,21 @@ export default abstract class BaseService<T extends BaseDao, E extends {}> {
         return (await this.list(filter, options, false)).data;
     }
 
+    /**
+     * 从云端下载文件
+     * @param fileId
+     */
+    async downloadFile(fileId) {
+        return await this.dao.downloadFile(fileId);
+    }
+
+    /**
+     * 上传文件到云端并返回可访问连接
+     * @param buffer
+     * @param fileName
+     */
+    async uploadFile(buffer: any, fileName: string) {
+        return await this.dao.uploadFile(buffer, fileName);
+    }
+
 }
