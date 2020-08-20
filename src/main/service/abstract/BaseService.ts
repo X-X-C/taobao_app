@@ -29,7 +29,7 @@ export default abstract class BaseService<T extends BaseDao, E extends {}> {
      * 新增
      * @param entity
      */
-    async add(entity: E) {
+    async add(entity: E | Array<E>) {
         return await this.dao.insert(entity);
     }
 
