@@ -1,5 +1,7 @@
 import Utils from "./utils/Utils";
 import BaseResult from "./dto/BaseResult";
+import ErrorLog from "./entity/ErrorLog";
+import ErrorLogService from "./service/ErrorLogService";
 
 export default class App {
     constructor(public context: any, public apiName: string) {
@@ -89,5 +91,9 @@ export default class App {
     db(tb: string) {
         return this.context.cloud.db.collection(tb);
     }
+}
 
+App.errorDo = async function (response) {
+    let errorLogService = new ErrorLogService(this.context)
+    await errorLogService.add(response);
 }

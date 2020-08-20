@@ -31,7 +31,6 @@ export default class Top {
     async selectOrder(data) {
         let params = {
             fields: "tid,type,status,payment,orders,rx_audit_status",
-            buyer_open_id: this.context.openId,
             page_size: 100,
             ...data
         }

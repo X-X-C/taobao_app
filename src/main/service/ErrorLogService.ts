@@ -7,13 +7,14 @@ export default class ErrorLogService extends BaseService<ErrorLogDao, ErrorLog> 
         super(new ErrorLogDao(context));
     }
 
-    async add(errorLog) {
-        Object.assign(errorLog, {
-            time: this.time.base,
-            date: this.time.YYYYMMDD,
-            mixNick: this.mixNick,
-            userNick: this.nick
-        });
+    async add(response) {
+        let errorLog = new ErrorLog();
+        errorLog.nick = this.nick;
+        errorLog.api = response.data;
+        errorLog.message = response.message;
+        errorLog.openId = this.openId;
+        errorLog.time = this.time.base;
+        errorLog.params = response.params;
         return await super.add(errorLog);
     }
 }
