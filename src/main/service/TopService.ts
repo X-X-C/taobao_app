@@ -35,7 +35,7 @@ export default class TopService {
         });
         //如果有下一页
         if (result.has_next === true) {
-            let rs: any = await this.selectAllOrder(start, end, page + 1);
+            let rs: any = await this.selectAllOrder(start, end, ext, page + 1);
             result.trades.trade = result.trades.trade.concat(rs.trades.trade);
             return result;
         } else {
