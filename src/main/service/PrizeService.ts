@@ -34,7 +34,7 @@ export default class PrizeService extends BaseService<PrizeDao, Prize> {
             }
         }
         let spmService = new SpmService(this.context);
-        await spmService.add("receive");
+        await spmService.addSpm("receive");
         return await this.edit(filter, options);
     }
 }
