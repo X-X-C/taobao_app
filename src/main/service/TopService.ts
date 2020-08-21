@@ -1,6 +1,7 @@
 import Top from "../utils/Top";
 import Utils from "../utils/Utils";
 
+
 export default class TopService {
     constructor(public context) {
     }
@@ -27,7 +28,11 @@ export default class TopService {
      * @param ext
      * @param page
      */
-    async selectAllOrder(start, end, ext = {}, page = 1) {
+    async selectAllOrder(start: any = false, end: any = false, ext: {
+        use_has_next?: boolean,
+        buyer_open_id?: string,
+        page_no?: number
+    } = {}, page = 1) {
         let result = await this.selectOrder(start, end, {
             use_has_next: true,
             page_no: page,
@@ -53,7 +58,11 @@ export default class TopService {
      *     page_no:     --页码
      * }
      */
-    async selectOrder(startTime = false, endTime = false, ext: any = {}) {
+    async selectOrder(startTime: any = false, endTime: any = false, ext: {
+        use_has_next?: boolean,
+        buyer_open_id?: string,
+        page_no?: number
+    } = {}) {
         let params: any = {
             buyer_open_id: this.context.openId,
             page_no: 1,

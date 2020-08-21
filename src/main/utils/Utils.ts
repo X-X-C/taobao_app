@@ -159,11 +159,17 @@ export default class Utils {
     /**
      * 清除对象里的空白值
      * @param obj
+     * @param deep
      */
-    static cleanObj(obj): boolean {
+    static cleanObj(obj, deep = false): boolean {
         for (let key in obj) {
             if (Utils.isBlank(obj[key])) {
                 delete obj[key];
+            }
+            //深清除
+            else if (typeof obj[key] === "object" && deep === true) {
+                Utils.cleanObj(obj[key], true);
+                Utils.cleanObj(obj);    
             }
         }
         return !Utils.isBlank(obj);
