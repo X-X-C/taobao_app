@@ -30,7 +30,7 @@ export default class ActivityService extends BaseService<ActivityDao, {}> {
                 }
             });
         }
-        return this.getSActivityStatus(activity);
+        return this.getActivityStatus(activity);
     }
 
     /**
@@ -51,7 +51,7 @@ export default class ActivityService extends BaseService<ActivityDao, {}> {
             }
             //查询活动
             let activity = await super.get(filter);
-            result.code = this.getSActivityStatus(activity);
+            result.code = this.getActivityStatus(activity);
             //带上活动返回
             result.data = activity;
             this.activity = result;
@@ -59,7 +59,7 @@ export default class ActivityService extends BaseService<ActivityDao, {}> {
         }
     }
 
-    getSActivityStatus(activity) {
+    getActivityStatus(activity) {
         //没有活动
         if (!activity) {
             return -1;
