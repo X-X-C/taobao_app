@@ -1,6 +1,5 @@
 import Utils from "./utils/Utils";
 import BaseResult from "./dto/BaseResult";
-import ErrorLog from "./entity/ErrorLog";
 import ErrorLogService from "./service/ErrorLogService";
 
 export default class App {
@@ -93,7 +92,10 @@ export default class App {
     }
 }
 
+
 App.errorDo = async function (response) {
     let errorLogService = new ErrorLogService(this.context)
     await errorLogService.add(response);
 }
+//请求成功是否返回参数
+App.config.returnParams = true;

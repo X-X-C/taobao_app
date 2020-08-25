@@ -32,6 +32,6 @@ export default class SpmService extends BaseService<SpmDao, Spm> {
      */
     async addSpm(type: string, data: any = false) {
         let spm = this.bean(type, data);
-        await super.add(spm);
+        await this.add(spm);
     }
 }

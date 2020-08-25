@@ -1,5 +1,6 @@
 import BaseDao from "../../dao/abstract/BaseDao";
 import Time from "../../utils/Time";
+import Utils from "../../utils/Utils";
 
 export default abstract class BaseService<T extends BaseDao, E extends {}> {
     protected constructor(Dao: T) {
@@ -39,6 +40,7 @@ export default abstract class BaseService<T extends BaseDao, E extends {}> {
      * @param options
      */
     async edit(filter, options) {
+        Utils.cleanObj(options, true);
         return await this.dao.update(filter, options);
     }
 

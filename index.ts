@@ -1,9 +1,6 @@
 import App from "./src/main/App";
-//请求成功是否返回参数
-App.config.returnParams = true;
 //每次请求都必须要的参数
 App.config.needParams = {};
-
 // @ts-ignore
 exports.main = async (context) => {
     const app = new App(context, "main");
@@ -11,17 +8,4 @@ exports.main = async (context) => {
     return await app.run(async function () {
         // do...
     });
-}
-
-/**
- * 后期检查数据
- * @param context
- */
-// @ts-ignore
-exports.aggregate = async (context) => {
-    const app = new App(context, "aggregate");
-    let need = {tb: "", pipe: []};
-    return await app.run(async function () {
-        return await app.db(this.tb).aggregate(this.pipe);
-    }, need);
 }
