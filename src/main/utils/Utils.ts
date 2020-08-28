@@ -82,6 +82,9 @@ export default class Utils {
                             throw "缺少字段" + targetKey
                         }
                     }
+                    if (typeof v[targetKey] === "number") {
+                        v[targetKey] = String(v[targetKey]);
+                    }
                     o[key] = v[targetKey];
                 }
                 header = false;
@@ -161,15 +164,15 @@ export default class Utils {
      * @param obj
      * @param deep
      */
-    static cleanObj(obj, deep = false): boolean {
+    static cleanObj(obj, deep = true): boolean {
         for (let key in obj) {
             if (Utils.isBlank(obj[key])) {
                 delete obj[key];
             }
             //深清除
             else if (typeof obj[key] === "object" && deep === true) {
-                Utils.cleanObj(obj[key], true);
-                Utils.cleanObj(obj);    
+                Utils.cleanObj(obj[key]);
+                Utils.cleanObj(obj, false);
             }
         }
         return !Utils.isBlank(obj);
