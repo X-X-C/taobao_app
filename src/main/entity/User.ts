@@ -1,8 +1,4 @@
 export default class User {
-    constructor(prototype: object = {}) {
-        Object.assign(this, prototype);
-    }
-
     //用户名
     nick: string;
     //用户MixNick

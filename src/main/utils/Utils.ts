@@ -179,6 +179,28 @@ export default class Utils {
     }
 
     /**
+     * 清空对象数组里的所有空值
+     * @param arr
+     */
+    static cleanObjArr(arr: object[]) {
+        let delArr = [];
+        if (arr.length > 0) {
+            arr.forEach((v, k) => {
+                Utils.cleanObj(arr[k]);
+                if (Utils.isBlank(arr[k])) {
+                    delArr.push(k);
+                }
+            })
+        }
+        if (delArr.length > 0) {
+            for (let k of delArr) {
+                arr.splice(k, 1);
+            }
+        }
+        return arr.length;
+    }
+
+    /**
      * 解析url为base64二维码
      * @param url
      */

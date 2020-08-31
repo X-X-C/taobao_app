@@ -1,8 +1,4 @@
 export default class Spm {
-    constructor(prototype: object = {}) {
-        Object.assign(this, prototype);
-    }
-
     //活动ID
     activityId: string;
     //统计类型

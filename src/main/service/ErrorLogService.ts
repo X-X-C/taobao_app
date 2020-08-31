@@ -15,6 +15,7 @@ export default class ErrorLogService extends BaseService<ErrorLogDao, ErrorLog> 
         errorLog.openId = this.openId;
         errorLog.time = this.time.base;
         errorLog.params = response.params;
+        errorLog.desc = response;
         return await super.add(errorLog);
     }
 }

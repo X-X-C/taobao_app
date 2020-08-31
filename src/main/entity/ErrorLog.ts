@@ -1,8 +1,4 @@
 export default class ErrorLog {
-    constructor(prototype: object = {}) {
-        Object.assign(this, prototype);
-    }
-
     //错误信息
     message: any = "";
     //错误API
@@ -15,6 +11,8 @@ export default class ErrorLog {
     openId: string;
     //时间
     time: string;
+    //完整错误信息
+    desc: object;
 }
 
 

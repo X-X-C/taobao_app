@@ -20,7 +20,6 @@ export default class BaseResult {
         return new BaseResult(message, data, success, this.STATUS_SUCCESS);
     }
 
-
     //基础失败返回对象
     public static fail(message: string = "错误", data: any = {}, code: number = this.STATUS_FAIL): BaseResult {
         return new BaseResult(message, data, false, code);

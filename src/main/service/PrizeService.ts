@@ -24,7 +24,8 @@ export default class PrizeService extends BaseService<PrizeDao, Prize> {
      */
     async receive(prizeId, ext) {
         let filter = {
-            _id: prizeId
+            _id: prizeId,
+            "user.openId": this.openId
         }
         let options = {
             $set: {
