@@ -146,6 +146,14 @@ export default class Utils {
     }
 
     /**
+     * 获取精确类型
+     * @param any
+     */
+    static getType(any) {
+        return Object.prototype.toString.call(any);
+    }
+
+    /**
      * 扩展对象，只扩展源对象里有意义且目标对象有的值
      * @param target
      * @param source
@@ -159,6 +167,7 @@ export default class Utils {
         }
     }
 
+
     /**
      * 清除对象里的空白值
      * @param obj
@@ -170,7 +179,7 @@ export default class Utils {
                 delete obj[key];
             }
             //深清除
-            else if (typeof obj[key] === "object" && deep === true) {
+            else if (Utils.getType(obj[key]) === Utils.getType({}) && deep === true) {
                 Utils.cleanObj(obj[key]);
                 Utils.cleanObj(obj, false);
             }
