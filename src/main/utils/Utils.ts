@@ -61,7 +61,7 @@ export default class Utils {
      * @param who  读取第几张表
      */
     static parseExcel(buffer, defineHeader: any = {}, who: number = 0) {
-        let data, workbook, header;
+        let data, workbook;
         workbook = xlsx.read(buffer, {
             type: "buffer"
         });
@@ -103,7 +103,7 @@ export default class Utils {
      *     header: []
      * }
      */
-    static jsonToExcelBuffer(excelJson, ext = {}) {
+    static jsonToExcelBuffer(excelJson, ext: { header?: Array<any> } = {}) {
         //将json转换为xlsx的sheet格式
         let sheet = xlsx.utils.json_to_sheet(excelJson, ext);
         //新建一个xlsx工作薄
