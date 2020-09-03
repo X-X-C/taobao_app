@@ -174,14 +174,16 @@ export default class Utils {
      * @param deep
      */
     static cleanObj(obj, deep = true): boolean {
-        for (let key in obj) {
-            if (Utils.isBlank(obj[key])) {
-                delete obj[key];
-            }
-            //深清除
-            else if (Utils.getType(obj[key]) === Utils.getType({}) && deep === true) {
-                Utils.cleanObj(obj[key]);
-                Utils.cleanObj(obj, false);
+        if ([Utils.getType({}), Utils.getType([])].indexOf(Utils.getType(obj)) !== -1) {
+            for (let key in obj) {
+                if (Utils.isBlank(obj[key])) {
+                    delete obj[key];
+                }
+                //深清除
+                else if (Utils.getType(obj[key]) === Utils.getType({}) && deep === true) {
+                    Utils.cleanObj(obj[key]);
+                    Utils.cleanObj(obj, false);
+                }
             }
         }
         return !Utils.isBlank(obj);
