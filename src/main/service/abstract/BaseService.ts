@@ -40,8 +40,11 @@ export default abstract class BaseService<T extends BaseDao, E extends {}> {
      * @param options
      */
     async edit(filter, options) {
-        Utils.cleanObj(options, true);
-        return await this.dao.update(filter, options);
+        let line = 0;
+        if (Utils.cleanObj(options)) {
+            line = await this.dao.update(filter, options);
+        }
+        return line;
     }
 
     /**

@@ -1,5 +1,8 @@
 import ActivityDao from "../dao/ActivityDao";
 import BaseService from "./abstract/BaseService";
+import UserService from "./UserService";
+import Prize from "../entity/Prize";
+import PrizeService from "./PrizeService";
 
 export default class ActivityService extends BaseService<ActivityDao, {}> {
     constructor(context) {
@@ -76,5 +79,67 @@ export default class ActivityService extends BaseService<ActivityDao, {}> {
         else {
             return 1;
         }
+    }
+
+    /**
+     * 初始化活动
+     */
+    async init(userService = new UserService(this.context)) {
+        let activity = await this.get();
+        let rs = {
+            awardStatus: -1,
+            ...activity
+        };
+        //活动已结束
+        if (activity.code === 2) {
+            activity = activity.data;
+            //获取配置
+            let {rankPrizeList, award} = activity.config;
+            //如果没有开过奖
+            if (award === false) {
+                let rankList = await userService.rank();
+                let winners = [];
+                //排名索引
+                let index = 1;
+                for (let u of rankList) {
+                    for (let p of rankPrizeList) {
+                        //获取条件
+                        let {startNum, endNum} = p.condition;
+                        //如果在中奖范围
+                        if (index >= startNum && index <= endNum) {
+                            let prize = new Prize();
+                            prize.prize = p;
+                            prize.type = "rank";
+                            prize.user = u;
+                            winners.push(prize);
+                        }
+                    }
+                    index += 1;
+                }
+                let filter = {
+                    _id: this.activityId,
+                    "config.award": false
+                }
+                let options = {
+                    $set: {
+                        "config.award": true
+                    }
+                }
+                //更改开奖状态
+                let status = await this.edit(filter, options);
+                //成功更改开奖状态
+                if (status === 1) {
+                    if (winners.length > 0) {
+                        let prizeService = new PrizeService(this.context);
+                        await prizeService.add(winners);
+                    }
+                }
+                //成功
+                rs.awardStatus = 1;
+            } else {
+                rs.awardStatus = 0;
+            }
+        }
+        return rs;
     }
 }
