@@ -11,45 +11,6 @@ exports.main = async (context) => {
         // do...
     });
 }
-
-// @ts-ignore
-exports.enter = async (context) => {
-    const app = new App(context, "enter");
-    return await app.run(async function () {
-        let userService = new UserService(context);
-        let rs = await userService.enter();
-        return BaseResult.success("成功", rs);
-    });
-}
-
-/**
- * 自己的排名
- * @param context
- */
-// @ts-ignore
-exports.selfRank = async (context) => {
-    const app = new App(context, "selfRank");
-    return await app.run(async function () {
-        let userService = new UserService(context);
-        let rs = await userService.selfRank();
-        return BaseResult.success("成功", rs);
-    });
-}
-
-/**
- * 入会
- * @param context
- */
-// @ts-ignore
-exports.enterMember = async (context) => {
-    const app = new App(context, "enterMember");
-    return await app.run(async function () {
-        let userService = new UserService(context);
-        let rs = await userService.enterMember();
-        return BaseResult.success("成功", rs);
-    });
-}
-
 /**
  * 获取用户
  * @param context

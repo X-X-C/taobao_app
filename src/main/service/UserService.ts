@@ -118,17 +118,20 @@ export default class UserService extends BaseService<UserDao, User> {
 
     /**
      * 排行榜
-     * @param limit
+     * @param opt
      */
-    async rank(limit = 10) {
+    async rank(opt: {
+        lessInfo?: boolean,  //简化用户昵称
+        limit?: number  //限制取出条数，默认10条
+    } = {}) {
         let options: any = {
             sort: {
                 score: -1,
                 lastGetScoreTime: 1
             },
-            limit
+            limit: opt.limit || 10
         }
-        return await super.getAll(
+        let data = await super.getAll(
             {
                 activityId: this.data.activityId,
                 score: {
@@ -140,6 +143,10 @@ export default class UserService extends BaseService<UserDao, User> {
             },
             options
         );
+        if (opt.lessInfo === true) {
+        } else {
+            return data;
+        }
     }
 
     /**
