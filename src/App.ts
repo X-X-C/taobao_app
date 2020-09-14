@@ -39,7 +39,7 @@ export default class App {
             //符合条件进行下一步
             result = await doSomething.call(this.context.data);
             //如果用户操作过后没有返回值就默认返回成功
-            !Utils.isBlank(result) ? response = result : false;
+            !Utils.isBlank(result) ? response.data = result : false;
         } catch (e) {
             //发现异常 初始化返回参数
             response = BaseResult.fail(e.message, this.apiName);

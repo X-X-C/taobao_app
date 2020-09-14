@@ -21,9 +21,7 @@ exports.user = async (context) => {
     return await app.run(async function () {
         let userService = new UserService(context);
         let user = await userService.get();
-        return BaseResult.success("成功", {
-            user
-        })
+        return {user};
     });
 }
 /**
@@ -37,7 +35,7 @@ exports.updateUser = async (context) => {
     return await app.run(async function () {
         let userService = new UserService(context);
         let code = await userService.updateUser();
-        return BaseResult.success("成功", {code});
+        return {code};
     }, need);
 }
 
