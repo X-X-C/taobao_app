@@ -1,6 +1,6 @@
-import App from "./src/main/App";
-import UserService from "./src/main/service/UserService";
-import BaseResult from "./src/main/dto/BaseResult";
+import App from "./src/App";
+import UserService from "./src/service/UserService";
+import BaseResult from "./src/dto/BaseResult";
 //每次请求都必须要的参数
 App.config.needParams = {};
 // @ts-ignore
