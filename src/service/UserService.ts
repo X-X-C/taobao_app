@@ -28,7 +28,7 @@ export default class UserService extends BaseService<UserDao, User> {
             if (!user && openId === this.openId) {
                 user = new User();
                 user.activityId = this.activityId;
-                user.createTime = this.time.base;
+                user.createTime = this.time().base;
                 user.nick = this.nick;
                 user.mixNick = this.mixNick;
                 user.openId = this.openId;
@@ -99,7 +99,7 @@ export default class UserService extends BaseService<UserDao, User> {
             userOptions.$set.inviter = {
                 openId: inviter.openId,
                 nick: inviter.nick,
-                time: this.time.base
+                time: this.time().base
             };
             //TODO 邀请成功
             //更新用户

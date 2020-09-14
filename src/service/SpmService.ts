@@ -15,13 +15,13 @@ export default class SpmService extends BaseService<SpmDao, Spm> {
     bean(type, data: any = false): Spm {
         let spm = new Spm();
         spm.activityId = this.activityId;
-        spm.date = this.time.format("YYYY-MM-DD");
+        spm.date = this.time().format("YYYY-MM-DD");
         spm.nick = this.nick;
         spm.type = type;
         spm.data = data || this.data;
         spm.openId = this.openId;
-        spm.time = this.time.base;
-        spm.timestamp = this.time.x;
+        spm.time = this.time().base;
+        spm.timestamp = this.time().x;
         return spm;
     }
 

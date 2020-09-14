@@ -80,7 +80,7 @@ export default class App {
             data.push(`成功删除${tbs[k]}下的${result}条数据。`);
             result = null;
         }
-        return BaseResult.success("成功", data);
+        return data;
     }
 
     /**

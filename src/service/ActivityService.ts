@@ -68,11 +68,11 @@ export default class ActivityService extends BaseService<ActivityDao, {}> {
             return -1;
         }
         //活动未开始
-        if (this.time.base < activity.startTime) {
+        if (this.time().base < activity.startTime) {
             return 0;
         }
         //活动已结束
-        else if (this.time.base > activity.endTime) {
+        else if (this.time().base > activity.endTime) {
             return 2
         }
         //活动正常

@@ -24,7 +24,7 @@ export default abstract class BaseService<T extends BaseDao, E extends {}> {
     protected openId: string;
     protected mixNick: string;
     protected activityId: string;
-    protected time: Time = new Time();
+    protected time = (date: any = new Date()): Time => new Time(date);
 
     /**
      * 新增
