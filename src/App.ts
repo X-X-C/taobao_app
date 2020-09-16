@@ -57,7 +57,7 @@ export default class App {
                 //用户自行对异常对象进行操作
                 await App.errorDo.call(this, response);
             } catch (e) {
-                //...能异常到这里来基本上就是本质上的错误
+                //...
             }
             //直接返回异常对象
             return response;
