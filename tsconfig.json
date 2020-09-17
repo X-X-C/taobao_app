@@ -2,7 +2,8 @@
     "compilerOptions": {
         "lib": [
             "ES2015",
-            "dom"
+            "dom",
+            "ES2017"
         ],
         "target": "ES5",
         "downlevelIteration": true
