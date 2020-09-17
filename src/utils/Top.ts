@@ -36,7 +36,7 @@ export default class Top {
             page_size: 100,
             ...data
         }
-        return await this.invoke("taobao.open.trades.sold.get", params, {});
+        return await this.invoke("taobao.open.trades.sold.get", params, ext);
     }
 
     /**
