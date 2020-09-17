@@ -17,5 +17,5 @@ export default abstract class Dao {
 
     abstract async count(filter: obj): Promise<number>;
 
-    abstract async aggregate(filter: obj[]): Promise<object[]>;
+    abstract async aggregate(filter: obj[]): Promise<any[]>;
 }

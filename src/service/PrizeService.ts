@@ -11,7 +11,7 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
     }
 
     async my(): Promise<Prize[]> {
-        let filter: obj = {
+        let filter = {
             "user.openId": this.openId,
             "user.activityId": this.activityId
         }

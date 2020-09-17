@@ -43,7 +43,7 @@ export default class BaseDao<T extends object> extends Dao {
         return await this.db.count(filter);
     };
 
-    async aggregate(pipe: object[]): Promise<T[]> {
+    async aggregate(pipe: obj[]): Promise<any[]> {
         return await this.db.aggregate(pipe);
     };
 

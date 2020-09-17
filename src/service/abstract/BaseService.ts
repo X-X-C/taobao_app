@@ -99,7 +99,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
         return await this.dao.count(filter);
     }
 
-    async aggregate(pipe: Array<obj>): Promise<E[]> {
+    async aggregate(pipe: Array<obj>): Promise<any[]> {
         return await this.dao.aggregate(pipe);
     }
 

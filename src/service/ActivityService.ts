@@ -2,7 +2,6 @@ import ActivityDao from "../dao/ActivityDao";
 import BaseService from "./abstract/BaseService";
 import {obj} from "../utils/Type";
 
-
 /**
  *
  * @param code
@@ -14,10 +13,10 @@ import {obj} from "../utils/Type";
  */
 type activityData = {
     code: number,
-    data: obj
+    data: any
 }
 
-export default class ActivityService extends BaseService<ActivityDao<{}>, {}> {
+export default class ActivityService extends BaseService<ActivityDao<any>, any> {
     constructor(context) {
         super(new ActivityDao(context));
     }
