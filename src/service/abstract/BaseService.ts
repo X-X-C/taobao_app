@@ -134,8 +134,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
      * @param options
      */
     async get(filter: any = {}, options: any = {}): Promise<E> {
-        options.limit = 1;
-        return (await this.list(filter, options, false)).data[0];
+        return await this.dao.get(filter, options);
     }
 
     /**
