@@ -92,4 +92,57 @@ export default class Top {
             ext
         );
     }
+
+
+    /**
+     * 打标商品绑定到小程序
+     * @param miniapp_id    小程序C端ID
+     * @param item_ids  商品ID 字符串，用，分开
+     * @param ext
+     * @return 参考：https://open.taobao.com/api.htm?spm=a219a.7386797.0.0.7f2c669ahs9Hif&source=search&docId=51714&docType=2
+     */
+    async taobaoOpentradeSpecialItemsBind(miniapp_id, item_ids, ext: any = {}) {
+        return await this.invoke(
+            "taobao.opentrade.special.items.bind",
+            {
+                miniapp_id,
+                item_ids
+            },
+            ext
+        );
+    }
+
+    /**
+     * 查询当前小程序绑定打标的商品
+     * @param miniapp_id    小程序C端ID
+     * @param ext
+     * @return 参考：https://open.taobao.com/api.htm?docId=51716&docType=2&source=search
+     */
+    async taobaoOpentradeSpecialItemsQuery(miniapp_id, ext: any = {}) {
+        return await this.invoke(
+            "taobao.opentrade.special.items.query",
+            {
+                miniapp_id
+            },
+            ext
+        );
+    }
+
+
+    /**
+     * 获取商品信息
+     * @param num_iid  商品ID
+     * @param ext
+     * @return 参考：https://open.taobao.com/api.htm?spm=a219a.7386797.0.0.1b14669agpX3MB&source=search&docId=24625&docType=2
+     */
+    async taobaoItemSellerGet(num_iid, ext: any = {}) {
+        return await this.invoke(
+            "taobao.item.seller.get",
+            {
+                fields: "num_iid,title,nick,price,approve_status,sku",
+                num_iid
+            },
+            ext
+        );
+    }
 }

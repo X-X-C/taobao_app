@@ -88,11 +88,63 @@ export default class TopService {
      * 发放奖品
      * @param ename
      */
-    async sendBenefit(ename) {
+    async sendBenefit(ename): Promise<result> {
         let r = this.getResult();
         r.data = await this.top.sendBenefit(ename);
         r.code = Number((r.data.result_code === "SEND_SUCCESS") && (r.data.result_success === true));
         return r;
     }
+
+
+    /**
+     * 为当前用户标记指定商品
+     * @param sku_id
+     * @param item_id
+     * @param ext
+     */
+    async opentradeSpecialUsersMark(sku_id, item_id, ext: any = {}): Promise<result> {
+        let r = this.getResult();
+        r.data = await this.top.opentradeSpecialUsersMark(sku_id, item_id, ext)
+        r.code = Number(r.data.result && (r.data.code !== 50));
+        return r;
+    }
+
+    /**
+     * 绑定打标商品到小程序
+     * @param miniapp_id
+     * @param item_ids
+     * @param ext
+     */
+    async taobaoOpentradeSpecialItemsBind(miniapp_id, item_ids, ext: any = {}): Promise<result> {
+        let r = this.getResult();
+        r.data = await this.top.taobaoOpentradeSpecialItemsBind(miniapp_id, item_ids, ext)
+        r.code = Number(r.data.results && (r.data.results.bind_ok === true));
+        return r;
+    }
+
+    /**
+     * 查询已经绑定的打标商品
+     * @param miniapp_id
+     * @param ext
+     */
+    async taobaoOpentradeSpecialItemsQuery(miniapp_id, ext: any = {}): Promise<result> {
+        let r = this.getResult();
+        r.data = await this.top.taobaoOpentradeSpecialItemsQuery(miniapp_id, ext)
+        r.code = Number(r.data.items && r.data.items.number);
+        return r;
+    }
+
+    /**
+     * 获取商品信息
+     * @param num_iid
+     * @param ext
+     */
+    async taobaoItemSellerGet(num_iid, ext: any = {}): Promise<result> {
+        let r = this.getResult();
+        r.data = await this.top.taobaoItemSellerGet(num_iid, ext);
+        r.code = Number(r.data.item && true);
+        return r;
+    }
+
 }
 
