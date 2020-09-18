@@ -14,7 +14,6 @@ export default class App {
     }
     //异常后的操作
     static errorDo: Function = (e) => {
-        console.log(e)
     }
 
     /**
