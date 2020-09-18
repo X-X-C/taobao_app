@@ -1,6 +1,5 @@
 import ActivityDao from "../dao/ActivityDao";
 import BaseService from "./abstract/BaseService";
-import {obj} from "../utils/Type";
 
 /**
  *
@@ -35,7 +34,7 @@ export default class ActivityService extends BaseService<ActivityDao<any>, any> 
         }
         //否则查询活动
         else {
-            let filter: obj = {};
+            let filter: any = {};
             !id || (filter._id = id);
             activity = await super.get(filter, {
                 projection: {

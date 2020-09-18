@@ -3,7 +3,6 @@ import PrizeDao from "../dao/PrizeDao";
 import Prize from "../entity/Prize";
 import SpmService from "./SpmService";
 import Time from "../utils/Time";
-import {obj} from "../utils/Type";
 
 export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
     constructor(context) {
@@ -23,7 +22,7 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
      * @param prizeId
      * @param ext
      */
-    async receive(prizeId: string, ext: obj): Promise<number> {
+    async receive(prizeId: string, ext: any): Promise<number> {
         let filter = {
             _id: prizeId,
             "user.openId": this.openId

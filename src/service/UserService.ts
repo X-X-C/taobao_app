@@ -1,7 +1,6 @@
 import UserDao from "../dao/UserDao";
 import User from "../entity/User";
 import BaseService from "./abstract/BaseService";
-import {obj} from "../utils/Type";
 
 export default class UserService extends BaseService<UserDao<User>, User> {
     constructor(context) {
@@ -45,7 +44,7 @@ export default class UserService extends BaseService<UserDao<User>, User> {
      * @param options
      * @param filter
      */
-    async editUser(options: obj, filter: obj): Promise<number> {
+    async editUser(options: any, filter: any): Promise<number> {
         return await super.edit(
             {
                 openId: this.openId,

@@ -1,5 +1,4 @@
 import Dao from "./Dao";
-import {obj} from "../../utils/Type";
 
 export default class BaseDao<T extends object> extends Dao {
 
@@ -14,11 +13,11 @@ export default class BaseDao<T extends object> extends Dao {
 
     db;
 
-    async delete(filter: obj): Promise<number> {
+    async delete(filter: any): Promise<number> {
         return await this.db.deleteMany(filter);
     }
 
-    async insertOne(bean: obj): Promise<string> {
+    async insertOne(bean: any): Promise<string> {
         return await this.db.insertOne(bean);
     }
 
@@ -26,24 +25,24 @@ export default class BaseDao<T extends object> extends Dao {
         return await this.db.insertMany(beans);
     }
 
-    async find(filter: obj = {}, options: obj = {}): Promise<T[]> {
+    async find(filter: any = {}, options: any = {}): Promise<T[]> {
         return await this.db.find(filter, options);
     }
 
-    async get(filter: obj = {}, options: obj = {}): Promise<T> {
+    async get(filter: any = {}, options: any = {}): Promise<T> {
         options.limit = 1;
         return (await this.find(filter, options))[0];
     }
 
-    async update(filter: obj, options: obj): Promise<number> {
+    async update(filter: any, options: any): Promise<number> {
         return await this.db.updateMany(filter, options);
     }
 
-    async count(filter: obj): Promise<number> {
+    async count(filter: any): Promise<number> {
         return await this.db.count(filter);
     };
 
-    async aggregate(pipe: obj[]): Promise<any[]> {
+    async aggregate(pipe: any[]): Promise<any[]> {
         return await this.db.aggregate(pipe);
     };
 

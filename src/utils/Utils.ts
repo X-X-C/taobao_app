@@ -5,7 +5,6 @@ import * as xlsx from "xlsx";
 import * as randombyweights from "randombyweights";
 // @ts-ignore
 import * as qr from "qr-image";
-import {obj} from "./Type";
 
 export default class Utils {
     /**
@@ -14,7 +13,7 @@ export default class Utils {
      * @param real  { name: "小白" }
      * @return BaseResult
      */
-    static checkParams(need: obj, real: obj): BaseResult {
+    static checkParams(need: any, real: any): BaseResult {
         for (let key in need) {
             if (typeof real[key] === "undefined") {
                 return BaseResult.fail(`缺少参数${key}`);

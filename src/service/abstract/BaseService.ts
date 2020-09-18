@@ -1,7 +1,7 @@
 import BaseDao from "../../dao/abstract/BaseDao";
 import Time from "../../utils/Time";
 import Utils from "../../utils/Utils";
-import {obj, result} from "../../utils/Type";
+import {result} from "../../utils/Type";
 
 type listResult<T> = {
     data: T[];
@@ -76,7 +76,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
      * @param filter
      * @param options
      */
-    async edit(filter: obj, options: obj): Promise<number> {
+    async edit(filter: any, options: any): Promise<number> {
         if (Utils.cleanObj(options, true)) {
             return await this.dao.update(filter, options);
         }
@@ -87,7 +87,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
      * 删除
      * @param filter
      */
-    async delete(filter: obj): Promise<number> {
+    async delete(filter: any): Promise<number> {
         return await this.dao.delete(filter);
     }
 
@@ -95,11 +95,11 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
      * 统计查询
      * @param filter
      */
-    async count(filter: obj): Promise<number> {
+    async count(filter: any): Promise<number> {
         return await this.dao.count(filter);
     }
 
-    async aggregate(pipe: Array<obj>): Promise<any[]> {
+    async aggregate(pipe: Array<any>): Promise<any[]> {
         return await this.dao.aggregate(pipe);
     }
 
@@ -111,7 +111,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
      * @param options
      * @param dividePage    是否分页
      */
-    async list(filter: obj = {}, options: listOptions = {}, dividePage: boolean = true): Promise<listResult<E>> {
+    async list(filter: any = {}, options: listOptions = {}, dividePage: boolean = true): Promise<listResult<E>> {
         let rs: listResult<E> = {
             data: null
         };
@@ -133,7 +133,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
      * @param filter
      * @param options
      */
-    async get(filter: obj = {}, options: obj = {}): Promise<E> {
+    async get(filter: any = {}, options: any = {}): Promise<E> {
         options.limit = 1;
         return (await this.list(filter, options, false)).data[0];
     }
@@ -143,7 +143,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
      * @param filter
      * @param options
      */
-    async getAll(filter: obj = {}, options: obj = {}): Promise<E[]> {
+    async getAll(filter: any = {}, options: any = {}): Promise<E[]> {
         return await this.dao.find(filter, options);
     }
 

@@ -1,5 +1,4 @@
 import Utils from "./Utils";
-import {obj} from "./Type";
 
 export default class Top {
     constructor(public context) {
@@ -11,7 +10,7 @@ export default class Top {
      * @param data  参数
      * @param ext   额外参数
      */
-    async invoke(api: string, data, ext: obj = {}) {
+    async invoke(api: string, data, ext: any = {}) {
         return await this.context.cloud.topApi.invoke({
             api,
             data,
@@ -30,7 +29,7 @@ export default class Top {
      * @param ext
      * @return 参考：https://open.taobao.com/api.htm?docId=45011&docType=2&scopeId=16730
      */
-    async selectOrder(data: obj, ext: obj = {}) {
+    async selectOrder(data: any, ext: any = {}) {
         let params = {
             fields: "tid,type,status,payment,orders,rx_audit_status",
             page_size: 100,
@@ -43,7 +42,7 @@ export default class Top {
      * 查询当前用户vip信息
      * @return 参考：https://open.taobao.com/api.htm?docId=34436&docType=2&scopeId=13840
      */
-    async vipStatus(data: obj = {}, ext: obj = {}) {
+    async vipStatus(data: any = {}, ext: any = {}) {
         let params = {
             extra_info: '{"source":"paiyangji","deviceId":"testId","itemId":565058963761}', //固定写法
             mix_nick: this.context.mixNick,
@@ -58,7 +57,7 @@ export default class Top {
      * @param ext
      * @return 参考：https://open.taobao.com/api.htm?docId=45573&docType=2&scopeId=16997
      */
-    async sendBenefit(ename, ext: obj = {}) {
+    async sendBenefit(ename, ext: any = {}) {
         let params = {
             right_ename: ename,
             receiver_id: this.context.openId,//用户openid
@@ -76,7 +75,7 @@ export default class Top {
      * @param ext
      * @return 参考：https://open.taobao.com/api.htm?spm=a219a.7386797.0.0.6344669azYA9UM&source=search&docId=51296&docType=2
      */
-    async opentradeSpecialUsersMark(sku_id, item_id, ext: obj = {}) {
+    async opentradeSpecialUsersMark(sku_id, item_id, ext: any = {}) {
         return await this.invoke(
             "taobao.opentrade.special.users.mark",
             {
