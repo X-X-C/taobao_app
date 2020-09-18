@@ -11,12 +11,16 @@ export default class Top {
      * @param ext   额外参数
      */
     async invoke(api: string, data, ext: any = {}) {
-        return await this.context.cloud.topApi.invoke({
-            api,
-            data,
-            autoSession: true,
-            ...ext
-        });
+        try {
+            return await this.context.cloud.topApi.invoke({
+                api,
+                data,
+                autoSession: true,
+                ...ext
+            });
+        } catch (e) {
+            return e;
+        }
     }
 
 
