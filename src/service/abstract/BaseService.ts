@@ -58,8 +58,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
 
     getResult(): result {
         return {
-            code: 0,
-            data: {}
+            code: 0
         }
     }
 

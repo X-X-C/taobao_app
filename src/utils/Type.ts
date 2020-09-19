@@ -4,6 +4,6 @@
 export type result = {
     code: number,
     message?: string,
-    data: any,
+    data?: any,
     [props: string]: any
 }
