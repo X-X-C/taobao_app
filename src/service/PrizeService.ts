@@ -2,7 +2,6 @@ import BaseService from "./abstract/BaseService";
 import PrizeDao from "../dao/PrizeDao";
 import Prize from "../entity/Prize";
 import SpmService from "./SpmService";
-import Time from "../utils/Time";
 
 export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
     constructor(context) {
@@ -29,7 +28,7 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
         }
         let options = {
             $set: {
-                receiveTime: new Time(),
+                receiveTime: this.time().common,
                 receiveStatus: true,
                 ext
             }

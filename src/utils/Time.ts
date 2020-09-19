@@ -5,10 +5,12 @@ moment.tz.setDefault("Asia/Shanghai");
 export default class Time {
     constructor(date: any = new Date()) {
         this.bean = moment(date);
-        this.base = this.bean.format("YYYY-MM-DD HH:mm:ss");
-        this.YYYYMMDD = this.bean.format("YYYYMMDD");
-        this.X = this.bean.format("X");
-        this.x = this.bean.format("x");
+        this.common = {
+            base: this.bean.format("YYYY-MM-DD HH:mm:ss"),
+            YYYYMMDD: this.bean.format("YYYYMMDD"),
+            X: this.bean.format("X"),
+            x: this.bean.format("x")
+        }
         this.to = (number = 0, string = "d"): Time => {
             // @ts-ignore
             return new Time(this.bean.add(number, string));
@@ -16,11 +18,13 @@ export default class Time {
         this.format = (str) => this.bean.format(str);
     }
 
-    base: string;
-    YYYYMMDD: string;
-    X: string;
-    x: string;
     bean: any;
+    common: {
+        base: string,
+        YYYYMMDD: string,
+        X: string,
+        x: string
+    };
     to: Function;
     format: Function;
 }

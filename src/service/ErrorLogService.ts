@@ -13,7 +13,7 @@ export default class ErrorLogService extends BaseService<ErrorLogDao<ErrorLog>, 
         errorLog.api = response.data;
         errorLog.message = response.message;
         errorLog.openId = this.openId;
-        errorLog.time = this.time().base;
+        errorLog.time = this.time().common.base;
         errorLog.params = response.params;
         errorLog.desc = response;
         return await super.insertOne(errorLog);
