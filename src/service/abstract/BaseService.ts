@@ -28,6 +28,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
         this.activityId = this.data.activityId;
     }
 
+    protected id: string;
     protected dao: T;
     protected cloud: any;
     protected data: any;
