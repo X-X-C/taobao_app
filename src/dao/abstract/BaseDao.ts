@@ -7,7 +7,7 @@ export default class BaseDao<T extends object> extends Dao {
         try {
             this.db = context.cloud.db.collection(table);
         } catch (e) {
-            // throw "获取数据库连接失败";
+            throw "获取数据库连接失败";
         }
     }
 
