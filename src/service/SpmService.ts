@@ -7,6 +7,8 @@ export default class SpmService extends BaseService<SpmDao<Spm>, Spm> {
         super(new SpmDao(context));
     }
 
+    id = "SpmService";
+
     /**
      * 获取spm bean
      * @param type

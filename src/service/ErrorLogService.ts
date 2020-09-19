@@ -7,6 +7,8 @@ export default class ErrorLogService extends BaseService<ErrorLogDao<ErrorLog>, 
         super(new ErrorLogDao(context));
     }
 
+    id = "ErrorLogService";
+
     async add(response): Promise<string> {
         let errorLog = new ErrorLog();
         errorLog.nick = this.nick;

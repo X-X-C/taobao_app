@@ -15,7 +15,7 @@ export default class TopService {
 
     //TOP接口工具
     private top = new Top(this.context);
-
+    id = "TopService";
 
     getResult(): result {
         return {

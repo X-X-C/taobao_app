@@ -8,6 +8,8 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
         super(new PrizeDao(context));
     }
 
+    id = "PrizeService";
+
     async my(): Promise<Prize[]> {
         let filter = {
             "user.openId": this.openId,

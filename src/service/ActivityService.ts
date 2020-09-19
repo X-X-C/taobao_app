@@ -20,6 +20,7 @@ export default class ActivityService extends BaseService<ActivityDao<any>, any> 
         super(new ActivityDao(context));
     }
 
+    id = "ActivityService";
     private activity: any;
 
     /**

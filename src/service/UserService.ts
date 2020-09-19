@@ -7,6 +7,7 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         super(new UserDao(context));
     }
 
+    id = "UserService";
     private user: User;
 
     /**
