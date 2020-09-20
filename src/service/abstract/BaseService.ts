@@ -47,7 +47,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
      * @param service
      */
     register(service) {
-        let s = services.find(v => v.id === service.id);
+        let s = services.find(v => v.constructor.name === service.constructor.name);
         if (!s) {
             s = service;
             services.push(s);
@@ -60,13 +60,12 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
      * @param target
      */
     getService<C extends { [prop: string]: any }>(target: (new (...args) => C)): C {
-        let t = new target(this.context);
-        let s = services.find(v => v.id === t.id);
+        let s = services.find(v => v.constructor.name === target.name);
         if (s) {
             return s;
         }
         //新实例注册到services
-        return this.register(target);
+        return new target(this.context);
     }
 
     /**

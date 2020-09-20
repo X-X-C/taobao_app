@@ -5,9 +5,8 @@ import Spm from "../entity/Spm";
 export default class SpmService extends BaseService<SpmDao<Spm>, Spm> {
     constructor(context) {
         super(new SpmDao(context));
+        return this.register(this);
     }
-
-    id = "SpmService";
 
     /**
      * 获取spm bean

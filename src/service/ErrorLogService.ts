@@ -5,9 +5,8 @@ import BaseService from "./abstract/BaseService";
 export default class ErrorLogService extends BaseService<ErrorLogDao<ErrorLog>, ErrorLog> {
     constructor(context) {
         super(new ErrorLogDao(context));
+        return this.register(this);
     }
-
-    id = "ErrorLogService";
 
     async add(response): Promise<string> {
         let errorLog = new ErrorLog();

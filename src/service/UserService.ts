@@ -5,9 +5,9 @@ import BaseService from "./abstract/BaseService";
 export default class UserService extends BaseService<UserDao<User>, User> {
     constructor(context) {
         super(new UserDao(context));
+        return this.register(this);
     }
 
-    id = "UserService";
     private user: User;
 
     /**
