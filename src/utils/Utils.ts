@@ -103,7 +103,7 @@ export default class Utils {
      *     header: []
      * }
      */
-    static jsonToExcelBuffer(excelJson, ext: { header?: Array<any> } = {}): Buffer {
+    static jsonToExcelBuffer(excelJson, ext: { header?: Array<any> } = {}): any {
         //将json转换为xlsx的sheet格式
         let sheet = xlsx.utils.json_to_sheet(excelJson, ext);
         //新建一个xlsx工作薄
@@ -215,6 +215,7 @@ export default class Utils {
      * @param url
      */
     static qrImage(url): string {
+        // @ts-ignore
         return 'data:image/png;base64,' + Buffer.from(qr.imageSync(url), 'utf8').toString('base64');
     }
 }
