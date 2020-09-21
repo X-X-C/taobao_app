@@ -26,7 +26,7 @@ export default class UserService extends BaseService<UserDao<User>, User> {
             if (!user && openId === this.openId) {
                 user = new User();
                 user.activityId = this.activityId;
-                user.creatTime = this.time().common.base;
+                user.createTime = this.time().common.base;
                 user.nick = this.nick;
                 user.mixNick = this.mixNick;
                 user.openId = this.openId;

@@ -8,5 +8,5 @@ export default class User {
     //活动ID
     activityId: string
     //创建时间
-    creatTime: string;
+    createTime: string;
 }
