@@ -45,7 +45,7 @@ export default class UserService extends BaseService<UserDao<User>, User> {
      * @param options
      * @param filter
      */
-    async editUser(options: any, filter: any): Promise<number> {
+    async editUser(options: any, filter: any = {}): Promise<number> {
         return await super.edit(
             {
                 openId: this.openId,
