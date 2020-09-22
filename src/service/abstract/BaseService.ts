@@ -41,6 +41,21 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
         return new Time(date);
     };
 
+
+    get result(): result {
+        return {
+            code: 0
+        }
+    }
+
+    get options() {
+        return {
+            $push: <E>{},
+            $set: <E>{},
+            $inc: <E>{}
+        }
+    }
+
     /**
      * 实例化的service
      * @param service
@@ -81,20 +96,6 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
      */
     async insertMany(entity: E[]): Promise<string[]> {
         return await this.dao.insertMany(entity);
-    }
-
-    getResult(): result {
-        return {
-            code: 0
-        }
-    }
-
-    getOptions() {
-        return {
-            $push: <E>{},
-            $set: <E>{},
-            $inc: <E>{}
-        }
     }
 
     /**
