@@ -6,7 +6,6 @@ import SpmService from "./SpmService";
 export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
     constructor(context) {
         super(new PrizeDao(context));
-        return this.register(this);
     }
 
     async my(): Promise<Prize[]> {
