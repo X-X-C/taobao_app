@@ -2,6 +2,8 @@ import BaseDao from "../../dao/abstract/BaseDao";
 import Time from "../../utils/Time";
 import Utils from "../../utils/Utils";
 import {result} from "../../utils/Type";
+import ServiceManager from "./ServiceManager";
+import App from "../../App";
 
 type listResult<T> = {
     data: T[];
@@ -39,6 +41,22 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
     protected time = (date: any = new Date()): Time => {
         return new Time(date);
     };
+
+    register(service) {
+        if (App.services instanceof ServiceManager) {
+            return App.services.register(service);
+        } else {
+            return service;
+        }
+    }
+
+    getService<C extends { [prop: string]: any }>(target: (new (...args) => C)): C {
+        if (App.services instanceof ServiceManager) {
+            return App.services.getService(target);
+        } else {
+            return new target(this.context);
+        }
+    }
 
 
     get result(): result {

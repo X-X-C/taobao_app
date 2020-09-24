@@ -1,10 +1,15 @@
 import Utils from "./utils/Utils";
 import BaseResult from "./dto/BaseResult";
 import ErrorLogService from "./service/ErrorLogService";
+import ServiceManager from "./service/abstract/ServiceManager";
 
 export default class App {
+
     constructor(public context: any, public apiName: string) {
+        App.services = new ServiceManager(context);
     }
+
+    static services: ServiceManager;
 
     //APP配置
     static config = {
@@ -14,6 +19,7 @@ export default class App {
     }
     //异常后的操作
     static errorDo: Function = (e) => {
+
     }
 
     /**

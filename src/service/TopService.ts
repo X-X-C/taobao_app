@@ -1,6 +1,8 @@
 import Top from "../utils/Top";
 import Utils from "../utils/Utils";
 import {result} from "../utils/Type";
+import ServiceManager from "./abstract/ServiceManager";
+import App from "../App";
 
 type orderExt = {
     use_has_next?: boolean,
@@ -11,6 +13,9 @@ type orderExt = {
 
 export default class TopService {
     constructor(public context) {
+        if (App.services instanceof ServiceManager) {
+            return App.services.register(this);
+        }
     }
 
     //TOP接口工具
