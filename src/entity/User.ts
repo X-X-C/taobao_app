@@ -9,4 +9,6 @@ export default class User {
     activityId: string
     //创建时间
     createTime: string;
+    //头像
+    avatar: string = "";
 }
