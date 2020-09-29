@@ -95,7 +95,7 @@ export default class TopService {
     async sendBenefit(ename): Promise<result> {
         let r = this.getResult();
         r.data = await this.top.sendBenefit(ename);
-        r.code = Number((r.data.result_code === "SEND_SUCCESS") && (r.data.result_success === true));
+        r.code = Number(r.data.result_success === true);
         return r;
     }
 
