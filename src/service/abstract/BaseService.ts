@@ -86,7 +86,10 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
      * @param entity
      */
     async insertMany(entity: E[]): Promise<string[]> {
-        return await this.dao.insertMany(entity);
+        if (entity.length > 0) {
+            return await this.dao.insertMany(entity);
+        }
+        return [];
     }
 
     /**
