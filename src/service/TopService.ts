@@ -12,14 +12,14 @@ type orderExt = {
 }
 
 export default class TopService {
-    constructor(public context) {
-        if (App.services instanceof ServiceManager) {
-            return App.services.register(this);
-        }
+    constructor(app: ServiceManager) {
+        this.context = app.context;
+        this.top = new Top(this.context);
     }
 
+    context;
     //TOP接口工具
-    private top = new Top(this.context);
+    top;
 
     getResult(): result {
         return {

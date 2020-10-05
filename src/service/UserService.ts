@@ -1,10 +1,11 @@
 import UserDao from "../dao/UserDao";
 import User from "../entity/User";
 import BaseService from "./abstract/BaseService";
+import ServiceManager from "./abstract/ServiceManager";
 
 export default class UserService extends BaseService<UserDao<User>, User> {
-    constructor(context) {
-        super(new UserDao(context));
+    constructor(app: ServiceManager) {
+        super(new UserDao(app.context), app);
         return this.register(this);
     }
 

@@ -1,8 +1,8 @@
 import ActivityDao from "../dao/ActivityDao";
 import BaseService from "./abstract/BaseService";
+import ServiceManager from "./abstract/ServiceManager";
 
 /**
- *
  * @param code
  * -1-->没有此活动
  * 0-->活动未开始
@@ -16,8 +16,8 @@ type activityData = {
 }
 
 export default class ActivityService extends BaseService<ActivityDao<any>, any> {
-    constructor(context) {
-        super(new ActivityDao(context));
+    constructor(app: ServiceManager) {
+        super(new ActivityDao(app.context), app);
         return this.register(this);
     }
 

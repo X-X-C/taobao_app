@@ -3,7 +3,6 @@ import Time from "../../utils/Time";
 import Utils from "../../utils/Utils";
 import {result} from "../../utils/Type";
 import ServiceManager from "./ServiceManager";
-import App from "../../App";
 
 type listResult<T> = {
     data: T[];
@@ -17,8 +16,9 @@ type listOptions = {
 }
 
 export default abstract class BaseService<T extends BaseDao<E>, E extends object> {
-    protected constructor(Dao: T) {
+    protected constructor(Dao: T, app: ServiceManager) {
         this.dao = Dao;
+        this.app = app;
         this.context = this.dao.context;
         this.cloud = this.context.cloud;
         this.data = this.context.data;
@@ -30,6 +30,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
         this.activityId = this.data.activityId;
     }
 
+    protected app: ServiceManager;
     protected dao: T;
     protected cloud: any;
     protected data: any;
@@ -42,19 +43,20 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
         return new Time(date);
     };
 
+
     register(service) {
-        if (App.services instanceof ServiceManager) {
-            return App.services.register(service);
+        if (this.app instanceof ServiceManager) {
+            return this.app.register(service);
         } else {
             return service;
         }
     }
 
     getService<C extends { [prop: string]: any }>(target: (new (...args) => C)): C {
-        if (App.services instanceof ServiceManager) {
-            return App.services.getService(target);
+        if (this.app instanceof ServiceManager) {
+            return this.app.getService(target);
         } else {
-            return new target(this.context);
+            return new target(this.app);
         }
     }
 
