@@ -1,7 +1,6 @@
 import BaseService from "./abstract/BaseService";
 import PrizeDao from "../dao/PrizeDao";
 import Prize from "../entity/Prize";
-import SpmService from "./SpmService";
 import ServiceManager from "./abstract/ServiceManager";
 
 export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
@@ -35,8 +34,6 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
                 ext
             }
         }
-        let spmService = new SpmService(this.context);
-        await spmService.addSpm("receive");
         return await this.edit(filter, options);
     }
 }
