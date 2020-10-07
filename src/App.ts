@@ -8,10 +8,6 @@ export default class App {
     constructor(public context: any, public apiName: string) {
         //创建一个服务管理
         this.services = new ServiceManager(context);
-        //配置全局请求参数
-        this.config.needParams = {}
-        //配置是否返回请求参数
-        this.config.returnParams = true;
     }
 
     //服务管理
@@ -20,7 +16,8 @@ export default class App {
     //APP配置
     config = {
         //是否在请求结束后返回本次请求参数
-        returnParams: false,
+        returnParams: true,
+        //全局请求参数
         needParams: {}
     }
 
