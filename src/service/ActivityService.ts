@@ -65,7 +65,12 @@ export default class ActivityService extends BaseService<ActivityDao<any>, any> 
                 filter._id = id;
             }
             //查询活动
-            let activity = await super.get(filter);
+            let activity = await super.get(filter, {
+                projection: {
+                    data: 1,
+                    config: 1
+                }
+            });
             result.code = this.status(activity);
             //带上活动返回
             result.data = activity;
