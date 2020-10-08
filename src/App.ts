@@ -8,9 +8,9 @@ export default class App {
 
     constructor(public context: any, public apiName: string) {
         //创建一个服务管理
-        this.services = new ServiceManager(context);
+        this.services = new ServiceManager();
         //创建埋点对象
-        this.spmService = this.services.getService(SpmService);
+        this.spmService = this.services.getService(SpmService, this);
     }
 
     //服务管理

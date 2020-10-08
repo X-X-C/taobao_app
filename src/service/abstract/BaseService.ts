@@ -55,7 +55,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
 
     getService<C extends { [prop: string]: any }>(target: (new (...args) => C)): C {
         if (this.app.services instanceof ServiceManager) {
-            return this.app.services.getService(target);
+            return this.app.services.getService(target, this.app);
         } else {
             return new target(this.app);
         }
@@ -173,7 +173,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
     spm(type, data) {
         this.app.addSpm(type, data);
     }
-    
+
     /**
      * 从云端下载文件
      * @param fileId
@@ -190,4 +190,57 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
     async uploadFile(buffer: any, fileName: string): Promise<string> {
         return await this.dao.uploadFile(buffer, fileName);
     }
+
+    compareObj(origin, target, extKey = "", compareRs = {
+        $inc: {},
+        $push: {},
+        $set: {}
+    }) {
+        for (let targetKey in target) {
+            let targetV = target[targetKey];
+            let originV = origin[targetKey];
+            let key = targetKey;
+            if (extKey !== "") {
+                key = extKey + "." + key;
+            }
+            //如果两个对象不相同
+            if (JSON.stringify(targetV) !== JSON.stringify(originV)) {
+                let originType = Utils.getType(originV);
+                //如果目标的对象类型相同
+                if (originType === Utils.getType(targetV)) {
+                    //如果是对象
+                    if (originType === Utils.getType({})) {
+                        //继续往下匹配
+                        this.compareObj(originV, targetV, key, compareRs)
+                    } else if (originType === Utils.getType(1)) {
+                        //数值相加
+                        compareRs.$inc[key] = targetV - originV;
+                    } else if (originType === Utils.getType([])) {
+                        compareRs.$push[key] = {
+                            $each: []
+                        }
+                        //如果是数组
+                        for (let targetVElement of targetV) {
+                            //查找源对象有没有目标的元素
+                            let arrObj = originV.find(ov => JSON.stringify(ov) === JSON.stringify(targetVElement));
+                            //如果目标对象没有相同的元素
+                            if (!arrObj) {
+                                compareRs.$push[key].$each.push(targetVElement);
+                            }
+                        }
+                        if (compareRs.$push[key].$each.length <= 0) {
+                            delete compareRs.$push[key];
+                        }
+                    } else {
+                        compareRs.$set[key] = targetV;
+                    }
+                } else {
+                    //如果类型不同直接设置
+                    compareRs.$set[key] = targetV;
+                }
+            }
+        }
+        return compareRs;
+    }
+
 }
