@@ -1,6 +1,6 @@
 import ActivityDao from "../dao/ActivityDao";
 import BaseService from "./abstract/BaseService";
-import ServiceManager from "./abstract/ServiceManager";
+import App from "../App";
 
 /**
  * @param code
@@ -16,7 +16,7 @@ type activityData = {
 }
 
 export default class ActivityService extends BaseService<ActivityDao<any>, any> {
-    constructor(app: ServiceManager) {
+    constructor(app: App) {
         super(new ActivityDao(app.context), app);
         return this.register(this);
     }

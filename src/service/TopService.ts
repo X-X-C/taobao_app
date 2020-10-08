@@ -1,7 +1,6 @@
 import Top from "../utils/Top";
 import Utils from "../utils/Utils";
 import {result} from "../utils/Type";
-import ServiceManager from "./abstract/ServiceManager";
 import App from "../App";
 
 type orderExt = {
@@ -12,7 +11,7 @@ type orderExt = {
 }
 
 export default class TopService {
-    constructor(app: ServiceManager) {
+    constructor(app: App) {
         this.context = app.context;
         this.top = new Top(this.context);
     }

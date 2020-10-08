@@ -2,12 +2,15 @@ import Utils from "./utils/Utils";
 import BaseResult from "./dto/BaseResult";
 import ErrorLogService from "./service/ErrorLogService";
 import ServiceManager from "./service/abstract/ServiceManager";
+import SpmService from "./service/SpmService";
 
 export default class App {
 
     constructor(public context: any, public apiName: string) {
         //创建一个服务管理
         this.services = new ServiceManager(context);
+        //创建埋点对象
+        this.spmService = this.services.getService(SpmService);
     }
 
     //服务管理
@@ -20,6 +23,11 @@ export default class App {
         //全局请求参数
         needParams: {}
     }
+
+    //埋点对象
+    spmService: SpmService;
+    //埋点数组
+    spmBeans = [];
 
     //异常后的操作
     async errorDo(response) {
@@ -76,7 +84,15 @@ export default class App {
         if (this.config.returnParams === true) {
             Object.assign(response, {params})
         }
+        //运行结束添加本次埋点
+        await this.spmService.insertMany(this.spmBeans);
+        this.spmBeans = [];
+
         return response;
+    }
+
+    addSpm(type, data) {
+        this.spmBeans.push(this.spmService.bean(type, data));
     }
 
     /**

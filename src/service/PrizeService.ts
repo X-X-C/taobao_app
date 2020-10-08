@@ -1,10 +1,10 @@
 import BaseService from "./abstract/BaseService";
 import PrizeDao from "../dao/PrizeDao";
 import Prize from "../entity/Prize";
-import ServiceManager from "./abstract/ServiceManager";
+import App from "../App";
 
 export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
-    constructor(app: ServiceManager) {
+    constructor(app: App) {
         super(new PrizeDao(app.context), app);
         return this.register(this);
     }

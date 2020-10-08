@@ -1,10 +1,10 @@
 import ErrorLogDao from "../dao/ErrorLogDao";
 import ErrorLog from "../entity/ErrorLog";
 import BaseService from "./abstract/BaseService";
-import ServiceManager from "./abstract/ServiceManager";
+import App from "../App";
 
 export default class ErrorLogService extends BaseService<ErrorLogDao<ErrorLog>, ErrorLog> {
-    constructor(app: ServiceManager) {
+    constructor(app: App) {
         super(new ErrorLogDao(app.context), app);
         return this.register(this);
     }

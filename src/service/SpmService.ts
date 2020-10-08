@@ -1,10 +1,10 @@
 import SpmDao from "../dao/SpmDao";
 import BaseService from "./abstract/BaseService";
 import Spm from "../entity/Spm";
-import ServiceManager from "./abstract/ServiceManager";
+import App from "../App";
 
 export default class SpmService extends BaseService<SpmDao<Spm>, Spm> {
-    constructor(app: ServiceManager) {
+    constructor(app: App) {
         super(new SpmDao(app.context), app);
         return this.register(this);
     }

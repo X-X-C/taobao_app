@@ -3,6 +3,7 @@ import Time from "../../utils/Time";
 import Utils from "../../utils/Utils";
 import {result} from "../../utils/Type";
 import ServiceManager from "./ServiceManager";
+import App from "../../App";
 
 type listResult<T> = {
     data: T[];
@@ -16,7 +17,7 @@ type listOptions = {
 }
 
 export default abstract class BaseService<T extends BaseDao<E>, E extends object> {
-    protected constructor(Dao: T, app: ServiceManager) {
+    protected constructor(Dao: T, app: App) {
         this.dao = Dao;
         this.app = app;
         this.context = this.dao.context;
@@ -30,7 +31,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
         this.activityId = this.data.activityId;
     }
 
-    protected app: ServiceManager;
+    protected app: App;
     protected dao: T;
     protected cloud: any;
     protected data: any;
@@ -45,16 +46,16 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
 
 
     register(service) {
-        if (this.app instanceof ServiceManager) {
-            return this.app.register(service);
+        if (this.app.services instanceof ServiceManager) {
+            return this.app.services.register(service);
         } else {
             return service;
         }
     }
 
     getService<C extends { [prop: string]: any }>(target: (new (...args) => C)): C {
-        if (this.app instanceof ServiceManager) {
-            return this.app.getService(target);
+        if (this.app.services instanceof ServiceManager) {
+            return this.app.services.getService(target);
         } else {
             return new target(this.app);
         }
@@ -169,6 +170,10 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
         return await this.dao.find(filter, options);
     }
 
+    spm(type, data) {
+        this.app.addSpm(type, data);
+    }
+    
     /**
      * 从云端下载文件
      * @param fileId
