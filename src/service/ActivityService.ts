@@ -50,27 +50,26 @@ export default class ActivityService extends BaseService<ActivityDao<any>, any> 
 
     /**
      * 获取活动
-     * @param id 活动ID
      */
-    async getActivity(id: string = this.activityId): Promise<activityData> {
+    async getActivity(
+        //获取活动字段
+        projection: any
+    ): Promise<activityData> {
         //如果目标活动已经被实例化
-        if (this.activity && this.activity.code !== -1 && this.activity.data._id === id) {
+        if (this.activity && this.activity.code !== -1 && this.activity.data._id === this.activityId) {
             return this.activity;
         } else {
             //返回值
             let result: any = {};
             //过滤参数
             let filter: any = {};
-            if (id) {
-                filter._id = id;
+            if (this.activityId) {
+                filter._id = this.activityId;
             }
+            let options: any = {};
+            !projection || (options.projection = projection)
             //查询活动
-            let activity = await super.get(filter, {
-                projection: {
-                    data: 1,
-                    config: 1
-                }
-            });
+            let activity = await super.get(filter, options);
             result.code = this.status(activity);
             //带上活动返回
             result.data = activity;
