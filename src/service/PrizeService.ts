@@ -11,8 +11,8 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
 
     async my(): Promise<Prize[]> {
         let filter = {
-            "user.openId": this.openId,
-            "user.activityId": this.activityId
+            openId: this.openId,
+            activityId: this.activityId
         }
         return await this.getAll(filter);
     }
@@ -25,7 +25,7 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
     async receive(prizeId: string, ext: any): Promise<number> {
         let filter = {
             _id: prizeId,
-            "user.openId": this.openId
+            openId: this.openId
         }
         let options = {
             $set: {
