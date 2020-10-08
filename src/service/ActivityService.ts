@@ -25,9 +25,8 @@ export default class ActivityService extends BaseService<ActivityDao<any>, any> 
 
     /**
      * 获取活动状态
-     * @param id
      */
-    async getActivityStatus(id: string = this.activityId): Promise<number> {
+    async getActivityStatus(): Promise<number> {
         let activity;
         //如果当前活动存在
         if (this.activity) {
@@ -36,7 +35,7 @@ export default class ActivityService extends BaseService<ActivityDao<any>, any> 
         //否则查询活动
         else {
             let filter: any = {};
-            !id || (filter._id = id);
+            !this.activityId || (filter._id = this.activityId);
             activity = await super.get(filter, {
                 projection: {
                     _id: 0,
@@ -53,7 +52,7 @@ export default class ActivityService extends BaseService<ActivityDao<any>, any> 
      */
     async getActivity(
         //获取活动字段
-        projection: any
+        projection?: any
     ): Promise<activityData> {
         //如果目标活动已经被实例化
         if (this.activity && this.activity.code !== -1 && this.activity.data._id === this.activityId) {
@@ -63,9 +62,7 @@ export default class ActivityService extends BaseService<ActivityDao<any>, any> 
             let result: any = {};
             //过滤参数
             let filter: any = {};
-            if (this.activityId) {
-                filter._id = this.activityId;
-            }
+            !this.activityId || (filter._id = this.activityId)
             let options: any = {};
             !projection || (options.projection = projection)
             //查询活动
