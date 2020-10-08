@@ -31,7 +31,7 @@ export default class App {
 
     //异常后的操作
     async errorDo(response) {
-        let errorLogService = new ErrorLogService(this.context)
+        let errorLogService = this.services.getService(ErrorLogService, this)
         await errorLogService.add(response);
     }
 
