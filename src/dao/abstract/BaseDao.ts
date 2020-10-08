@@ -50,7 +50,7 @@ export default class BaseDao<T extends object> extends Dao {
      * 从云端下载文件
      * @param fileId
      */
-    async downloadFile(fileId): Promise<Buffer> {
+    async downloadFile(fileId): Promise<any> {
         return await this.context.cloud.file.downloadFile({fileId});
     }
 
