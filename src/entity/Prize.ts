@@ -23,6 +23,8 @@ export default class Prize {
     prize: object;
     //获奖时间
     time;
+    //暗号
+    code;
     //获奖日期
     date;
     //获奖类型

@@ -11,4 +11,6 @@ export default class User {
     createTime: string;
     //头像
     avatar: string = "";
+    //邀请人信息
+    inviter: any;
 }

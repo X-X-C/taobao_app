@@ -60,4 +60,17 @@ export default class UserService extends BaseService<UserDao<User>, User> {
     async add(user: User): Promise<string> {
         return await super.insertOne(user);
     }
+
+    /**
+     * 更新用户头像
+     */
+    async updateUser() {
+        await this.editUser({
+            $set: {
+                avatar: this.data.avatar,
+                nick: this.nick
+            }
+        });
+    }
+
 }
