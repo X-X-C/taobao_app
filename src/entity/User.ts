@@ -1,4 +1,8 @@
 export default class User {
+    constructor(user?) {
+        Object.assign(this, user)
+    }
+
     //用户名
     nick: string;
     //用户MixNick
@@ -13,4 +17,13 @@ export default class User {
     avatar: string = "";
     //邀请人信息
     inviter: any;
+
+    baseInfo() {
+        return {
+            nick: this.nick,
+            openId: this.openId,
+            activityId: this.activityId,
+            avatar: this.avatar
+        }
+    }
 }

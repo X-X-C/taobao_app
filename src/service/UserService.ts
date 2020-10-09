@@ -32,6 +32,8 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                 user.mixNick = this.mixNick;
                 user.openId = this.openId;
                 await this.add(user);
+            } else {
+                user = new User(user);
             }
             //如果获取的是当前用户，保存
             if (openId === this.openId) {
