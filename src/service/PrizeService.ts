@@ -51,7 +51,8 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
                 }
                 //积分领取
                 else if (prize.type === "point") {
-                    //TODO 积分
+                    let {addPointNum} = prize[prize.type];
+                    r.data = await topService.taobaoCrmPointChange(addPointNum);
                 }
                 //权益领取
                 else if (prize.type === "benefit") {

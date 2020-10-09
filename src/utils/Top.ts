@@ -10,7 +10,7 @@ export default class Top {
      * @param data  参数
      * @param ext   额外参数
      */
-    async invoke(api: string, data, ext: any = {}) {
+    async invoke(api: string, data, ext?) {
         return await this.context.cloud.topApi.invoke({
             api,
             data,
@@ -29,10 +29,11 @@ export default class Top {
      * @param ext
      * @return 参考：https://open.taobao.com/api.htm?docId=45011&docType=2&scopeId=16730
      */
-    async selectOrder(data: any, ext: any = {}) {
+    async selectOrder(data: any, ext?) {
         let params = {
             fields: "tid,type,status,payment,orders,rx_audit_status",
             page_size: 100,
+            buyer_open_id: this.context.openId,
             ...data
         }
         return await this.invoke("taobao.open.trades.sold.get", params, ext);
@@ -42,7 +43,7 @@ export default class Top {
      * 查询当前用户vip信息
      * @return 参考：https://open.taobao.com/api.htm?docId=34436&docType=2&scopeId=13840
      */
-    async vipStatus(data: any = {}, ext: any = {}) {
+    async vipStatus(data: any = {}, ext?) {
         let params = {
             extra_info: '{"source":"paiyangji","deviceId":"testId","itemId":565058963761}', //固定写法
             mix_nick: this.context.mixNick,
@@ -57,7 +58,7 @@ export default class Top {
      * @param ext
      * @return 参考：https://open.taobao.com/api.htm?docId=45573&docType=2&scopeId=16997
      */
-    async sendBenefit(ename, ext: any = {}) {
+    async sendBenefit(ename, ext?) {
         let params = {
             right_ename: ename,
             receiver_id: this.context.openId,//用户openid
@@ -75,7 +76,7 @@ export default class Top {
      * @param ext
      * @return 参考：https://open.taobao.com/api.htm?spm=a219a.7386797.0.0.6344669azYA9UM&source=search&docId=51296&docType=2
      */
-    async opentradeSpecialUsersMark(sku_id, item_id, ext: any = {}) {
+    async opentradeSpecialUsersMark(sku_id, item_id, ext?) {
         return await this.invoke(
             "taobao.opentrade.special.users.mark",
             {
@@ -97,7 +98,7 @@ export default class Top {
      * @param ext
      * @return 参考：https://open.taobao.com/api.htm?spm=a219a.7386797.0.0.7f2c669ahs9Hif&source=search&docId=51714&docType=2
      */
-    async taobaoOpentradeSpecialItemsBind(miniapp_id, item_ids, ext: any = {}) {
+    async taobaoOpentradeSpecialItemsBind(miniapp_id, item_ids, ext?) {
         return await this.invoke(
             "taobao.opentrade.special.items.bind",
             {
@@ -114,7 +115,7 @@ export default class Top {
      * @param ext
      * @return 参考：https://open.taobao.com/api.htm?docId=51716&docType=2&source=search
      */
-    async taobaoOpentradeSpecialItemsQuery(miniapp_id, ext: any = {}) {
+    async taobaoOpentradeSpecialItemsQuery(miniapp_id, ext?) {
         return await this.invoke(
             "taobao.opentrade.special.items.query",
             {
@@ -131,12 +132,32 @@ export default class Top {
      * @param ext
      * @return 参考：https://open.taobao.com/api.htm?spm=a219a.7386797.0.0.1b14669agpX3MB&source=search&docId=24625&docType=2
      */
-    async taobaoItemSellerGet(num_iid, ext: any = {}) {
+    async taobaoItemSellerGet(num_iid, ext?) {
         return await this.invoke(
             "taobao.item.seller.get",
             {
                 fields: "num_iid,title,nick,price,approve_status,sku",
                 num_iid
+            },
+            ext
+        );
+    }
+
+    /**
+     * 会员积分变更
+     * @param data 参数
+     * @param ext
+     * @return 参考：https://open.taobao.com/api.htm?docId=45305&docType=2&scopeId=16898
+     */
+    async taobaoCrmPointChange(data, ext?) {
+        return await this.invoke(
+            "taobao.crm.point.change",
+            {
+                change_type: 3,
+                opt_type: 0,
+                quantity: 0,
+                open_id: this.context.openId,
+                ...data
             },
             ext
         );

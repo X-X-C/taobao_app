@@ -73,7 +73,6 @@ export default class TopService {
      */
     async selectOrder(startTime: any = false, endTime: any = false, ext: orderExt = {}) {
         let params: any = {
-            buyer_open_id: this.context.openId,
             page_no: 1,
             ...ext
         };
@@ -145,7 +144,23 @@ export default class TopService {
     async taobaoItemSellerGet(num_iid, ext: any = {}): Promise<result> {
         let r = this.getResult();
         r.data = await this.top.taobaoItemSellerGet(num_iid, ext);
-        r.code = Number(r.data.item && true);
+        r.code = Number(!!r.data.item);
+        return r;
+    }
+
+    /**
+     * 获取商品信息
+     * @param num   增加数量
+     * @param openId    默认为当前用户增加
+     * @param ext
+     */
+    async taobaoCrmPointChange(num, openId = this.context.openId, ext: any = {}): Promise<result> {
+        let r = this.getResult();
+        r.data = await this.top.taobaoCrmPointChange({
+            quantity: num,
+            open_id: openId
+        }, ext);
+        r.code = Number(!!r.data.result);
         return r;
     }
 
