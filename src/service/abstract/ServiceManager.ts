@@ -23,7 +23,6 @@ export default class ServiceManager {
     /**
      * 通过类获取service
      * @param target
-     * @param app
      */
     getService<C extends { [prop: string]: any }>(target: (new (...args) => C)): C {
         let s = this.services.find(v => v.constructor.name === target.name);
