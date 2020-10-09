@@ -218,4 +218,8 @@ export default class Utils {
         // @ts-ignore
         return 'data:image/png;base64,' + Buffer.from(qr.imageSync(url), 'utf8').toString('base64');
     }
+
+    static deepClone(obj) {
+        return JSON.parse(JSON.stringify(obj));
+    }
 }

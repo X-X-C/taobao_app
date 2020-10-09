@@ -14,7 +14,7 @@ export default class SpmService extends BaseService<SpmDao<Spm>, Spm> {
      * @param type
      * @param data
      */
-    bean(type: string, data: any = false): Spm {
+    bean(type: string, data?): Spm {
         let spm = new Spm();
         spm.activityId = this.activityId;
         spm.date = this.time().format("YYYY-MM-DD");
@@ -32,7 +32,7 @@ export default class SpmService extends BaseService<SpmDao<Spm>, Spm> {
      * @param type
      * @param data
      */
-    async addSpm(type: string, data: any = false): Promise<string> {
+    async addSpm(type: string, data?): Promise<string> {
         let spm = this.bean(type, data);
         return await this.insertOne(spm);
     }

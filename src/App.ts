@@ -8,9 +8,9 @@ export default class App {
 
     constructor(public context: any, public apiName: string) {
         //创建一个服务管理
-        this.services = new ServiceManager();
+        this.services = new ServiceManager(this);
         //创建埋点对象
-        this.spmService = this.services.getService(SpmService, this);
+        this.spmService = this.services.getService(SpmService);
     }
 
     //服务管理
@@ -31,7 +31,7 @@ export default class App {
 
     //异常后的操作
     async errorDo(response) {
-        let errorLogService = this.services.getService(ErrorLogService, this)
+        let errorLogService = this.services.getService(ErrorLogService)
         await errorLogService.add(response);
     }
 
@@ -86,12 +86,11 @@ export default class App {
         }
         //运行结束添加本次埋点
         await this.spmService.insertMany(this.spmBeans);
-        this.spmBeans = [];
 
         return response;
     }
 
-    addSpm(type, data) {
+    addSpm(type, data?) {
         this.spmBeans.push(this.spmService.bean(type, data));
     }
 

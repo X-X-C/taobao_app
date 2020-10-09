@@ -55,7 +55,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
 
     getService<C extends { [prop: string]: any }>(target: (new (...args) => C)): C {
         if (this.app.services instanceof ServiceManager) {
-            return this.app.services.getService(target, this.app);
+            return this.app.services.getService(target);
         } else {
             return new target(this.app);
         }
@@ -170,9 +170,6 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
         return await this.dao.find(filter, options);
     }
 
-    spm(type, data) {
-        this.app.addSpm(type, data);
-    }
 
     /**
      * 从云端下载文件
@@ -243,4 +240,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
         return compareRs;
     }
 
+    spm(type, data?) {
+        this.app.addSpm(type, data);
+    }
 }

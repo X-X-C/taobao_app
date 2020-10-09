@@ -2,7 +2,7 @@ import App from "../../App";
 
 export default class ServiceManager {
 
-    constructor() {
+    constructor(public app: App) {
     }
 
     services = [];
@@ -25,12 +25,12 @@ export default class ServiceManager {
      * @param target
      * @param app
      */
-    getService<C extends { [prop: string]: any }>(target: (new (...args) => C), app: App): C {
+    getService<C extends { [prop: string]: any }>(target: (new (...args) => C)): C {
         let s = this.services.find(v => v.constructor.name === target.name);
         if (s) {
             return s;
         }
         //新实例注册到services
-        return new target(app);
+        return new target(this.app);
     }
 }
