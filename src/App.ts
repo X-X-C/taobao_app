@@ -86,7 +86,8 @@ export default class App {
         }
         //运行结束添加本次埋点
         await this.spmService.insertMany(this.spmBeans);
-
+        //清空埋点
+        this.spmBeans = [];
         return response;
     }
 
