@@ -8,7 +8,7 @@ import Utils from "../utils/Utils";
 
 export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
     constructor(app: App) {
-        super(new PrizeDao(app.context), app);
+        super(PrizeDao, app);
         return this.register(this);
     }
 

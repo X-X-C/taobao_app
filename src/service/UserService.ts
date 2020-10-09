@@ -5,7 +5,7 @@ import App from "../App";
 
 export default class UserService extends BaseService<UserDao<User>, User> {
     constructor(app: App) {
-        super(new UserDao(app.context), app);
+        super(UserDao, app);
         return this.register(this);
     }
 

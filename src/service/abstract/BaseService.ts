@@ -17,8 +17,8 @@ type listOptions = {
 }
 
 export default abstract class BaseService<T extends BaseDao<E>, E extends object> {
-    protected constructor(Dao: T, app: App) {
-        this.dao = Dao;
+    protected constructor(Dao: new(...args) => T, app: App) {
+        this.dao = new Dao(app.context);
         this.app = app;
         this.context = this.dao.context;
         this.cloud = this.context.cloud;

@@ -5,7 +5,7 @@ import App from "../App";
 
 export default class ErrorLogService extends BaseService<ErrorLogDao<ErrorLog>, ErrorLog> {
     constructor(app: App) {
-        super(new ErrorLogDao(app.context), app);
+        super(ErrorLogDao, app);
         return this.register(this);
     }
 
