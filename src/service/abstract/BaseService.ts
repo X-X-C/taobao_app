@@ -227,14 +227,29 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
                         compareRs.$push[key] = {
                             $each: []
                         }
+                        let index = 0;
                         //如果是数组
                         for (let targetVElement of targetV) {
-                            //查找源对象有没有目标的元素
-                            let arrObj = originV.find(ov => JSON.stringify(ov) === JSON.stringify(targetVElement));
-                            //如果目标对象没有相同的元素
-                            if (!arrObj) {
-                                compareRs.$push[key].$each.push(targetVElement);
+                            let originArrayV = originV[index];
+                            //如果两个值是不相等的
+                            if (JSON.stringify(originArrayV) !== JSON.stringify(targetVElement)) {
+                                let targetVElementType = Utils.getType(targetVElement);
+                                let originArrayVType = Utils.getType(originArrayV);
+                                //如果目标不存在
+                                if (originArrayVType === Utils.getType(undefined)) {
+                                    compareRs.$push[key].$each.push(targetVElement);
+                                }
+                                //如果类型为对象
+                                else if (targetVElementType === originArrayVType && originArrayVType === type.object) {
+                                    //继续往下匹配
+                                    this.compareObj(originArrayV, targetVElement, key + "." + index, compareRs)
+                                }
+                                //如果类型不为对象
+                                else {
+                                    compareRs.$set[key + "." + index] = targetVElementType;
+                                }
                             }
+                            ++index;
                         }
                         if (compareRs.$push[key].$each.length <= 0) {
                             delete compareRs.$push[key];
