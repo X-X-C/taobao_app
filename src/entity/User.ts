@@ -17,6 +17,8 @@ export default class User {
     avatar: string = "";
     //邀请人信息
     inviter: any;
+    //上次初始化时间
+    lastInitTime: string = "";
 
     baseInfo() {
         return {

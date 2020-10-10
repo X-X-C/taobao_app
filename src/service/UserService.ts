@@ -2,6 +2,7 @@ import UserDao from "../dao/UserDao";
 import User from "../entity/User";
 import BaseService from "./abstract/BaseService";
 import App from "../App";
+import Utils from "../utils/Utils";
 
 export default class UserService extends BaseService<UserDao<User>, User> {
     constructor(app: App) {
@@ -75,4 +76,35 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         });
     }
 
+    /**
+     * 首次进入
+     */
+    async enter() {
+        //返回信息
+        let user = await this.getUser();
+        //源用户信息
+        let _user = Utils.deepClone(user);
+        //初始化用户信息
+        this.init(user);
+        //比较用户更新信息
+        let options = this.compareObj(_user, user);
+        //更新用户
+        await this.editUser(options);
+        //返回
+        return {
+            user
+        };
+    }
+
+    /**
+     * 初始化用户
+     * @private
+     */
+    private init(user: User) {
+        let time = this.time().common;
+        //上次初始化时间
+        if (user.lastInitTime !== time.YYYYMMDD) {
+            //do...
+        }
+    }
 }

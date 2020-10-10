@@ -145,6 +145,14 @@ export default class Utils {
         return unique;
     }
 
+    static type = {
+        number: Utils.getType(1),
+        object: Utils.getType({}),
+        array: Utils.getType([]),
+        string: Utils.getType(""),
+        boolean: Utils.getType(true),
+    }
+
     /**
      * 获取精确类型
      * @param any

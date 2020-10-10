@@ -188,11 +188,21 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
         return await this.dao.uploadFile(buffer, fileName);
     }
 
-    compareObj(origin, target, extKey = "", compareRs = {
+
+    /**
+     * 比较两个对象，返回两个比较后的修改option
+     * 对于数组只适合push操作，修改自己额外操作
+     * @param origin
+     * @param target
+     * @param extKey
+     * @param compareRs
+     */
+    compareObj(origin, target, extKey = "", compareRs: any = {
         $inc: {},
         $push: {},
         $set: {}
     }) {
+        let type = Utils.type;
         for (let targetKey in target) {
             let targetV = target[targetKey];
             let originV = origin[targetKey];
@@ -203,16 +213,17 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
             //如果两个对象不相同
             if (JSON.stringify(targetV) !== JSON.stringify(originV)) {
                 let originType = Utils.getType(originV);
+                let targetType = Utils.getType(targetV);
                 //如果目标的对象类型相同
-                if (originType === Utils.getType(targetV)) {
+                if (originType === targetType) {
                     //如果是对象
-                    if (originType === Utils.getType({})) {
+                    if (originType === type.object) {
                         //继续往下匹配
                         this.compareObj(originV, targetV, key, compareRs)
-                    } else if (originType === Utils.getType(1)) {
+                    } else if (originType === type.number) {
                         //数值相加
                         compareRs.$inc[key] = targetV - originV;
-                    } else if (originType === Utils.getType([])) {
+                    } else if (originType === type.array) {
                         compareRs.$push[key] = {
                             $each: []
                         }
