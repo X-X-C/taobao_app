@@ -191,7 +191,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
 
     /**
      * 比较两个对象，返回两个比较后的修改option
-     * 对于数组只适合push操作，修改自己额外操作
+     * !!!!!!慎用!!!!!!
      * @param origin
      * @param target
      * @param extKey
