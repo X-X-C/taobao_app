@@ -215,7 +215,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
                 let originType = Utils.getType(originV);
                 let targetType = Utils.getType(targetV);
                 //如果目标的对象类型相同
-                if (originType === targetType) {
+                if (originType === targetType && [type.object, type.number, type.array].indexOf(originType) !== -1) {
                     //如果是对象
                     if (originType === type.object) {
                         //继续往下匹配
@@ -254,8 +254,6 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
                         if (compareRs.$push[key].$each.length <= 0) {
                             delete compareRs.$push[key];
                         }
-                    } else {
-                        compareRs.$set[key] = targetV;
                     }
                 } else {
                     //如果类型不同直接设置
