@@ -31,7 +31,7 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
             _id: prizeId,
             openId: this.openId
         }
-        let prize = await this.get(filter);
+        let prize: any = await this.get(filter);
         if (prize && prize.receiveStatus === false) {
             let options = {
                 $set: {
@@ -43,6 +43,7 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
             r.code = await this.edit(filter, options);
             //成功领取
             if (r.code >= 1) {
+                prize = prize.prize;
                 let topService = this.getService(TopService);
                 //尖货领取
                 if (prize.type === "goods") {

@@ -20,7 +20,10 @@ export default class SpmService extends BaseService<SpmDao<Spm>, Spm> {
         spm.date = this.time().format("YYYY-MM-DD");
         spm.nick = this.nick;
         spm.type = type;
-        spm.data = data || this.data;
+        spm.data = {
+            ...this.data,
+            ...data
+        }
         spm.openId = this.openId;
         spm.time = this.time().common.base;
         spm.timestamp = this.time().common.x;
