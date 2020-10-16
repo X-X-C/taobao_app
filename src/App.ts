@@ -91,8 +91,8 @@ export default class App {
         return response;
     }
 
-    addSpm(type, data?) {
-        this.spmBeans.push(this.spmService.bean(type, data));
+    addSpm(type, data?, ext?) {
+        this.spmBeans.push(this.spmService.bean(type, data, ext));
     }
 
     /**
