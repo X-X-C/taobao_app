@@ -107,4 +107,27 @@ export default class UserService extends BaseService<UserDao<User>, User> {
             //do...
         }
     }
+
+    /**
+     * 从当前时间开始获取连续签到天数
+     * @param data
+     */
+    getSuccessiveDay(data) {
+        /**
+         * 源数据
+         */
+        let day = data;
+        let successiveDay = 0;
+        while (day.length > successiveDay) {
+            let time = this.time();
+            let target = time.to(-successiveDay).YYYYMMDD;
+            if (day.indexOf(target) !== -1) {
+                successiveDay += 1;
+            } else {
+                break;
+            }
+        }
+        return successiveDay;
+    }
+
 }

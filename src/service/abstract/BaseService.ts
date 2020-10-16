@@ -264,7 +264,33 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
         return compareRs;
     }
 
-    spm(type, data?) {
-        this.app.addSpm(type, data);
+    spm(type, data?, ext?) {
+        this.app.addSpm(type, data, ext);
+    }
+
+    /**
+     * 游戏次数埋点
+     * @param origin
+     * @param num
+     * @param ext
+     */
+    gameNumSpm(origin, num, ext?) {
+        this.spm("gameNum", {
+            origin,
+            num
+        }, ext);
+    }
+
+    /**
+     * 分数埋点
+     * @param origin
+     * @param num
+     * @param ext
+     */
+    scoreSpm(origin, num, ext?) {
+        this.spm("score", {
+            origin,
+            num
+        }, ext);
     }
 }
