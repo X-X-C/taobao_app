@@ -29,7 +29,8 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
         let r = this.result;
         let filter = {
             _id: prizeId,
-            openId: this.openId
+            openId: this.openId,
+            activityId: this.activityId
         }
         let prize: any = await this.get(filter);
         if (prize && prize.receiveStatus === false) {
