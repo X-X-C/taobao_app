@@ -12,6 +12,18 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
         return this.register(this);
     }
 
+    baseInfo() {
+        return {
+            province: "",
+            city: "",
+            district: "",
+            name: "",
+            tel: "",
+            address: "",
+            desc: ""
+        }
+    }
+
     async my(): Promise<Prize[]> {
         let filter = {
             openId: this.openId,
@@ -22,10 +34,9 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
 
     /**
      * 领取奖品
-     * @param prizeId
-     * @param ext
      */
-    async receive(prizeId: string, ext: any): Promise<result> {
+    async receive(): Promise<result> {
+        let {prizeId, ext} = this.data;
         let r = this.result;
         let filter = {
             _id: prizeId,
@@ -34,17 +45,23 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
         }
         let prize: any = await this.get(filter);
         if (prize && prize.receiveStatus === false) {
+            prize = prize.prize;
+            let baseInfo = this.baseInfo();
+            //实物奖品填写信息
+            if (prize.type === "item") {
+                Object.assign(baseInfo, ext)
+                baseInfo.desc = baseInfo.province + baseInfo.city + baseInfo.district + baseInfo.address;
+            }
             let options = {
                 $set: {
                     receiveTime: this.time().common,
                     receiveStatus: true,
-                    ext
+                    ext: baseInfo
                 }
             }
             r.code = await this.edit(filter, options);
             //成功领取
             if (r.code >= 1) {
-                prize = prize.prize;
                 let topService = this.getService(TopService);
                 //尖货领取
                 if (prize.type === "goods") {
