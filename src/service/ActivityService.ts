@@ -25,7 +25,7 @@ export default class ActivityService extends BaseService<ActivityDao<any>, any> 
     /**
      * 获取活动状态
      */
-    async getActivityStatus(): Promise<number> {
+    async getActivityStatus(): Promise<activityData> {
         let activity;
         //如果当前活动存在
         if (this.activity) {
@@ -43,7 +43,10 @@ export default class ActivityService extends BaseService<ActivityDao<any>, any> 
                 }
             });
         }
-        return this.status(activity);
+        return {
+            code: this.status(activity),
+            data: activity
+        };
     }
 
     /**

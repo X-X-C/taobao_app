@@ -54,7 +54,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
     }
 
 
-    get result(): result {
+    get result(): result | any {
         return {
             code: 0
         }
