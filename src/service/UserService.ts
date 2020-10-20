@@ -6,6 +6,8 @@ import Utils from "../utils/Utils";
 import Time from "../utils/Time";
 import ActivityService from "./ActivityService";
 import TopService from "./TopService";
+import Prize from "../entity/Prize";
+import PrizeService from "./PrizeService";
 
 export default class UserService extends BaseService<UserDao<User>, User> {
     constructor(app: App) {
@@ -300,24 +302,25 @@ export default class UserService extends BaseService<UserDao<User>, User> {
             r.message = "已经是会员"
         }
         //超过限制
-        else if (_inviter.task.assist.count > 10) {
+        else if (inviter.task.assist.count > 10) {
             r.code = -8;
             r.message = "超过邀请限制"
         }
         //条件满足
         else {
             //todo 邀请人操作
+            inviter.task.assist.count += 1;
             let inviterOptions = this.compareObj(_inviter, inviter);
             let inviterFilter = {
                 "task.assist.count": _inviter.task.assist.count,
-                openId: _inviter.openId
+                openId: inviter.openId
             }
             r.code = await this.editUser(inviterOptions, inviterFilter);
             //成功
-            if (r.code >= 1) {
+            if (r.code > 0) {
                 user.inviter = {
-                    nick: _inviter.nick,
-                    openId: _inviter.openId,
+                    nick: inviter.nick,
+                    openId: inviter.openId,
                     time: time.common.base
                 }
                 let options = this.compareObj(_user, user);
@@ -334,5 +337,78 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         });
         Object.assign(spmData, r);
         return r;
+    }
+
+
+    async lottery() {
+        //当前用户信息
+        let {user, _user} = await this.baseData();
+        let activityService = this.services.activityService;
+        //获取活动
+        let activity = await activityService.getActivity({
+            startTime: 1,
+            endTime: 1,
+            config: 1
+        })
+        //返回值
+        let r = this.result;
+        r.award = false;
+        //活动进行中
+        if (activity.code === 1) {
+            //有抽奖次数
+            if (user.lotteryCount > 0) {
+                user.lotteryCount -= 1;
+                let options = this.compareObj(_user, user);
+                let filter: any = {
+                    lotteryCount: _user.lotteryCount
+                }
+                r.code = await this.editUser(options, filter);
+                //抽奖成功
+                if (r.code > 0) {
+                    let prizeList = activity.data.config.lotteryPrize.prizeList;
+                    let awardIndex = Utils.random(prizeList.map(v => parseFloat(v.probability)));
+                    //抽中的奖品
+                    let prize = prizeList[awardIndex];
+                    //不是未中奖
+                    if (prize.type !== "noprize") {
+                        //查询库存
+                        let grantDone = activity.data.data.grantTotal[prize.id] || 0;
+                        //有剩余库存
+                        if (grantDone < prize.stock) {
+                            filter = {
+                                _id: this.activityId,
+                                $or: [
+                                    {
+                                        ["data.grantTotal." + prize.id]: {
+                                            $exists: false
+                                        },
+                                    },
+                                    {
+                                        ["data.grantTotal." + prize.id]: grantDone
+                                    }
+                                ]
+                            }
+                            options = {
+                                $inc: {
+                                    ["data.grantTotal." + prize.id]: 1
+                                }
+                            }
+                            r.code = await activityService.edit(filter, options);
+                            //成功扣减库存
+                            if (r.code >= 1) {
+                                let prizeService = this.getService(PrizeService);
+                                let sendPrize = new Prize(user, prize, "lottery");
+                                if (prize.type === "code") {
+                                    sendPrize.code = await prizeService.generateCode();
+                                }
+                                sendPrize._id = await prizeService.insertOne(sendPrize);
+                                r.prize = sendPrize;
+                                r.award = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

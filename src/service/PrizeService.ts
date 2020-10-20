@@ -88,9 +88,9 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
     /**
      * 生成暗号
      */
-    async generateCode() {
+    async generateCode(length = 10) {
         while (true) {
-            let code = Utils.getUniqueStr(20);
+            let code = Utils.getUniqueStr(length);
             //查询是否已有暗号
             let count = await this.count({
                 activityId: this.activityId,

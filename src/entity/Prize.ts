@@ -13,6 +13,7 @@ export default class Prize {
         this.type = type;
     }
 
+    _id;
     //活动ID
     activityId: string;
     //用户名
@@ -34,9 +35,5 @@ export default class Prize {
     //领取状态
     receiveStatus: boolean = false;
     //额外参数
-    ext: any = {
-        name: "",
-        phone: "",
-        address: ""
-    }
+    ext: any = {}
 }

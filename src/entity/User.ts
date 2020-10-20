@@ -52,6 +52,12 @@ export default class User {
         }
     }
 
+    /**
+     * 抽奖字段
+     */
+        //剩余抽奖次数
+    lotteryCount: number = 0;
+
     baseInfo() {
         return {
             nick: this.nick,
