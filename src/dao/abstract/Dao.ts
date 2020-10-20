@@ -1,18 +1,19 @@
 export default abstract class Dao {
-    //淘宝小程序专属
-    protected constructor(protected context: object, protected table: string) {
+    protected constructor(protected context: any, protected table: string) {
 
     }
 
-    abstract async find(filter, options);
+    abstract async find(filter: any, options: any): Promise<any[]>;
 
-    abstract async update(filter, options);
+    abstract async update(filter: any, options: any): Promise<number>;
 
-    abstract async delete(filter);
+    abstract async delete(filter: any): Promise<number>;
 
-    abstract async insert(beans);
+    abstract async insertOne(bean: any): Promise<string>;
 
-    abstract async count(filter);
+    abstract async insertMany(beans: any[]): Promise<string[]>;
 
-    abstract async aggregate(filter);
+    abstract async count(filter: any): Promise<number>;
+
+    abstract async aggregate(filter: any[]): Promise<any[]>;
 }

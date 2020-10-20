@@ -13,7 +13,7 @@ export default class Utils {
      * @param real  { name: "小白" }
      * @return BaseResult
      */
-    static checkParams(need: object, real: object) {
+    static checkParams(need: any, real: any): BaseResult {
         for (let key in need) {
             if (typeof real[key] === "undefined") {
                 return BaseResult.fail(`缺少参数${key}`);
@@ -28,7 +28,7 @@ export default class Utils {
      * 判断是否为空
      * @param any
      */
-    static isBlank(any: any) {
+    static isBlank(any: any): boolean {
         return any === null || any === undefined || any === "" || JSON.stringify(any) === "[]" || JSON.stringify(any) === "{}";
     }
 
@@ -37,7 +37,7 @@ export default class Utils {
      * 将excel里的时间转换为标准时间格式
      * @param number
      */
-    static parseExcelDate(number: number) {
+    static parseExcelDate(number: number): false | string {
         //不是数字
         if (isNaN(Number(number)) === true) {
             return false;
@@ -60,7 +60,7 @@ export default class Utils {
      * @param defineHeader
      * @param who  读取第几张表
      */
-    static parseExcel(buffer, defineHeader: any = {}, who: number = 0) {
+    static parseExcel(buffer, defineHeader: any = {}, who: number = 0): Array<any> | false {
         let data, workbook;
         workbook = xlsx.read(buffer, {
             type: "buffer"
@@ -103,7 +103,7 @@ export default class Utils {
      *     header: []
      * }
      */
-    static jsonToExcelBuffer(excelJson, ext: { header?: Array<any> } = {}) {
+    static jsonToExcelBuffer(excelJson, ext: { header?: Array<any> } = {}): any {
         //将json转换为xlsx的sheet格式
         let sheet = xlsx.utils.json_to_sheet(excelJson, ext);
         //新建一个xlsx工作薄
@@ -119,7 +119,7 @@ export default class Utils {
      * 抽奖
      * @param probabilityArr 概率数组
      */
-    static random(probabilityArr: Array<number>) {
+    static random(probabilityArr: Array<number>): number {
         return randombyweights(probabilityArr);
     }
 
@@ -127,7 +127,7 @@ export default class Utils {
      * 获取的随机字符串长度
      * @param length
      */
-    static getUniqueStr(length: number) {
+    static getUniqueStr(length: number): string {
         let unique = '';
         let source = [];
         //得到 0-9  A-Z  a-z
@@ -145,11 +145,19 @@ export default class Utils {
         return unique;
     }
 
+    static type = {
+        number: Utils.getType(1),
+        object: Utils.getType({}),
+        array: Utils.getType([]),
+        string: Utils.getType(""),
+        boolean: Utils.getType(true),
+    }
+
     /**
      * 获取精确类型
      * @param any
      */
-    static getType(any) {
+    static getType(any): string {
         return Object.prototype.toString.call(any);
     }
 
@@ -158,7 +166,7 @@ export default class Utils {
      * @param target
      * @param source
      */
-    static assign(target: object, source: object) {
+    static assign(target: object, source: object): void {
         for (let key in source) {
             let v = source[key];
             if (!Utils.isBlank(v) && typeof target[key] !== "undefined") {
@@ -166,7 +174,6 @@ export default class Utils {
             }
         }
     }
-
 
     /**
      * 清除对象里的空白值
@@ -193,7 +200,7 @@ export default class Utils {
      * 清空对象数组里的所有空值
      * @param arr
      */
-    static cleanObjArr(arr: object[]) {
+    static cleanObjArr(arr: object[]): number {
         let delArr = [];
         if (arr.length > 0) {
             arr.forEach((v, k) => {
@@ -215,7 +222,12 @@ export default class Utils {
      * 解析url为base64二维码
      * @param url
      */
-    static qrImage(url) {
+    static qrImage(url): string {
+        // @ts-ignore
         return 'data:image/png;base64,' + Buffer.from(qr.imageSync(url), 'utf8').toString('base64');
+    }
+
+    static deepClone<T>(obj: T): T {
+        return JSON.parse(JSON.stringify(obj));
     }
 }

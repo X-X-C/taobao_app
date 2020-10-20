@@ -1,21 +1,31 @@
 import ActivityDao from "../dao/ActivityDao";
 import BaseService from "./abstract/BaseService";
-import UserService from "./UserService";
-import Prize from "../entity/Prize";
-import PrizeService from "./PrizeService";
+import App from "../App";
 
-export default class ActivityService extends BaseService<ActivityDao, {}> {
-    constructor(context) {
-        super(new ActivityDao(context));
+/**
+ * @param code
+ * -1-->没有此活动
+ * 0-->活动未开始
+ * 1-->活动进行中
+ * 2-->活动已结束
+ * @param data 活动数据
+ */
+type activityData = {
+    code: number,
+    data: any
+}
+
+export default class ActivityService extends BaseService<ActivityDao<any>, any> {
+    constructor(app: App) {
+        super(ActivityDao, app);
     }
 
     private activity: any;
 
     /**
      * 获取活动状态
-     * @param id
      */
-    async getStatus(id: string = this.activityId) {
+    async getActivityStatus(): Promise<number> {
         let activity;
         //如果当前活动存在
         if (this.activity) {
@@ -24,7 +34,7 @@ export default class ActivityService extends BaseService<ActivityDao, {}> {
         //否则查询活动
         else {
             let filter: any = {};
-            !id || (filter._id = id);
+            !this.activityId || (filter._id = this.activityId);
             activity = await super.get(filter, {
                 projection: {
                     _id: 0,
@@ -33,28 +43,30 @@ export default class ActivityService extends BaseService<ActivityDao, {}> {
                 }
             });
         }
-        return this.getActivityStatus(activity);
+        return this.status(activity);
     }
 
     /**
-     * 查询活动
-     * @param id 活动ID
+     * 获取活动
      */
-    async get(id: string = this.activityId) {
+    async getActivity(
+        //获取活动字段
+        projection?: any
+    ): Promise<activityData> {
         //如果目标活动已经被实例化
-        if (this.activity && this.activity.code !== -1 && this.activity.data._id === id) {
+        if (this.activity && this.activity.code !== -1 && this.activity.data._id === this.activityId) {
             return this.activity;
         } else {
             //返回值
             let result: any = {};
             //过滤参数
             let filter: any = {};
-            if (id) {
-                filter._id = id;
-            }
+            !this.activityId || (filter._id = this.activityId)
+            let options: any = {};
+            !projection || (options.projection = projection)
             //查询活动
-            let activity = await super.get(filter);
-            result.code = this.getActivityStatus(activity);
+            let activity = await super.get(filter, options);
+            result.code = this.status(activity);
             //带上活动返回
             result.data = activity;
             this.activity = result;
@@ -62,84 +74,22 @@ export default class ActivityService extends BaseService<ActivityDao, {}> {
         }
     }
 
-    getActivityStatus(activity) {
+    private status(activity: any): number {
         //没有活动
         if (!activity) {
             return -1;
         }
         //活动未开始
-        if (this.time().base < activity.startTime) {
+        if (this.time().common.base < activity.startTime) {
             return 0;
         }
         //活动已结束
-        else if (this.time().base > activity.endTime) {
+        else if (this.time().common.base > activity.endTime) {
             return 2
         }
         //活动正常
         else {
             return 1;
         }
-    }
-
-    /**
-     * 初始化活动
-     */
-    async init(userService = new UserService(this.context)) {
-        let activity = await this.get();
-        let rs = {
-            awardStatus: -1,
-            ...activity
-        };
-        //活动已结束
-        if (activity.code === 2) {
-            activity = activity.data;
-            //获取配置
-            let {rankPrizeList, award} = activity.config;
-            //如果没有开过奖
-            if (award === false) {
-                let rankList = await userService.rank();
-                let winners = [];
-                //排名索引
-                let index = 1;
-                for (let u of rankList) {
-                    for (let p of rankPrizeList) {
-                        //获取条件
-                        let {startNum, endNum} = p.condition;
-                        //如果在中奖范围
-                        if (index >= startNum && index <= endNum) {
-                            let prize = new Prize();
-                            prize.prize = p;
-                            prize.type = "rank";
-                            prize.user = u;
-                            winners.push(prize);
-                        }
-                    }
-                    index += 1;
-                }
-                let filter = {
-                    _id: this.activityId,
-                    "config.award": false
-                }
-                let options = {
-                    $set: {
-                        "config.award": true
-                    }
-                }
-                //更改开奖状态
-                let status = await this.edit(filter, options);
-                //成功更改开奖状态
-                if (status === 1) {
-                    if (winners.length > 0) {
-                        let prizeService = new PrizeService(this.context);
-                        await prizeService.add(winners);
-                    }
-                }
-                //成功
-                rs.awardStatus = 1;
-            } else {
-                rs.awardStatus = 0;
-            }
-        }
-        return rs;
     }
 }

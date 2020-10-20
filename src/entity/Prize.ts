@@ -2,14 +2,31 @@ import User from "./User";
 import Time from "../utils/Time";
 
 export default class Prize {
-    //完整的获奖人信息
-    user: User;
+    constructor(user: User, prize: any, type: string) {
+        this.activityId = user.activityId;
+        this.openId = user.openId
+        this.nick = user.nick
+        this.prize = prize;
+        let time = new Time();
+        this.time = time.common;
+        this.date = time.format("YYYY/MM/DD");
+        this.type = type;
+    }
+
+    //活动ID
+    activityId: string;
+    //用户名
+    nick: string;
+    //openId
+    openId: string;
     //获奖人的中奖产品
     prize: object;
     //获奖时间
-    time: Time = new Time();
+    time;
+    //暗号
+    code;
     //获奖日期
-    date = this.time.format("YYYY/MM/DD")
+    date;
     //获奖类型
     type: string;
     //领取时间

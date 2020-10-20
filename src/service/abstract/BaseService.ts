@@ -1,10 +1,25 @@
 import BaseDao from "../../dao/abstract/BaseDao";
 import Time from "../../utils/Time";
 import Utils from "../../utils/Utils";
+import {result} from "../../utils/Type";
+import ServiceManager from "./ServiceManager";
+import App from "../../App";
 
-export default abstract class BaseService<T extends BaseDao, E extends {}> {
-    protected constructor(Dao: T) {
-        this.dao = Dao;
+type listResult<T> = {
+    data: T[];
+    [other: string]: any;
+}
+
+type listOptions = {
+    skip?: number,
+    limit?: number,
+    [other: string]: any
+}
+
+export default abstract class BaseService<T extends BaseDao<E>, E extends object> {
+    protected constructor(Dao: new(...args) => T, app: App) {
+        this.dao = new Dao(app.context);
+        this.app = app;
         this.context = this.dao.context;
         this.cloud = this.context.cloud;
         this.data = this.context.data;
@@ -16,6 +31,7 @@ export default abstract class BaseService<T extends BaseDao, E extends {}> {
         this.activityId = this.data.activityId;
     }
 
+    protected app: App;
     protected dao: T;
     protected cloud: any;
     protected data: any;
@@ -24,14 +40,51 @@ export default abstract class BaseService<T extends BaseDao, E extends {}> {
     protected openId: string;
     protected mixNick: string;
     protected activityId: string;
-    protected time = (date: any = new Date()): Time => new Time(date);
+    protected time = (date: any = new Date()): Time => {
+        return new Time(date);
+    };
+
+
+    getService<C extends { [prop: string]: any }>(target: (new (...args) => C)): C {
+        if (this.app.services instanceof ServiceManager) {
+            return this.app.services.getService(target);
+        } else {
+            return new target(this.app);
+        }
+    }
+
+
+    get result(): result | any {
+        return {
+            code: 0
+        }
+    }
+
+    get options() {
+        return {
+            $push: <E>{},
+            $set: <E>{},
+            $inc: <E>{}
+        }
+    }
 
     /**
-     * 新增
+     * 新增一条数据
      * @param entity
      */
-    async add(entity: E | Array<E>) {
-        return await this.dao.insert(entity);
+    async insertOne(entity: E): Promise<string> {
+        return await this.dao.insertOne(entity);
+    }
+
+    /**
+     * 新增多条数据
+     * @param entity
+     */
+    async insertMany(entity: E[]): Promise<string[]> {
+        if (entity.length > 0) {
+            return await this.dao.insertMany(entity);
+        }
+        return [];
     }
 
     /**
@@ -39,19 +92,18 @@ export default abstract class BaseService<T extends BaseDao, E extends {}> {
      * @param filter
      * @param options
      */
-    async edit(filter, options) {
-        let line = 0;
-        if (Utils.cleanObj(options)) {
-            line = await this.dao.update(filter, options);
+    async edit(filter: any, options: any): Promise<number> {
+        if (Utils.cleanObj(options, false)) {
+            return await this.dao.update(filter, options);
         }
-        return line;
+        return 0;
     }
 
     /**
      * 删除
      * @param filter
      */
-    async delete(filter) {
+    async delete(filter: any): Promise<number> {
         return await this.dao.delete(filter);
     }
 
@@ -59,14 +111,13 @@ export default abstract class BaseService<T extends BaseDao, E extends {}> {
      * 统计查询
      * @param filter
      */
-    async count(filter) {
+    async count(filter: any): Promise<number> {
         return await this.dao.count(filter);
     }
 
-    async aggregate(pipe: Array<any>) {
+    async aggregate(pipe: Array<any>): Promise<any[]> {
         return await this.dao.aggregate(pipe);
     }
-
 
     /**
      * 分页查询带限制条件
@@ -76,8 +127,10 @@ export default abstract class BaseService<T extends BaseDao, E extends {}> {
      * @param options
      * @param dividePage    是否分页
      */
-    async list(filter: any = {}, options: any = {}, dividePage = true) {
-        let rs: any = {};
+    async list(filter: any = {}, options: listOptions = {}, dividePage: boolean = true): Promise<listResult<E>> {
+        let rs: listResult<E> = {
+            data: null
+        };
         if (dividePage === true) {
             let {size, page} = this.data;
             if (size && page) {
@@ -96,9 +149,8 @@ export default abstract class BaseService<T extends BaseDao, E extends {}> {
      * @param filter
      * @param options
      */
-    async get(filter = {}, options: any = {}) {
-        options.limit = 1;
-        return (await this.list(filter, options, false)).data[0];
+    async get(filter: any = {}, options: any = {}): Promise<E> {
+        return await this.dao.get(filter, options);
     }
 
     /**
@@ -106,15 +158,16 @@ export default abstract class BaseService<T extends BaseDao, E extends {}> {
      * @param filter
      * @param options
      */
-    async getAll(filter = {}, options = {}) {
-        return (await this.list(filter, options, false)).data;
+    async getAll(filter: any = {}, options: any = {}): Promise<E[]> {
+        return await this.dao.find(filter, options);
     }
+
 
     /**
      * 从云端下载文件
      * @param fileId
      */
-    async downloadFile(fileId) {
+    async downloadFile(fileId: string): Promise<any> {
         return await this.dao.downloadFile(fileId);
     }
 
@@ -123,8 +176,88 @@ export default abstract class BaseService<T extends BaseDao, E extends {}> {
      * @param buffer
      * @param fileName
      */
-    async uploadFile(buffer: any, fileName: string) {
+    async uploadFile(buffer: any, fileName: string): Promise<string> {
         return await this.dao.uploadFile(buffer, fileName);
+    }
+
+
+    /**
+     * 比较两个对象，返回两个比较后的修改option
+     * !!!!!!慎用!!!!!!
+     * @param origin
+     * @param target
+     * @param extKey
+     * @param compareRs
+     */
+    compareObj(origin, target, extKey = "", compareRs: any = {
+        $inc: {},
+        $push: {},
+        $set: {}
+    }) {
+        let type = Utils.type;
+        for (let targetKey in target) {
+            let targetV = target[targetKey];
+            let originV = origin[targetKey];
+            let key = targetKey;
+            if (extKey !== "") {
+                key = extKey + "." + key;
+            }
+            //如果两个对象不相同
+            if (JSON.stringify(targetV) !== JSON.stringify(originV)) {
+                let originType = Utils.getType(originV);
+                let targetType = Utils.getType(targetV);
+                //如果目标的对象类型相同
+                if (originType === targetType && [type.object, type.number, type.array].indexOf(originType) !== -1) {
+                    //如果是对象
+                    if (originType === type.object) {
+                        //继续往下匹配
+                        this.compareObj(originV, targetV, key, compareRs)
+                    } else if (originType === type.number) {
+                        //数值相加
+                        compareRs.$inc[key] = targetV - originV;
+                    } else if (originType === type.array) {
+                        compareRs.$push[key] = {
+                            $each: []
+                        }
+                        let index = 0;
+                        //如果是数组
+                        for (let targetVElement of targetV) {
+                            let originArrayV = originV[index];
+                            //如果两个值是不相等的
+                            if (JSON.stringify(originArrayV) !== JSON.stringify(targetVElement)) {
+                                let targetVElementType = Utils.getType(targetVElement);
+                                let originArrayVType = Utils.getType(originArrayV);
+                                //如果目标不存在
+                                if (originArrayVType === Utils.getType(undefined)) {
+                                    compareRs.$push[key].$each.push(targetVElement);
+                                }
+                                //如果类型为对象
+                                else if (targetVElementType === originArrayVType && originArrayVType === type.object) {
+                                    //继续往下匹配
+                                    this.compareObj(originArrayV, targetVElement, key + "." + index, compareRs)
+                                }
+                                //如果类型不为对象
+                                else {
+                                    compareRs.$set[key + "." + index] = targetVElementType;
+                                }
+                            }
+                            ++index;
+                        }
+                        if (compareRs.$push[key].$each.length <= 0) {
+                            delete compareRs.$push[key];
+                        }
+                    }
+                } else {
+                    //如果类型不同直接设置
+                    compareRs.$set[key] = targetV;
+                }
+            }
+        }
+        return compareRs;
+    }
+
+    spm(type, data?, ext?) {
+        this.app.addSpm(type, data, ext);
     }
 
 }

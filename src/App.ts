@@ -1,20 +1,38 @@
 import Utils from "./utils/Utils";
 import BaseResult from "./dto/BaseResult";
 import ErrorLogService from "./service/ErrorLogService";
+import ServiceManager from "./service/abstract/ServiceManager";
+import SpmService from "./service/SpmService";
 
 export default class App {
+
     constructor(public context: any, public apiName: string) {
+        //创建一个服务管理
+        this.services = new ServiceManager(this);
+        //创建埋点对象
+        this.spmService = this.services.getService(SpmService);
     }
 
+    //服务管理
+    services: ServiceManager;
+
     //APP配置
-    static config = {
+    config = {
         //是否在请求结束后返回本次请求参数
-        returnParams: false,
+        returnParams: true,
+        //全局请求参数
         needParams: {}
     }
+
+    //埋点对象
+    spmService: SpmService;
+    //埋点数组
+    spmBeans = [];
+
     //异常后的操作
-    static errorDo: Function = (e) => {
-        console.log(e)
+    async errorDo(response) {
+        let errorLogService = this.services.getService(ErrorLogService)
+        await errorLogService.add(response);
     }
 
     /**
@@ -22,7 +40,7 @@ export default class App {
      * @param doSomething
      * @param needParams 所需参数 { name: "" }
      */
-    async run(doSomething: Function, needParams: object = {}) {
+    async run(doSomething: Function, needParams: object = {}): Promise<BaseResult> {
         //初始化返回对象
         let response = BaseResult.success();
         //保存原始请求参数
@@ -31,7 +49,7 @@ export default class App {
         let result = null;
         try {
             //全局所需参数
-            Object.assign(needParams, App.config.needParams);
+            Object.assign(needParams, this.config.needParams);
             //判断参数是否符合条件
             result = Utils.checkParams(needParams, params);
             //如果不符合条件直接返回
@@ -55,7 +73,7 @@ export default class App {
             Object.assign(response, {params})
             try {
                 //用户自行对异常对象进行操作
-                await App.errorDo.call(this, response);
+                await this.errorDo(response);
             } catch (e) {
                 //...
             }
@@ -63,17 +81,25 @@ export default class App {
             return response;
         }
         //成功过后是否返回请求参数
-        if (App.config.returnParams === true) {
+        if (this.config.returnParams === true) {
             Object.assign(response, {params})
         }
+        //运行结束添加本次埋点
+        await this.spmService.insertMany(this.spmBeans);
+        //清空埋点
+        this.spmBeans = [];
         return response;
+    }
+
+    addSpm(type, data?, ext?) {
+        this.spmBeans.push(this.spmService.bean(type, data, ext));
     }
 
     /**
      * 清空指定的表
      * @param tbs
      */
-    async cleanTable(tbs) {
+    async cleanTable(tbs): Promise<Array<string>> {
         let result = null, data = [];
         for (let k in tbs) {
             result = await this.db(tbs[k]).deleteMany({_id: {$ne: 0}});
@@ -91,11 +117,3 @@ export default class App {
         return this.context.cloud.db.collection(tb);
     }
 }
-
-
-App.errorDo = async function (response) {
-    let errorLogService = new ErrorLogService(this.context)
-    await errorLogService.add(response);
-}
-//请求成功是否返回参数
-App.config.returnParams = true;

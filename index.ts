@@ -1,42 +1,39 @@
 import App from "./src/App";
 import UserService from "./src/service/UserService";
-//每次请求都必须要的参数
-App.config.needParams = {};
 // @ts-ignore
 exports.main = async (context) => {
     const app = new App(context, "main");
-    App.config.needParams = {};
     return await app.run(async function () {
-        // do...
+        //..
     });
 }
-/**
- * 获取用户
- * @param context
- */
+
 // @ts-ignore
-exports.user = async (context) => {
-    const app = new App(context, "user");
+exports.enter = async (context) => {
+    const app = new App(context, "enter");
     return await app.run(async function () {
-        let userService = new UserService(context);
-        let user = await userService.get();
-        return {user};
+        let userService = app.services.getService(UserService);
+        return await userService.enter();
     });
 }
-/**
- * 更新用户信息
- * @param context
- */
+
+
+// @ts-ignore
+exports.userInfo = async (context) => {
+    const app = new App(context, "userInfo");
+    return await app.run(async function () {
+        let userService = app.services.getService(UserService);
+        return await userService.getUser();
+    });
+}
+
+
 // @ts-ignore
 exports.updateUser = async (context) => {
     const app = new App(context, "updateUser");
-    let need = {avatar: ""}
     return await app.run(async function () {
-        let userService = new UserService(context);
-        let code = await userService.updateUser();
-        return {code};
-    }, need);
+        let userService = app.services.getService(UserService);
+        return await userService.updateUser();
+    });
 }
-
-
 

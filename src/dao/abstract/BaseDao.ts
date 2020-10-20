@@ -1,6 +1,6 @@
 import Dao from "./Dao";
 
-export default class BaseDao extends Dao {
+export default class BaseDao<T extends object> extends Dao {
 
     constructor(public context: any, public table: string) {
         super(context, table);
@@ -13,40 +13,44 @@ export default class BaseDao extends Dao {
 
     db;
 
-    async delete(filter: object) {
+    async delete(filter: any): Promise<number> {
         return await this.db.deleteMany(filter);
     }
 
-    async insert(beans: Array<object> | object) {
-        if (Array.isArray(beans) === false) {
-            return await this.db.insertOne(beans);
-        } else {
-            return await this.db.insertMany(beans);
-        }
+    async insertOne(bean: any): Promise<string> {
+        return await this.db.insertOne(bean);
     }
 
-    async find(filter: object = {}, options: object = {}) {
+    async insertMany(beans: Array<T>): Promise<string[]> {
+        return await this.db.insertMany(beans);
+    }
+
+    async find(filter: any = {}, options: any = {}): Promise<T[]> {
         return await this.db.find(filter, options);
     }
 
-    async update(filter: object, options: object) {
+    async get(filter: any = {}, options: any = {}): Promise<T> {
+        options.limit = 1;
+        return (await this.find(filter, options))[0];
+    }
+
+    async update(filter: any, options: any): Promise<number> {
         return await this.db.updateMany(filter, options);
     }
 
-    async count(filter: object) {
+    async count(filter: any): Promise<number> {
         return await this.db.count(filter);
     };
 
-    async aggregate(pipe: object[]) {
+    async aggregate(pipe: any[]): Promise<any[]> {
         return await this.db.aggregate(pipe);
     };
-
 
     /**
      * 从云端下载文件
      * @param fileId
      */
-    async downloadFile(fileId) {
+    async downloadFile(fileId): Promise<any> {
         return await this.context.cloud.file.downloadFile({fileId});
     }
 
@@ -55,7 +59,7 @@ export default class BaseDao extends Dao {
      * @param buffer
      * @param fileName
      */
-    async uploadFile(buffer: any, fileName: string) {
+    async uploadFile(buffer: any, fileName: string): Promise<string> {
         //上传文件
         let result = await this.context.cloud.file.uploadFile({
             fileContent: buffer,
@@ -69,7 +73,7 @@ export default class BaseDao extends Dao {
      * 获取访问链接
      * @param fileId
      */
-    async getTempFileUrl(fileId) {
+    async getTempFileUrl(fileId): Promise<string> {
         //获取链接
         let url = await this.context.cloud.file.getTempFileURL({
             fileId: [fileId]
