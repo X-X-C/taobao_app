@@ -227,7 +227,7 @@ export default class Utils {
         return 'data:image/png;base64,' + Buffer.from(qr.imageSync(url), 'utf8').toString('base64');
     }
 
-    static deepClone(obj) {
+    static deepClone<T>(obj: T): T {
         return JSON.parse(JSON.stringify(obj));
     }
 }
