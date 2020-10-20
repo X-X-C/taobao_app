@@ -247,7 +247,9 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         //当前用户信息
         let {user, _user} = await this.baseData();
         //邀请人信息
-        let inviter = await this.baseData(this.data.inviterOpenId);
+        let inviterData = await this.baseData(this.data.inviterOpenId);
+        let inviter = inviterData.user;
+        let _inviter = inviterData._user;
         //时间对象
         let time = this.time();
         //会员状态
@@ -256,10 +258,81 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         let status = await this.services.activityService.getActivityStatus();
         //返回值
         let r = this.result;
-
-        if(status)
-
-
+        //记录值
+        let spmData = {
+            user,
+            inviter: inviter || this.data.inviterOpenId,
+            vip
+        }
+        //不在活动时间内
+        if (status.code !== 1) {
+            r.code = -1;
+            r.message = "不在活动时间内"
+        }
+        //邀请人不存在
+        else if (!inviter) {
+            r.code = -2;
+            r.message = "邀请人不存在"
+        }
+        //当前用户已经被其他用户邀请了
+        else if (user.inviter) {
+            r.code = -3;
+            r.message = "已经被其他用户邀请"
+        }
+        //不能邀请自己
+        else if (this.data.inviterOpenId === this.openId) {
+            r.code = -4;
+            r.message = "不能邀请自己"
+        }
+        //不是会员
+        else if (vip.code !== 1) {
+            r.code = -5;
+            r.message = "不是会员"
+        }
+        //不是新会员
+        else if (user.createTime > vip.data.gmt_create || user.task.member === true) {
+            r.code = -6;
+            r.message = "不是新会员"
+        }
+        //已经是会员
+        else if (this.data.urlBack !== true) {
+            r.code = -7;
+            r.message = "已经是会员"
+        }
+        //超过限制
+        else if (_inviter.task.assist.count > 10) {
+            r.code = -8;
+            r.message = "超过邀请限制"
+        }
+        //条件满足
+        else {
+            //todo 邀请人操作
+            let inviterOptions = this.compareObj(_inviter, inviter);
+            let inviterFilter = {
+                "task.assist.count": _inviter.task.assist.count,
+                openId: _inviter.openId
+            }
+            r.code = await this.editUser(inviterOptions, inviterFilter);
+            //成功
+            if (r.code >= 1) {
+                user.inviter = {
+                    nick: _inviter.nick,
+                    openId: _inviter.openId,
+                    time: time.common.base
+                }
+                let options = this.compareObj(_user, user);
+                r.code = await this.editUser(options);
+                this.spm("assist", spmData, {
+                    openId: inviter.openId,
+                    nick: inviter.nick
+                });
+            }
+        }
+        this.spm("assistAll", spmData, {
+            openId: inviter.openId,
+            nick: inviter.nick
+        });
+        Object.assign(spmData, r);
         return r;
     }
 }

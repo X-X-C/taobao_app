@@ -45,6 +45,11 @@ export default class User {
         follow: false,
         //加入会员
         member: false,
+        //助力
+        assist: {
+            count: 0,
+            day: ""
+        }
     }
 
     baseInfo() {
