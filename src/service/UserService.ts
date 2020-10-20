@@ -5,6 +5,7 @@ import App from "../App";
 import Utils from "../utils/Utils";
 import Time from "../utils/Time";
 import ActivityService from "./ActivityService";
+import TopService from "./TopService";
 
 export default class UserService extends BaseService<UserDao<User>, User> {
     constructor(app: App) {
@@ -15,7 +16,17 @@ export default class UserService extends BaseService<UserDao<User>, User> {
 
     get services() {
         return {
-            activityService: this.getService(ActivityService)
+            activityService: this.getService(ActivityService),
+            topService: this.getService(TopService)
+        }
+    }
+
+    async baseData(openId = this.openId) {
+        let user = await this.getUser(openId);
+        let _user = Utils.deepClone(user);
+        return {
+            user,
+            _user
         }
     }
 
@@ -89,10 +100,7 @@ export default class UserService extends BaseService<UserDao<User>, User> {
     async enter() {
         //获取活动
         let activity = await this.services.activityService.getActivity();
-        //返回信息
-        let user = await this.getUser();
-        //源用户信息
-        let _user = Utils.deepClone(user);
+        let {user, _user} = await this.baseData();
         //初始化用户信息
         this.init(user);
         //比较用户更新信息
@@ -159,9 +167,11 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         return max;
     }
 
+    /**
+     * 游戏开奖
+     */
     async gameStart() {
-        let user = await this.getUser();
-        let _user = Utils.deepClone(user);
+        let {user, _user} = await this.baseData();
         let r = this.result;
         r.gameNum = _user.gameNum;
         //有游戏次数
@@ -184,9 +194,11 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         return r;
     }
 
+    /**
+     * 游戏结算
+     */
     async gameEnd() {
-        let user = await this.getUser();
-        let _user = Utils.deepClone(user);
+        let {user, _user} = await this.baseData();
         let r = this.result;
         r.score = _user.score;
         //正常结算
@@ -197,6 +209,8 @@ export default class UserService extends BaseService<UserDao<User>, User> {
             user.score += add;
             //更新获取分数时间
             user.lastGetScoreTime = time.common.x;
+            //更新游戏状态
+            user.gameStatus = 0;
             let options = this.compareObj(_user, user);
             let filter = {
                 score: _user.score
@@ -208,6 +222,44 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         } else {
             //不是在游戏中状态结算
         }
+        return r;
+    }
+
+
+    async follow() {
+        let {user, _user} = await this.baseData();
+        let r = this.result;
+        //没有关注过店铺
+        if (user.task.follow === false) {
+            user.task.follow = true;
+            let options = this.compareObj(_user, user);
+            let filter = <User>{
+                task: {
+                    follow: true
+                }
+            }
+            r.code = await this.editUser(options, filter);
+        }
+        return r;
+    }
+
+    async assist() {
+        //当前用户信息
+        let {user, _user} = await this.baseData();
+        //邀请人信息
+        let inviter = await this.baseData(this.data.inviterOpenId);
+        //时间对象
+        let time = this.time();
+        //会员状态
+        let vip = await this.services.topService.vipStatus();
+        //获取活动
+        let status = await this.services.activityService.getActivityStatus();
+        //返回值
+        let r = this.result;
+
+        if(status)
+
+
         return r;
     }
 }
