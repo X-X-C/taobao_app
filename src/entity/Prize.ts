@@ -14,6 +14,8 @@ export default class Prize {
     }
 
     //活动ID
+    _id;
+    //活动ID
     activityId: string;
     //用户名
     nick: string;
@@ -34,9 +36,5 @@ export default class Prize {
     //领取状态
     receiveStatus: boolean = false;
     //额外参数
-    ext: any = {
-        name: "",
-        phone: "",
-        address: ""
-    }
+    ext: any = {}
 }
