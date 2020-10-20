@@ -30,6 +30,6 @@ export default class ServiceManager {
             return s;
         }
         //新实例注册到services
-        return new target(this.app);
+        return this.register(new target(this.app));
     }
 }

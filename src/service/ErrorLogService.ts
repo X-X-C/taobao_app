@@ -6,7 +6,6 @@ import App from "../App";
 export default class ErrorLogService extends BaseService<ErrorLogDao<ErrorLog>, ErrorLog> {
     constructor(app: App) {
         super(ErrorLogDao, app);
-        return this.register(this);
     }
 
     async add(response): Promise<string> {

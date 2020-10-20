@@ -6,7 +6,6 @@ import App from "../App";
 export default class SpmService extends BaseService<SpmDao<Spm>, Spm> {
     constructor(app: App) {
         super(SpmDao, app);
-        return this.register(this);
     }
 
     /**

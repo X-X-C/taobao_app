@@ -7,7 +7,6 @@ import Utils from "../utils/Utils";
 export default class UserService extends BaseService<UserDao<User>, User> {
     constructor(app: App) {
         super(UserDao, app);
-        return this.register(this);
     }
 
     private user: User;

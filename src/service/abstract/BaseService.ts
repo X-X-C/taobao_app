@@ -45,14 +45,6 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
     };
 
 
-    register(service) {
-        if (this.app.services instanceof ServiceManager) {
-            return this.app.services.register(service);
-        } else {
-            return service;
-        }
-    }
-
     getService<C extends { [prop: string]: any }>(target: (new (...args) => C)): C {
         if (this.app.services instanceof ServiceManager) {
             return this.app.services.getService(target);

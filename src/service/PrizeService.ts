@@ -9,7 +9,6 @@ import Utils from "../utils/Utils";
 export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
     constructor(app: App) {
         super(PrizeDao, app);
-        return this.register(this);
     }
 
     baseInfo() {

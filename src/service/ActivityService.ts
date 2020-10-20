@@ -18,7 +18,6 @@ type activityData = {
 export default class ActivityService extends BaseService<ActivityDao<any>, any> {
     constructor(app: App) {
         super(ActivityDao, app);
-        return this.register(this);
     }
 
     private activity: any;
