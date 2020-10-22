@@ -339,7 +339,6 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         return r;
     }
 
-
     async lottery() {
         //当前用户信息
         let {user, _user} = await this.baseData();
@@ -411,4 +410,105 @@ export default class UserService extends BaseService<UserDao<User>, User> {
             }
         }
     }
+
+    async rank(size: number = this.data.size || 50, page: number = this.data.page || 1) {
+        let pipe = [
+            {
+                $match: {
+                    activityId: this.activityId,
+                    score: {
+                        $gt: 0
+                    }
+                }
+            },
+            {
+                $sort: {
+                    score: -1,
+                    lastGetScoreTime: 1
+                }
+            },
+            {
+                $skip: (page - 1) * size
+            },
+            {
+                $limit: size
+            },
+            {
+                $project: {
+                    _id: 0,
+                    openId: 1,
+                    avatar: 1,
+                    activityId: 1,
+                    score: 1,
+                    nick: 1
+                }
+            }
+        ]
+        let list = await this.aggregate(pipe);
+        let index = 1;
+        list = list.map(v => {
+            return {
+                ...v,
+                rank: index++
+            }
+        });
+        return {
+            list
+        }
+    }
+
+    async meRank() {
+        let user = await this.getUser();
+        let r: any = {
+            openId: user.openId,
+            avatar: user.avatar,
+            activityId: user.activityId,
+            score: user.score,
+            nick: user.nick,
+            rank: false
+        }
+        if (r.score <= 0) {
+            return r;
+        }
+        r.rank = await this.count({
+            activityId: this.activityId,
+            score: {
+                $gt: user.score
+            }
+        });
+        let pipe = [
+            {
+                $match: {
+                    activityId: this.activityId,
+                    score: user.score
+                }
+            },
+            {
+                $sort: {
+                    score: -1,
+                    lastGetScoreTime: 1
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    ids: {
+                        $push: "$openId"
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    rank: {
+                        $indexOfArray: ["$ids", user.openId]
+                    }
+                }
+            }
+        ]
+        r.rank = r.rank + (await this.aggregate(pipe))[0].rank + 1;
+        return r;
+    }
+
+
 }
