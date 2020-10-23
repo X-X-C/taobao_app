@@ -22,6 +22,10 @@ export default class User {
     inviter: any;
     //上次初始化时间
     lastInitTime: string = "";
+    //会员状态
+    vipStatus: number;
+    //入会时间
+    gmtCreate: string;
     /**
      * 通用字段
      */

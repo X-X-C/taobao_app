@@ -100,15 +100,30 @@ export default class UserService extends BaseService<UserDao<User>, User> {
      * 首次进入
      */
     async enter() {
+        let activityService = this.services.activityService;
         //获取活动
-        let activity = await this.services.activityService.getActivity();
+        let activity = await activityService.getActivity();
+        //活动已结束,开奖
+        if (activity.code === 2) {
+            await activityService.award();
+        }
         let {user, _user} = await this.baseData();
+        let time = this.time().common;
+        let vip = await this.services.topService.vipStatus();
         //初始化用户信息
         this.init(user);
+        //入会时间
+        if (vip.code === 1 && !user.gmtCreate) {
+            user.gmtCreate = vip.data.gmt_create;
+        }
         //比较用户更新信息
         let options = this.compareObj(_user, user);
         //更新用户
-        await this.editUser(options);
+        await this.editUser(options, {
+            lastInitTime: time.YYYYMMDD
+        });
+        //会员状态
+        user.vipStatus = vip.code;
         //返回
         return {
             user
@@ -123,7 +138,8 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         let time = this.time().common;
         //上次初始化时间
         if (user.lastInitTime !== time.YYYYMMDD) {
-            //do...
+            user.lastInitTime = time.YYYYMMDD;
+            //todo 初始化用户
         }
     }
 
@@ -262,8 +278,8 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         let r = this.result;
         //记录值
         let spmData = {
-            user,
-            inviter: inviter || this.data.inviterOpenId,
+            user: user.baseInfo(),
+            inviter: inviter.baseInfo(),
             vip
         }
         //不在活动时间内
@@ -445,7 +461,7 @@ export default class UserService extends BaseService<UserDao<User>, User> {
             }
         ]
         let list = await this.aggregate(pipe);
-        let index = 1;
+        let index = 1 + (page - 1) * size;
         list = list.map(v => {
             return {
                 ...v,
