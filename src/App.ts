@@ -21,7 +21,7 @@ export default class App {
         //是否在请求结束后返回本次请求参数
         returnParams: true,
         //全局请求参数
-        needParams: {}
+        needParams: []
     }
 
     //埋点对象
@@ -29,27 +29,24 @@ export default class App {
     //埋点数组
     spmBeans = [];
 
-    //异常后的操作
-    async errorDo(response) {
-        let errorLogService = this.services.getService(ErrorLogService)
-        await errorLogService.add(response);
-    }
-
     /**
      * 运行方法 可以捕获异常并处理
      * @param doSomething
      * @param needParams 所需参数 { name: "" }
      */
-    async run(doSomething: Function, needParams: object = {}): Promise<BaseResult> {
+    async run(doSomething: Function, needParams: string[] = []): Promise<BaseResult> {
         //初始化返回对象
         let response = BaseResult.success();
         //保存原始请求参数
-        let params = {...this.context.data};
+        let params = Utils.deepClone(this.context.data);
+        //是否返回请求参数
+        if (this.config.returnParams === true) {
+            response.params = params;
+        }
         //记录值
         let result = null;
         try {
-            //全局所需参数
-            Object.assign(needParams, this.config.needParams);
+            needParams = needParams.concat(this.config.needParams);
             //判断参数是否符合条件
             result = Utils.checkParams(needParams, params);
             //如果不符合条件直接返回
@@ -60,29 +57,14 @@ export default class App {
             !Utils.isBlank(result) ? response.data = result : false;
         } catch (e) {
             //发现异常 初始化返回参数
-            response = BaseResult.fail(e.message, this.apiName);
-            //如果异常为对象，将对象里的东西合并的返回中
-            if (typeof e === "object") {
-                Object.assign(response, e);
-            }
-            //如果为字符串，则设置信息，通常返回字符串异常不可能
-            else if (typeof e === "string") {
-                response.message = e;
-            }
-            //将本次请求异常的参数记录
-            Object.assign(response, {params})
+            response = BaseResult.fail(e.message, e);
+            response.api = this.apiName;
             try {
-                //用户自行对异常对象进行操作
-                await this.errorDo(response);
+                let errorLogService = this.services.getService(ErrorLogService)
+                await errorLogService.add(response);
             } catch (e) {
                 //...
             }
-            //直接返回异常对象
-            return response;
-        }
-        //成功过后是否返回请求参数
-        if (this.config.returnParams === true) {
-            Object.assign(response, {params})
         }
         //运行结束添加本次埋点
         await this.spmService.insertMany(this.spmBeans);
@@ -103,7 +85,7 @@ export default class App {
         let result = null, data = [];
         for (let k in tbs) {
             result = await this.db(tbs[k]).deleteMany({_id: {$ne: 0}});
-            data.push(`成功删除${tbs[k]}下的${result}条数据。`);
+            data.push(`成功删除${tbs[k]}下的${result}条数据`);
             result = null;
         }
         return data;
