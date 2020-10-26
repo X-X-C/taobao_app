@@ -10,6 +10,11 @@ export default class BaseResult {
     constructor(public message: string, public data: any, public success: boolean, public error: number) {
     }
 
+    //参数
+    params;
+    //api
+    api;
+
     //成功码
     public static readonly STATUS_SUCCESS = 0; //成功码
     public static readonly STATUS_FAIL = 1; //服务器错误码
