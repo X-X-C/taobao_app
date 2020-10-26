@@ -12,7 +12,7 @@ exports.main = async (context) => {
 exports.enter = async (context) => {
     const app = new App(context, "enter");
     return await app.run(async function () {
-        let userService = app.services.getService(UserService);
+        let userService = app.getService(UserService);
         return await userService.enter();
     });
 }
@@ -22,7 +22,7 @@ exports.enter = async (context) => {
 exports.userInfo = async (context) => {
     const app = new App(context, "userInfo");
     return await app.run(async function () {
-        let userService = app.services.getService(UserService);
+        let userService = app.getService(UserService);
         return await userService.getUser();
     });
 }
@@ -32,7 +32,7 @@ exports.userInfo = async (context) => {
 exports.updateUser = async (context) => {
     const app = new App(context, "updateUser");
     return await app.run(async function () {
-        let userService = app.services.getService(UserService);
+        let userService = app.getService(UserService);
         return await userService.updateUser();
     });
 }
