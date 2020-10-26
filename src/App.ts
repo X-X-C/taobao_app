@@ -116,4 +116,8 @@ export default class App {
     db(tb: string) {
         return this.context.cloud.db.collection(tb);
     }
+
+    getService<T>(clazz: new(...args: any) => T): T {
+        return this.services.getService(clazz);
+    }
 }
