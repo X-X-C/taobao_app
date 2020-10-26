@@ -11,6 +11,8 @@ export default class ErrorLog {
     openId: string;
     //时间
     time: string;
+    //详情
+    desc: any;
 }
 
 
