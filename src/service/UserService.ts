@@ -243,7 +243,6 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         return r;
     }
 
-
     async follow() {
         let {user, _user} = await this.baseData();
         let r = this.result;
@@ -525,7 +524,6 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         r.rank = r.rank + (await this.aggregate(pipe))[0].rank + 1;
         return r;
     }
-
 
     async checkOrder(user: User) {
         let activity = await this.services.activityService.getActivityStatus();
