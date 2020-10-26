@@ -72,31 +72,27 @@ export default class Utils {
         //读取表的数据
         data = workbook.Sheets[workbook.SheetNames[who]];
         data = xlsx.utils.sheet_to_json(data);
-        try {
-            let header = true;
-            //映射对应的键
-            data = data.map(v => {
-                let o = {};
-                for (let key in defineHeader) {
-                    let targetKey = defineHeader[key];
-                    //如果是表头
-                    if (header === true) {
-                        //如果表头中没有对应的键
-                        if (typeof v[targetKey] === "undefined") {
-                            throw "缺少字段" + targetKey
-                        }
+        let header = true;
+        //映射对应的键
+        data = data.map(v => {
+            let o = {};
+            for (let key in defineHeader) {
+                let targetKey = defineHeader[key];
+                //如果是表头
+                if (header === true) {
+                    //如果表头中没有对应的键
+                    if (typeof v[targetKey] === "undefined") {
+                        throw "表格缺少字段" + targetKey
                     }
-                    if (typeof v[targetKey] === "number") {
-                        v[targetKey] = String(v[targetKey]);
-                    }
-                    o[key] = v[targetKey];
                 }
-                header = false;
-                return o;
-            });
-        } catch (e) {
-            return false;
-        }
+                if (typeof v[targetKey] === "number") {
+                    v[targetKey] = String(v[targetKey]);
+                }
+                o[key] = v[targetKey];
+            }
+            header = false;
+            return o;
+        });
         return data;
     }
 
