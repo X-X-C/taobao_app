@@ -527,4 +527,59 @@ export default class UserService extends BaseService<UserDao<User>, User> {
     }
 
 
+    async checkOrder(user: User) {
+        let activity = await this.services.activityService.getActivityStatus();
+        //如果活动进行中
+        if (activity.code === 1) {
+            let {startTime, endTime} = activity.data;
+            //检查订单
+            let result = await this.services.topService.selectOrder(startTime, endTime);
+            //结果
+            let r = {
+                prepaid: {
+                    num: 0,
+                    data: []
+                },
+                buy: {
+                    num: 0,
+                    data: []
+                }
+            }
+            if (result.total_results > 0) {
+                //大订单
+                let orders = result.trades.trade;
+                for (let order of orders) {
+                    //是否是预定商品
+                    let prepaid = false;
+                    //如果订单已付款
+                    if (
+                        (
+                            order.status === "WAIT_SELLER_SEND_GOODS" ||
+                            order.status === "WAIT_BUYER_CONFIRM_GOODS" ||
+                            order.status === "TRADE_FINISHED" ||
+                            order.step_trade_status === "FRONT_PAID_FINAL_NOPAID" ||
+                            order.step_trade_status === "FRONT_PAID_FINAL_PAID"
+                        ) &&
+                        (user.task.doneOrders.indexOf(order.tid) === -1)
+                    ) {
+                        user.task.doneOrders.push(order.tid);
+                        //如果是下定
+                        if (order.step_trade_status === "FRONT_PAID_FINAL_NOPAID" ||
+                            order.step_trade_status === "FRONT_PAID_FINAL_PAID") {
+                            prepaid = true;
+                        }
+                        for (let goods of order.orders.order) {
+                            if (prepaid) {
+                                r.prepaid.num += goods.num;
+                                r.prepaid.data.push(goods);
+                            } else {
+                                r.buy.num += goods.num;
+                                r.buy.data.push(goods);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

@@ -49,11 +49,13 @@ export default class User {
         follow: false,
         //加入会员
         member: false,
-        //助力
+        //邀请好友
         assist: {
             count: 0,
             day: ""
-        }
+        },
+        //已检查的订单
+        doneOrders: []
     }
 
     /**
