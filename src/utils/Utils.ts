@@ -9,19 +9,23 @@ import * as qr from "qr-image";
 export default class Utils {
     /**
      * 判断参数是否正确
-     * @param need  { name: "示例" }
-     * @param real  { name: "小白" }
-     * @return BaseResult
      */
-    static checkParams(need: any, real: any): BaseResult {
-        for (let key in need) {
-            if (typeof real[key] === "undefined") {
-                return BaseResult.fail(`缺少参数${key}`);
-            } else if (typeof real[key] !== typeof need[key]) {
-                return BaseResult.fail(`参数类型错误${key}`);
-            }
+    static checkParams(need: any[], real: object): {
+        success: boolean,
+        message: string
+    } {
+        let rs = {
+            success: false,
+            message: ""
         }
-        return BaseResult.success();
+        let keys = Object.keys(real);
+        rs.success = need.every(v => {
+            if (keys.indexOf(v) !== -1) {
+                return true;
+            }
+            rs.message += "缺少参数" + v;
+        });
+        return rs;
     }
 
     /**
