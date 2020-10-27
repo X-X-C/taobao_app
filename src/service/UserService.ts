@@ -67,12 +67,17 @@ export default class UserService extends BaseService<UserDao<User>, User> {
      * 更新用户头像
      */
     async updateUser() {
-        await this.editUser({
-            $set: {
-                avatar: this.data.avatar,
-                nick: this.nick
+        await this.editUser(
+            {
+                $set: {
+                    avatar: this.data.avatar,
+                    nick: this.nick
+                }
+            },
+            {
+                avatar: ""
             }
-        });
+        );
     }
 
     /**
