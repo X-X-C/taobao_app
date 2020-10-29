@@ -108,25 +108,30 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         let activityService = this.services.activityService;
         //获取活动
         let activity = await activityService.getActivity();
+        //获取用户
+        let {user, _user} = await this.baseData();
+        //获取会员状态
+        let vip = await this.services.topService.vipStatus();
         //活动已结束,开奖
         if (activity.code === 2) {
             await activityService.award();
         }
-        let {user, _user} = await this.baseData();
-        let time = this.time().common;
-        let vip = await this.services.topService.vipStatus();
-        //初始化用户信息
-        this.init(user);
-        //入会时间
-        if (vip.code === 1 && !user.gmtCreate) {
-            user.gmtCreate = vip.data.gmt_create;
+        //活动进行中，初始化用户
+        else if (activity.code === 1) {
+            let time = this.time().common;
+            //入会时间
+            if (vip.code === 1 && !user.gmtCreate) {
+                user.gmtCreate = vip.data.gmt_create;
+            }
+            //初始化用户信息
+            this.init(user);
+            //比较用户更新信息
+            let options = this.compareObj(_user, user);
+            //更新用户
+            await this.editUser(options, {
+                lastInitTime: time.YYYYMMDD
+            });
         }
-        //比较用户更新信息
-        let options = this.compareObj(_user, user);
-        //更新用户
-        await this.editUser(options, {
-            lastInitTime: time.YYYYMMDD
-        });
         //会员状态
         user.vipStatus = vip.code;
         //返回
@@ -364,11 +369,7 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         let {user, _user} = await this.baseData();
         let activityService = this.services.activityService;
         //获取活动
-        let activity = await activityService.getActivity({
-            startTime: 1,
-            endTime: 1,
-            config: 1
-        })
+        let activity = await activityService.getActivity(activityService.pureFiled)
         //返回值
         let r = this.result;
         r.award = false;

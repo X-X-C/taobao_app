@@ -25,6 +25,12 @@ export default class ActivityService extends BaseService<ActivityDao<any>, any> 
 
     private activity: any;
 
+    pureFiled = {
+        startTime: 1,
+        endTime: 1,
+        config: 1
+    }
+
     /**
      * 获取活动状态
      */
