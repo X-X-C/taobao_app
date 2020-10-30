@@ -109,6 +109,8 @@ export default class Utils {
     static jsonToExcelBuffer(excelJson, ext: { header?: Array<any> } = {}): any {
         //将json转换为xlsx的sheet格式
         let sheet = xlsx.utils.json_to_sheet(excelJson, ext);
+        //更改每个单元格的宽度
+        sheet["!cols"] = (new Array(excelJson.length)).fill({width: 17});
         //新建一个xlsx工作薄
         let workbook = xlsx.utils.book_new();
         //将json的sheet添加到新的工作簿中
