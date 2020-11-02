@@ -121,39 +121,39 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
 
     /**
      * 分页查询带限制条件
-     * 请求时可携带参数  page,size来分页
      * 返回分页数据
      * @param filter
      * @param options
-     * @param dividePage    是否分页
      */
-    async list(filter: any = {}, options: listOptions = {
-        skip: 0,
-        limit: 100
-    }, dividePage: boolean = true): Promise<listResult<E>> {
-        let rs: listResult<E> = {
-            data: null
-        };
-        if (dividePage === true) {
-            let {size, page} = this.data;
-            if (size && page) {
-                options.skip = (page - 1) * size;
-                options.limit = size;
-                let count = await this.dao.count(filter);
-                rs.total = Math.ceil(count / size);
-            }
+    async pageList(
+        filter: any = {},
+        options: {
+            page?: number,
+            size?: number,
+            projection?: any
+        } = {
+            page: 1,
+            size: 500
         }
-        rs.data = await this.dao.aggregate([
+    ) {
+        let rs: listResult<E> = {
+            data: []
+        };
+        let count = await this.dao.count(filter);
+        rs.total = Math.ceil(count / options.size);
+        let pipe: any = [
             {
                 $match: filter
             },
             {
-                $skip: options.skip
+                $skip: (options.page - 1) * options.size
             },
             {
-                $limit: options.limit
+                $limit: options.size
             }
-        ]);
+        ]
+        if (options.projection) pipe.push({$project: options.projection});
+        rs.data = await this.aggregate(pipe);
         return rs;
     }
 
