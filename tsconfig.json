@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "lib": [
+            "ES2015",
+            "dom",
+            "ES2017"
+        ],
+        "target": "ES5",
+        "downlevelIteration": true,
+        "experimentalDecorators": true
+    }
+}
