@@ -27,7 +27,7 @@ export default class SpmService extends BaseService<SpmDao<Spm>, Spm> {
         spm.openId = this.openId;
         spm.time = this.time().common.base;
         spm.timestamp = this.time().common.x;
-        Object.assign(ext);
+        Object.assign(spm, ext);
         return spm;
     }
 

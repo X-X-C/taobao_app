@@ -10,9 +10,9 @@ export default class BaseResult {
     constructor(public message: string, public data: any, public success: boolean, public error: number) {
     }
 
-    //参数
+    //请求参数
     params;
-    //api
+    //所属api
     api;
 
     //成功码

@@ -1,4 +1,3 @@
-import BaseResult from "../dto/BaseResult";
 // @ts-ignore
 import * as xlsx from "xlsx";
 // @ts-ignore
@@ -72,27 +71,31 @@ export default class Utils {
         //读取表的数据
         data = workbook.Sheets[workbook.SheetNames[who]];
         data = xlsx.utils.sheet_to_json(data);
-        let header = true;
-        //映射对应的键
-        data = data.map(v => {
-            let o = {};
-            for (let key in defineHeader) {
-                let targetKey = defineHeader[key];
-                //如果是表头
-                if (header === true) {
-                    //如果表头中没有对应的键
-                    if (typeof v[targetKey] === "undefined") {
-                        throw "表格缺少字段" + targetKey
+        try {
+            let header = true;
+            //映射对应的键
+            data = data.map(v => {
+                let o = {};
+                for (let key in defineHeader) {
+                    let targetKey = defineHeader[key];
+                    //如果是表头
+                    if (header === true) {
+                        //如果表头中没有对应的键
+                        if (typeof v[targetKey] === "undefined") {
+                            throw "缺少字段" + targetKey
+                        }
                     }
+                    if (typeof v[targetKey] === "number") {
+                        v[targetKey] = String(v[targetKey]);
+                    }
+                    o[key] = v[targetKey];
                 }
-                if (typeof v[targetKey] === "number") {
-                    v[targetKey] = String(v[targetKey]);
-                }
-                o[key] = v[targetKey];
-            }
-            header = false;
-            return o;
-        });
+                header = false;
+                return o;
+            });
+        } catch (e) {
+            return false;
+        }
         return data;
     }
 
@@ -106,6 +109,8 @@ export default class Utils {
     static jsonToExcelBuffer(excelJson, ext: { header?: Array<any> } = {}): any {
         //将json转换为xlsx的sheet格式
         let sheet = xlsx.utils.json_to_sheet(excelJson, ext);
+        //更改每个单元格的宽度
+        sheet["!cols"] = (new Array(excelJson.length)).fill({width: 17});
         //新建一个xlsx工作薄
         let workbook = xlsx.utils.book_new();
         //将json的sheet添加到新的工作簿中

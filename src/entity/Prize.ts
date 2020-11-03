@@ -1,5 +1,5 @@
 import User from "./User";
-import Time from "../utils/Time";
+import Time from "../../base/utils/Time";
 
 export default class Prize {
     constructor(user: User, prize: any, type: string) {

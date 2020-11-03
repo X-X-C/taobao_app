@@ -18,7 +18,7 @@ export default class TopService {
 
     context;
     //TOP接口工具
-    top: Top;
+    top;
 
     getResult(): result {
         return {

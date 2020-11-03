@@ -1,13 +1,13 @@
+import BaseService from "../../base/service/abstract/BaseService";
 import UserDao from "../dao/UserDao";
 import User from "../entity/User";
-import BaseService from "./abstract/BaseService";
-import App from "../App";
-import Utils from "../utils/Utils";
-import Time from "../utils/Time";
+import App from "../../base/App";
 import ActivityService from "./ActivityService";
-import TopService from "./TopService";
-import Prize from "../entity/Prize";
+import TopService from "../../base/service/TopService";
+import Utils from "../../base/utils/Utils";
+import Time from "../../base/utils/Time";
 import PrizeService from "./PrizeService";
+import Prize from "../entity/Prize";
 
 export default class UserService extends BaseService<UserDao<User>, User> {
     constructor(app: App) {
