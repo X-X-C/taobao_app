@@ -14,7 +14,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
     protected constructor(Dao: new(...args) => T, app: App) {
         this.dao = new Dao(app.context);
         this.app = app;
-        this.context = this.dao.context;
+        this.context = this.app.context;
         this.cloud = this.context.cloud;
         this.data = this.context.data;
         //处理未授权的用户名称
