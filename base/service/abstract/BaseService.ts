@@ -125,7 +125,8 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
             page?: number,
             size?: number,
             project?: any,
-            sort?: any
+            sort?: any,
+            [otherKey: string]: any
         } = {
             page: 1,
             size: 500
@@ -136,6 +137,8 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
         };
         let count = await this.dao.count(filter);
         rs.total = Math.ceil(count / options.size);
+        options.skip = (options.page - 1) * options.size;
+        options.limit = options.size;
         rs.data = await this.getAll(filter, options);
         return rs;
     }
