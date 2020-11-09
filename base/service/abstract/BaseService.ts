@@ -124,7 +124,8 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
         options: {
             page?: number,
             size?: number,
-            projection?: any
+            project?: any,
+            sort?: any
         } = {
             page: 1,
             size: 500
@@ -135,19 +136,7 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
         };
         let count = await this.dao.count(filter);
         rs.total = Math.ceil(count / options.size);
-        let pipe: any = [
-            {
-                $match: filter
-            },
-            {
-                $skip: (options.page - 1) * options.size
-            },
-            {
-                $limit: options.size
-            }
-        ]
-        if (options.projection) pipe.push({$project: options.projection});
-        rs.data = await this.aggregate(pipe);
+        rs.data = await this.getAll(filter, options);
         return rs;
     }
 
@@ -165,10 +154,20 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
      * @param filter
      * @param options
      */
-    async getAll(filter: any = {}, options: any = {}): Promise<E[]> {
-        return await this.dao.find(filter, options);
+    async getAll(filter: any = {}, options: {
+        sort?: any,
+        skip?: number,
+        limit?: number,
+        project?: any
+    } = {}): Promise<E[]> {
+        let pipe = [];
+        if (!Utils.isBlank(filter)) pipe.push({$match: filter});
+        if (!Utils.isBlank(options.sort)) pipe.push({$sort: options.sort});
+        if (!Utils.isBlank(options.skip)) pipe.push({$skip: options.skip});
+        if (!Utils.isBlank(options.limit)) pipe.push({$limit: options.limit});
+        if (!Utils.isBlank(options.project)) pipe.push({$project: options.project});
+        return await this.aggregate(pipe);
     }
-
 
     /**
      * 从云端下载文件
