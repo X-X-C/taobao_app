@@ -5,7 +5,7 @@ import UserService from "./src/service/UserService";
 exports.main = async (context) => {
     const app = new App(context, "main");
     return await app.run(async function () {
-        //..
+        return "OK";
     });
 }
 
