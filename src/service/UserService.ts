@@ -122,6 +122,10 @@ export default class UserService extends BaseService<UserDao<User>, User> {
             //入会时间
             if (vip.code === 1 && !user.gmtCreate) {
                 user.gmtCreate = vip.data.gmt_create;
+                //如果是入会回调且是新会员
+                if (this.data.urlback === true && user.createTime <= user.gmtCreate) {
+                    this.spm("newMember");
+                }
             }
             //初始化用户信息
             this.init(user);
