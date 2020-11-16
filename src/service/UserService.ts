@@ -409,8 +409,8 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                                 ]
                             }
                             options = {
-                                $inc: {
-                                    ["data.grantTotal." + prize.id]: 1
+                                $set: {
+                                    ["data.grantTotal." + prize.id]: grantDone + 1
                                 }
                             }
                             r.code = await activityService.edit(filter, options);
