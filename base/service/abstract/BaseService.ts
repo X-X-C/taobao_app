@@ -265,8 +265,8 @@ export default abstract class BaseService<T extends BaseDao<E>, E extends object
         return compareRs;
     }
 
-    spm(type, data?, ext?) {
-        this.app.addSpm(type, data, ext);
+    async spm(type, data?, ext?) {
+        await this.app.addSpm(type, data, ext);
     }
 
 }

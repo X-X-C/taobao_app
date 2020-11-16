@@ -74,8 +74,10 @@ export default class App {
         return response;
     }
 
-    addSpm(type, data?, ext?) {
-        this.spmBeans.push(this.spmService.bean(type, data, ext));
+    async addSpm(type, data?, ext?) {
+        this.spmBeans.push(
+            await this.spmService.bean(type, data, ext)
+        );
     }
 
     /**

@@ -15,4 +15,8 @@ export default class Spm {
     nick: string;
     //用户OpenId
     openId: string;
+    //天index
+    dayIndex: number;
+    //总index
+    totalIndex: number;
 }

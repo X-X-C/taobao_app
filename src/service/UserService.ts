@@ -124,7 +124,7 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                 user.gmtCreate = vip.data.gmt_create;
                 //如果是入会回调且是新会员
                 if (this.data.urlback === true && user.createTime <= user.gmtCreate) {
-                    this.spm("newMember");
+                    await this.spm("newMember");
                 }
             }
             //初始化用户信息
@@ -354,13 +354,13 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                 }
                 let options = this.compareObj(_user, user);
                 r.code = await this.editUser(options);
-                this.spm("assist", spmData, {
+                await this.spm("assist", spmData, {
                     openId: inviter.openId,
                     nick: inviter.nick
                 });
             }
         }
-        this.spm("assistAll", spmData, {
+        await this.spm("assistAll", spmData, {
             openId: inviter.openId,
             nick: inviter.nick
         });
