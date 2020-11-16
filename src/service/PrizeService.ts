@@ -66,19 +66,19 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
                 if (prize.type === "goods") {
                     let {skuId, itemId} = prize[prize.type];
                     r.data = await topService.opentradeSpecialUsersMark(skuId, itemId);
-                    this.spm("mark");
+                    await this.spm("mark");
                 }
                 //积分领取
                 else if (prize.type === "point") {
                     let {addPointNum} = prize[prize.type];
                     r.data = await topService.taobaoCrmPointChange(addPointNum);
-                    this.spm("point");
+                    await this.spm("point");
                 }
                 //权益领取
                 else if (prize.type === "benefit") {
                     let {ename} = prize[prize.type];
                     r.data = await topService.sendBenefit(ename);
-                    this.spm("benefit");
+                    await this.spm("benefit");
                 }
             }
         }
