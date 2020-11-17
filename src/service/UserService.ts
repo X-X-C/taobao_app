@@ -127,14 +127,17 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                     await this.spm("newMember");
                 }
             }
-            //初始化用户信息
-            this.init(user);
+            let filter = <User>{};
+            //如果今天没有初始化过用户
+            if (user.lastInitTime !== time.YYYYMMDD) {
+                filter.lastInitTime = time.YYYYMMDD;
+                //初始化用户信息
+                this.init(user);
+            }
             //比较用户更新信息
             let options = this.compareObj(_user, user);
             //更新用户
-            await this.editUser(options, {
-                lastInitTime: time.YYYYMMDD
-            });
+            await this.editUser(options, filter);
         }
         //会员状态
         user.vipStatus = vip.code;
