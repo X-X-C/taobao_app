@@ -107,7 +107,7 @@ export default class UserService extends BaseService<UserDao<User>, User> {
     async enter() {
         let activityService = this.services.activityService;
         //获取活动
-        let activity = await activityService.getActivity();
+        let activity = await activityService.getActivity(activityService.pureFiled);
         //获取用户
         let {user, _user} = await this.baseData();
         //获取会员状态
