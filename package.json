@@ -12,7 +12,8 @@
         "xlsx": "*",
         "moment-timezone": "*",
         "gmtaobao": "*",
-        "qr-image": "*"
+        "qr-image": "*",
+        "gm-spm": "*"
     },
     "author": "",
     "license": "ISC"
