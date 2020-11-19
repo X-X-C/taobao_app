@@ -5,6 +5,8 @@ import App from "../../base/App";
 import {result} from "../../base/utils/Type";
 import TopService from "../../base/service/TopService";
 import Utils from "../../base/utils/Utils";
+import UserService from "./UserService";
+import MsgGenerate from "../Utils/MsgGenerate";
 
 export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
     constructor(app: App) {
@@ -62,23 +64,45 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
             //成功领取
             if (r.code >= 1) {
                 let topService = this.getService(TopService);
+                let userService = this.getService(UserService);
+                let user = await userService.getUser();
+                let time = this.time().common.base;
                 //尖货领取
                 if (prize.type === "goods") {
                     let {skuId, itemId} = prize[prize.type];
                     r.data = await topService.opentradeSpecialUsersMark(skuId, itemId);
-                    await this.spm("_mark");
+                    this.simpleSpm("_mark", {
+                        desc: MsgGenerate.receiveDesc(user, time, prize, r.data),
+                        topResult: r.data.data
+                    });
                 }
                 //积分领取
                 else if (prize.type === "point") {
                     let {addPointNum} = prize[prize.type];
                     r.data = await topService.taobaoCrmPointChange(addPointNum);
-                    await this.spm("_point");
+                    this.simpleSpm("_point", {
+                        desc: MsgGenerate.receiveDesc(user, time, prize, r.data),
+                        topResult: r.data.data
+                    });
                 }
                 //权益领取
                 else if (prize.type === "benefit") {
                     let {ename} = prize[prize.type];
                     r.data = await topService.sendBenefit(ename);
-                    await this.spm("_benefit");
+                    this.simpleSpm("_benefit", {
+                        desc: MsgGenerate.receiveDesc(user, time, prize, r.data),
+                        topResult: r.data.data
+                    });
+                }
+                //其他情况
+                else {
+                    let data = {
+                        code: r.code,
+                        data: `修改了${r.code}条数据`
+                    }
+                    this.simpleSpm("_receive", {
+                        desc: MsgGenerate.receiveDesc(user, time, prize, data)
+                    })
                 }
             }
         }
@@ -102,4 +126,5 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
             }
         }
     }
+
 }

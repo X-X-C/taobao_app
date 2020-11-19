@@ -8,6 +8,7 @@ import Utils from "../../base/utils/Utils";
 import Time from "../../base/utils/Time";
 import PrizeService from "./PrizeService";
 import Prize from "../entity/Prize";
+import MsgGenerate from "../Utils/MsgGenerate";
 
 export default class UserService extends BaseService<UserDao<User>, User> {
     constructor(app: App) {
@@ -296,7 +297,8 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         let spmData = {
             user: user.baseInfo(),
             inviter: inviter.baseInfo(),
-            vip
+            vip,
+            desc: "成功"
         }
         //不在活动时间内
         if (status.code !== 1) {
@@ -367,6 +369,7 @@ export default class UserService extends BaseService<UserDao<User>, User> {
             openId: inviter.openId,
             nick: inviter.nick
         });
+        spmData.desc = MsgGenerate.assistDesc(user, inviter, time.common.base, r.message, vip);
         Object.assign(spmData, r);
         return r;
     }
