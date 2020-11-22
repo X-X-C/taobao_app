@@ -17,11 +17,11 @@ export default class User {
     //创建时间
     createTime: string;
     //头像
-    avatar: string = "";
+    avatar: string | boolean = false;
     //邀请人信息
     inviter: any;
     //上次初始化时间
-    lastInitTime: string = "";
+    lastInitTime: string | boolean = false;
     //会员状态
     vipStatus: number;
     //入会时间
@@ -32,7 +32,7 @@ export default class User {
         //分数
     score: number = 0;
     //上次获取分数时间
-    lastGetScoreTime: string = "";
+    lastGetScoreTime: number | string = "";
     /**
      * 游戏类字段
      */
