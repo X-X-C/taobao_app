@@ -14,7 +14,7 @@ export default class User {
     //创建时间
     createTime: string;
     //头像
-    avatar: string = "";
+    avatar: string | boolean = false;
 
     baseInfo() {
         return {
