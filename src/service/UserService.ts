@@ -2,7 +2,6 @@ import UserDao from "../dao/UserDao";
 import User from "../entity/User";
 import BaseService from "../../base/service/abstract/BaseService";
 import App from "../../base/App";
-import Utils from "../../base/utils/Utils";
 
 export default class UserService extends BaseService<UserDao<User>, User> {
     constructor(app: App) {
@@ -75,7 +74,7 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                 }
             },
             {
-                avatar: ""
+                avatar: false
             }
         );
     }
