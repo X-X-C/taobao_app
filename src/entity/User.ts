@@ -21,7 +21,7 @@ export default class User {
     //邀请人信息
     inviter: any;
     //上次初始化时间
-    lastInitTime: string | boolean = false;
+    lastInitTime: number | boolean = false;
     //会员状态
     vipStatus: number;
     //入会时间

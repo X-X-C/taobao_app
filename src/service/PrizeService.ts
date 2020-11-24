@@ -7,6 +7,7 @@ import TopService from "../../base/service/TopService";
 import Utils from "../../base/utils/Utils";
 import UserService from "./UserService";
 import MsgGenerate from "../Utils/MsgGenerate";
+import BaseResult from "../../base/dto/BaseResult";
 
 export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
     constructor(app: App) {
@@ -25,20 +26,21 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
         }
     }
 
-    async my(): Promise<Prize[]> {
+    async my(): Promise<BaseResult> {
         let filter = {
             openId: this.openId,
             activityId: this.activityId
         }
-        return await this.getAll(filter);
+        let list = await this.getAll(filter);
+        return this.getResult({list});
     }
 
     /**
      * 领取奖品
      */
-    async receive(): Promise<result> {
+    async receive(): Promise<BaseResult> {
         let {prizeId, ext} = this.data;
-        let r = this.result;
+        let result = this.result;
         let filter = {
             _id: prizeId,
             openId: this.openId,
@@ -60,9 +62,9 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
                     ext: baseInfo
                 }
             }
-            r.code = await this.edit(filter, options);
+            result.code = await this.edit(filter, options);
             //成功领取
-            if (r.code >= 1) {
+            if (result.code >= 1) {
                 let topService = this.getService(TopService);
                 let userService = this.getService(UserService);
                 let user = await userService.getUser();
@@ -70,43 +72,43 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
                 //尖货领取
                 if (prize.type === "goods") {
                     let {skuId, itemId} = prize[prize.type];
-                    r.data = await topService.opentradeSpecialUsersMark(skuId, itemId);
-                    this.simpleSpm("_mark", {
-                        desc: MsgGenerate.receiveDesc(user, time, prize, r.data),
-                        topResult: r.data.data
+                    result.data = await topService.opentradeSpecialUsersMark(skuId, itemId);
+                    await this.simpleSpm("_mark", {
+                        desc: MsgGenerate.receiveDesc(user, time, prize, result.data),
+                        topResult: result.data.data
                     });
                 }
                 //积分领取
                 else if (prize.type === "point") {
                     let {addPointNum} = prize[prize.type];
-                    r.data = await topService.taobaoCrmPointChange(addPointNum);
-                    this.simpleSpm("_point", {
-                        desc: MsgGenerate.receiveDesc(user, time, prize, r.data),
-                        topResult: r.data.data
+                    result.data = await topService.taobaoCrmPointChange(addPointNum);
+                    await this.simpleSpm("_point", {
+                        desc: MsgGenerate.receiveDesc(user, time, prize, result.data),
+                        topResult: result.data.data
                     });
                 }
                 //权益领取
                 else if (prize.type === "benefit") {
                     let {ename} = prize[prize.type];
-                    r.data = await topService.sendBenefit(ename);
-                    this.simpleSpm("_benefit", {
-                        desc: MsgGenerate.receiveDesc(user, time, prize, r.data),
-                        topResult: r.data.data
+                    result.data = await topService.sendBenefit(ename);
+                    await this.simpleSpm("_benefit", {
+                        desc: MsgGenerate.receiveDesc(user, time, prize, result.data),
+                        topResult: result.data.data
                     });
                 }
                 //其他情况
                 else {
                     let data = {
-                        code: r.code,
-                        data: `修改了${r.code}条数据`
+                        code: result.code,
+                        data: `修改了${result.code}条数据`
                     }
-                    this.simpleSpm("_receive", {
+                    await this.simpleSpm("_receive", {
                         desc: MsgGenerate.receiveDesc(user, time, prize, data)
                     })
                 }
             }
         }
-        return r;
+        return result;
     }
 
     /**
@@ -126,5 +128,4 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
             }
         }
     }
-
 }
