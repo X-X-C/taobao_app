@@ -17,12 +17,6 @@ export default class ActivityService extends BaseActivityService {
         super(app);
     }
 
-    pureFiled = {
-        startTime: 1,
-        endTime: 1,
-        config: 1
-    }
-
     async award() {
         let code = -1;
         let activity = await this.getActivity();
