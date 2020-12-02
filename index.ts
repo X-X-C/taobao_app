@@ -24,7 +24,7 @@ exports.userInfo = async (context) => {
     const app = new App(context, "userInfo");
     return await app.run(async function () {
         let userService = app.getService(UserService);
-        return await userService.getUser();
+        return await userService.userInfo();
     });
 }
 

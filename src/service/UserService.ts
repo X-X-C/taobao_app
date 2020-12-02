@@ -89,17 +89,19 @@ export default class UserService extends BaseService<UserDao<User>, User> {
      * 更新用户头像
      */
     async updateUser() {
-        await this.editUser(
-            {
-                $set: {
-                    avatar: this.data.avatar,
-                    nick: this.nick
+        return this.getResult({
+            line: await this.editUser(
+                {
+                    $set: {
+                        avatar: this.data.avatar,
+                        nick: this.nick
+                    }
+                },
+                {
+                    avatar: false
                 }
-            },
-            {
-                avatar: ""
-            }
-        );
+            )
+        });
     }
 
     /**
@@ -131,7 +133,7 @@ export default class UserService extends BaseService<UserDao<User>, User> {
             let filter = <User>{};
             //如果今天没有初始化过用户
             if (user.lastInitTime !== time.YYYYMMDD) {
-                filter.lastInitTime = time.YYYYMMDD;
+                filter.lastInitTime = _user.lastInitTime;
                 //初始化用户信息
                 this.init(user);
             }
@@ -143,9 +145,9 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         //会员状态
         user.vipStatus = vip.code;
         //返回
-        return {
+        return this.getResult({
             user
-        };
+        });
     }
 
     /**
@@ -587,5 +589,11 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                 }
             }
         }
+    }
+
+    async userInfo() {
+        return this.getResult({
+            user: await this.getUser()
+        });
     }
 }
