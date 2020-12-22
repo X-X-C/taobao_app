@@ -2,11 +2,10 @@ import BaseService from "../../base/service/abstract/BaseService";
 import PrizeDao from "../dao/PrizeDao";
 import Prize from "../entity/Prize";
 import App from "../../base/App";
-import {result} from "../../base/utils/Type";
 import TopService from "../../base/service/TopService";
 import Utils from "../../base/utils/Utils";
 import UserService from "./UserService";
-import MsgGenerate from "../Utils/MsgGenerate";
+import MsgGenerate from "../utils/MsgGenerate";
 import BaseResult from "../../base/dto/BaseResult";
 
 export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {

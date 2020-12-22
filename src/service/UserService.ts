@@ -8,7 +8,7 @@ import Utils from "../../base/utils/Utils";
 import Time from "../../base/utils/Time";
 import PrizeService from "./PrizeService";
 import Prize from "../entity/Prize";
-import MsgGenerate from "../Utils/MsgGenerate";
+import MsgGenerate from "../utils/MsgGenerate";
 
 export default class UserService extends BaseService<UserDao<User>, User> {
     constructor(app: App) {
