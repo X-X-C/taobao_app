@@ -38,7 +38,7 @@ export default class ActivityService extends BaseActivityService {
                 let userService = this.getService(UserService);
                 let rankPrizeList = activity.data.config.rankPrizeList;
                 //需要开奖的数据
-                let rankList = (await userService.rank()).list;
+                let rankList = await userService.rank();
                 //需要开奖的奖品
                 let winners = [];
                 for (let user of rankList) {
