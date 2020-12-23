@@ -89,7 +89,7 @@ export default class UserService extends BaseService<UserDao<User>, User> {
      * 更新用户头像
      */
     async updateUser() {
-        return this.getResult({
+        this.response.data = {
             line: await this.editUser(
                 {
                     $set: {
@@ -101,7 +101,7 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                     avatar: false
                 }
             )
-        });
+        };
     }
 
     /**
@@ -110,7 +110,8 @@ export default class UserService extends BaseService<UserDao<User>, User> {
     async enter() {
         let activityService = this.services.activityService;
         //获取活动
-        let activity = await activityService.getActivity(activityService.pureFiled);
+        // let activity = await activityService.getActivity(activityService.pureFiled);
+        let activity = this.globalActivity;
         //获取用户
         let {user, _user} = await this.baseData();
         //获取会员状态
@@ -145,9 +146,7 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         //会员状态
         user.vipStatus = vip.code;
         //返回
-        return this.getResult({
-            user
-        });
+        this.response.data = {user};
     }
 
     /**
@@ -210,8 +209,7 @@ export default class UserService extends BaseService<UserDao<User>, User> {
      */
     async gameStart() {
         let {user, _user} = await this.baseData();
-        let result = this.result;
-        result.data.gameNum = _user.gameNum;
+        this.response.data.gameNum = _user.gameNum;
         //有游戏次数
         if (user.gameNum > 0) {
             //游戏状态改为游戏中
@@ -223,13 +221,12 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                 gameNum: _user.gameNum
             }
             //减去游戏次数
-            result.code = await this.editUser(options, filter);
+            this.response.code = await this.editUser(options, filter);
             //成功减去游戏次数
-            if (result.code > 0) {
-                result.data.gameNum = user.gameNum;
+            if (this.response.code > 0) {
+                this.response.data.gameNum = user.gameNum;
             }
         }
-        return result;
     }
 
     /**
@@ -237,8 +234,7 @@ export default class UserService extends BaseService<UserDao<User>, User> {
      */
     async gameEnd() {
         let {user, _user} = await this.baseData();
-        let result = this.result;
-        result.data.score = _user.score;
+        this.response.data.score = _user.score;
         //正常结算
         if (user.gameStatus === 1) {
             let {add} = this.data;
@@ -253,19 +249,18 @@ export default class UserService extends BaseService<UserDao<User>, User> {
             let filter = {
                 score: _user.score
             }
-            result.code = await this.editUser(options, filter);
-            if (result.code > 0) {
-                result.data.score = user.score;
+            this.response.code = await this.editUser(options, filter);
+            if (this.response.code > 0) {
+                this.response.data.score = user.score;
             }
         } else {
             //不是在游戏中状态结算
         }
-        return result;
+        return this.response;
     }
 
     async follow() {
         let {user, _user} = await this.baseData();
-        let result = this.result;
         //没有关注过店铺
         if (user.task.follow === false) {
             user.task.follow = true;
@@ -275,9 +270,8 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                     follow: true
                 }
             }
-            result.code = await this.editUser(options, filter);
+            this.response.code = await this.editUser(options, filter);
         }
-        return result;
     }
 
     async assist() {
@@ -292,9 +286,8 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         //会员状态
         let vip = await this.services.topService.vipStatus();
         //获取活动
-        let status = await this.services.activityService.getActivityStatus();
-        //返回值
-        let result = this.result;
+        // let status = await this.services.activityService.getActivityStatus();
+        let status = this.globalActivity;
         //记录值
         let spmData = {
             user: user.baseInfo(),
@@ -304,43 +297,43 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         }
         //不在活动时间内
         if (status.code !== 1) {
-            result.code = -1;
-            result.message = "不在活动时间内"
+            this.response.code = -1;
+            this.response.message = "不在活动时间内"
         }
         //邀请人不存在
         else if (!inviter) {
-            result.code = -2;
-            result.message = "邀请人不存在"
+            this.response.code = -2;
+            this.response.message = "邀请人不存在"
         }
         //当前用户已经被其他用户邀请了
         else if (user.inviter) {
-            result.code = -3;
-            result.message = "已经被其他用户邀请"
+            this.response.code = -3;
+            this.response.message = "已经被其他用户邀请"
         }
         //不能邀请自己
         else if (this.data.inviterOpenId === this.openId) {
-            result.code = -4;
-            result.message = "不能邀请自己"
+            this.response.code = -4;
+            this.response.message = "不能邀请自己"
         }
         //不是会员
         else if (vip.code !== 1) {
-            result.code = -5;
-            result.message = "不是会员"
+            this.response.code = -5;
+            this.response.message = "不是会员"
         }
         //不是新会员
         else if (user.createTime > vip.data.gmt_create || user.task.member === true) {
-            result.code = -6;
-            result.message = "不是新会员"
+            this.response.code = -6;
+            this.response.message = "不是新会员"
         }
         //已经是会员
         else if (this.data.urlBack !== true) {
-            result.code = -7;
-            result.message = "已经是会员"
+            this.response.code = -7;
+            this.response.message = "已经是会员"
         }
         //超过限制
         else if (inviter.task.assist.count > 10) {
-            result.code = -8;
-            result.message = "超过邀请限制"
+            this.response.code = -8;
+            this.response.message = "超过邀请限制"
         }
         //条件满足
         else {
@@ -351,22 +344,21 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                 "task.assist.count": _inviter.task.assist.count,
                 openId: inviter.openId
             }
-            result.code = await this.editUser(inviterOptions, inviterFilter);
+            this.response.code = await this.editUser(inviterOptions, inviterFilter);
             //成功
-            if (result.code > 0) {
+            if (this.response.code > 0) {
                 user.inviter = {
                     nick: inviter.nick,
                     openId: inviter.openId,
                     time: time.common.base
                 }
                 let options = this.compareObj(_user, user);
-                result.code = await this.editUser(options);
+                this.response.code = await this.editUser(options);
                 await this.spm("assist", spmData,);
             }
         }
         await this.spm("assistAll");
-        spmData.desc = MsgGenerate.assistDesc(user, inviter, time.common.base, result.message, vip);
-        return result;
+        spmData.desc = MsgGenerate.assistDesc(user, inviter, time.common.base, this.response.message, vip);
     }
 
     async lottery() {
@@ -374,10 +366,9 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         let {user, _user} = await this.baseData();
         let activityService = this.services.activityService;
         //获取活动
-        let activity = await activityService.getActivity(activityService.pureFiled)
-        //返回值
-        let result = this.result;
-        result.data.award = false;
+        // let activity = await activityService.getActivity(activityService.pureFiled)
+        let activity = this.globalActivity;
+        this.response.data.award = false;
         //活动进行中
         if (activity.code === 1) {
             //有抽奖次数
@@ -387,9 +378,9 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                 let filter: any = {
                     lotteryCount: _user.lotteryCount
                 }
-                result.code = await this.editUser(options, filter);
+                this.response.code = await this.editUser(options, filter);
                 //抽奖成功
-                if (result.code > 0) {
+                if (this.response.code > 0) {
                     let prizeList = activity.data.config.lotteryPrize.prizeList;
                     let awardIndex = Utils.random(prizeList.map(v => parseFloat(v.probability)));
                     //抽中的奖品
@@ -418,17 +409,17 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                                     ["data.grantTotal." + prize.id]: grantDone + 1
                                 }
                             }
-                            result.code = await activityService.edit(filter, options);
+                            this.response.code = await activityService.edit(filter, options);
                             //成功扣减库存
-                            if (result.code >= 1) {
+                            if (this.response.code >= 1) {
                                 let prizeService = this.getService(PrizeService);
                                 let sendPrize = new Prize(user, prize, "lottery");
                                 if (prize.type === "code") {
                                     sendPrize.code = await prizeService.generateCode();
                                 }
                                 sendPrize._id = await prizeService.insertOne(sendPrize);
-                                result.data.prize = sendPrize;
-                                result.data.award = true;
+                                this.response.data.prize = sendPrize;
+                                this.response.data.award = true;
                             }
                         }
                     }
@@ -478,13 +469,13 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                 rank: index++
             }
         });
-        return this.getResult({list});
+        this.response.data = {list};
+        return list;
     }
 
     async meRank() {
         let user = await this.getUser();
-        let result = this.result;
-        result.data = {
+        this.response.data = {
             openId: user.openId,
             avatar: user.avatar,
             activityId: user.activityId,
@@ -492,10 +483,10 @@ export default class UserService extends BaseService<UserDao<User>, User> {
             nick: user.nick,
             rank: false
         }
-        if (result.data.score <= 0) {
-            return result.data;
+        if (this.response.data.score <= 0) {
+            return this.response.data;
         }
-        result.data.rank = await this.count({
+        this.response.data.rank = await this.count({
             activityId: this.activityId,
             score: {
                 $gt: user.score
@@ -531,12 +522,13 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                 }
             }
         ]
-        result.data.rank = result.data.rank + (await this.aggregate(pipe))[0].rank + 1;
-        return result;
+        this.response.data.rank = this.response.data.rank + (await this.aggregate(pipe))[0].rank + 1;
+        return this.response.data;
     }
 
     async checkOrder(user: User) {
-        let activity = await this.services.activityService.getActivityStatus();
+        // let activity = await this.services.activityService.getActivityStatus();
+        let activity = this.globalActivity;
         //如果活动进行中
         if (activity.code === 1) {
             let {startTime, endTime} = activity.data;
@@ -592,8 +584,8 @@ export default class UserService extends BaseService<UserDao<User>, User> {
     }
 
     async userInfo() {
-        return this.getResult({
+        this.response.data = {
             user: await this.getUser()
-        });
+        }
     }
 }

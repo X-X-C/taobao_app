@@ -12,6 +12,7 @@ exports.main = async (context) => {
 // @ts-ignore
 exports.enter = async (context) => {
     const app = new App(context, "enter");
+    app.config.globalActivity = true;
     return await app.run(async function () {
         let userService = app.getService(UserService);
         return await userService.enter();

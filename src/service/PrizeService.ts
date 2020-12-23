@@ -25,21 +25,20 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
         }
     }
 
-    async my(): Promise<BaseResult> {
+    async my() {
         let filter = {
             openId: this.openId,
             activityId: this.activityId
         }
         let list = await this.getAll(filter);
-        return this.getResult({list});
+        this.response.data = {list};
     }
 
     /**
      * 领取奖品
      */
-    async receive(): Promise<BaseResult> {
+    async receive() {
         let {prizeId, ext} = this.data;
-        let result = this.result;
         let filter = {
             _id: prizeId,
             openId: this.openId,
@@ -61,9 +60,9 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
                     ext: baseInfo
                 }
             }
-            result.code = await this.edit(filter, options);
+            this.response.code = await this.edit(filter, options);
             //成功领取
-            if (result.code >= 1) {
+            if (this.response.code >= 1) {
                 let topService = this.getService(TopService);
                 let userService = this.getService(UserService);
                 let user = await userService.getUser();
@@ -71,35 +70,35 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
                 //尖货领取
                 if (prize.type === "goods") {
                     let {skuId, itemId} = prize[prize.type];
-                    result.data = await topService.opentradeSpecialUsersMark(skuId, itemId);
+                    this.response.data = await topService.opentradeSpecialUsersMark(skuId, itemId);
                     await this.simpleSpm("_mark", {
-                        desc: MsgGenerate.receiveDesc(user, time, prize, result.data),
-                        topResult: result.data.data
+                        desc: MsgGenerate.receiveDesc(user, time, prize, this.response.data),
+                        topResult: this.response.data.data
                     });
                 }
                 //积分领取
                 else if (prize.type === "point") {
                     let {addPointNum} = prize[prize.type];
-                    result.data = await topService.taobaoCrmPointChange(addPointNum);
+                    this.response.data = await topService.taobaoCrmPointChange(addPointNum);
                     await this.simpleSpm("_point", {
-                        desc: MsgGenerate.receiveDesc(user, time, prize, result.data),
-                        topResult: result.data.data
+                        desc: MsgGenerate.receiveDesc(user, time, prize, this.response.data),
+                        topResult: this.response.data.data
                     });
                 }
                 //权益领取
                 else if (prize.type === "benefit") {
                     let {ename} = prize[prize.type];
-                    result.data = await topService.sendBenefit(ename);
+                    this.response.data = await topService.sendBenefit(ename);
                     await this.simpleSpm("_benefit", {
-                        desc: MsgGenerate.receiveDesc(user, time, prize, result.data),
-                        topResult: result.data.data
+                        desc: MsgGenerate.receiveDesc(user, time, prize, this.response.data),
+                        topResult: this.response.data.data
                     });
                 }
                 //其他情况
                 else {
                     let data = {
-                        code: result.code,
-                        data: `修改了${result.code}条数据`
+                        code: this.response.code,
+                        data: `修改了${this.response.code}条数据`
                     }
                     await this.simpleSpm("_receive", {
                         desc: MsgGenerate.receiveDesc(user, time, prize, data)
@@ -107,7 +106,6 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
                 }
             }
         }
-        return result;
     }
 
     /**
