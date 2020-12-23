@@ -15,7 +15,7 @@ exports.enter = async (context) => {
     app.config.globalActivity = true;
     return await app.run(async function () {
         let userService = app.getService(UserService);
-        return await userService.enter();
+        await userService.enter();
     });
 }
 
@@ -25,7 +25,7 @@ exports.userInfo = async (context) => {
     const app = new App(context, "userInfo");
     return await app.run(async function () {
         let userService = app.getService(UserService);
-        return await userService.userInfo();
+        await userService.userInfo();
     });
 }
 
@@ -35,7 +35,7 @@ exports.updateUser = async (context) => {
     const app = new App(context, "updateUser");
     return await app.run(async function () {
         let userService = app.getService(UserService);
-        return await userService.updateUser();
+        await userService.updateUser();
     });
 }
 
