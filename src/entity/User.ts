@@ -50,10 +50,7 @@ export default class User {
         //加入会员
         member: false,
         //邀请好友
-        assist: {
-            count: 0,
-            day: ""
-        },
+        assist: 0,
         //已检查的订单
         doneOrders: []
     }

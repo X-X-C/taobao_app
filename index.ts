@@ -1,13 +1,46 @@
 import App from "./base/App";
 import UserService from "./src/service/UserService";
+import PrizeService from "./src/service/PrizeService";
 
 // @ts-ignore
 exports.main = async (context) => {
     const app = new App(context, "main");
+    app.config.globalActivity = true;
     return await app.run(async function () {
-        return "OK";
     });
 }
+
+
+// @ts-ignore
+exports.assist = async (context) => {
+    const app = new App(context, "assist");
+    app.config.globalActivity = true;
+    let need = ['sopenId']
+    return await app.run(async function () {
+        await app.getService(UserService).assist();
+    }, need);
+}
+
+
+// @ts-ignore
+exports.task = async (context) => {
+    const app = new App(context, "task");
+    app.config.globalActivity = true;
+    let need = ['target'];
+    return await app.run(async function () {
+        //活动进行中
+        if (app.globalActivity.code === 1) {
+            let userService = app.getService(UserService);
+            await userService.normalTask(this.target);
+        } else {
+            //不在活动时间内
+            app.response.success = false;
+            app.response.message = '不在活动时间内';
+            app.response.code = 201;
+        }
+    }, need);
+}
+
 
 // @ts-ignore
 exports.enter = async (context) => {
@@ -37,5 +70,36 @@ exports.updateUser = async (context) => {
         let userService = app.getService(UserService);
         await userService.updateUser();
     });
+}
+
+
+// @ts-ignore
+exports.lottery = async (context) => {
+    const app = new App(context, "lottery");
+    app.config.globalActivity = true;
+    return await app.run(async function () {
+        let userService = app.getService(UserService);
+        await userService.lottery();
+    });
+}
+
+
+// @ts-ignore
+exports.myPrize = async (context) => {
+    const app = new App(context, "myPrize");
+    return await app.run(async function () {
+        let prizeService = app.getService(PrizeService);
+        await prizeService.my();
+    });
+}
+
+// @ts-ignore
+exports.receivePrize = async (context) => {
+    const app = new App(context, "receivePrize");
+    let need = ['prizeId'];
+    return await app.run(async function () {
+        let prizeService = app.getService(PrizeService);
+        await prizeService.receive();
+    }, need);
 }
 

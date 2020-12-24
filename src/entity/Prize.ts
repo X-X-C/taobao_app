@@ -11,7 +11,7 @@ export default class Prize {
         this.prizeName = prize.name;
         this.prizeId = prize.id;
         let time = new Time();
-        this.time = time.common;
+        this.time = time.common.base;
         this.date = time.format("YYYY/MM/DD");
         this.type = type;
     }
