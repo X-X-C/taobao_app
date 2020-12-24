@@ -228,8 +228,7 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                 }
             }
         } else {
-            this.response.success = false;
-            this.response.message = '不在活动时间内';
+            this.response.set201();
         }
     }
 
@@ -262,8 +261,7 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                 //不是在游戏中状态结算
             }
         } else {
-            this.response.success = false;
-            this.response.message = '不在活动时间内';
+            this.response.set201();
         }
     }
 
@@ -289,42 +287,41 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         }
         //不在活动时间内
         if (status.code !== 1) {
-            this.response.code = -1;
-            this.response.message = "不在活动时间内"
+            this.response.set201();
         }
         //邀请人不存在
         else if (!inviter) {
-            this.response.code = -2;
+            this.response.code = 202;
             this.response.message = "邀请人不存在"
         }
         //当前用户已经被其他用户邀请了
         else if (user.inviter) {
-            this.response.code = -3;
+            this.response.code = 203;
             this.response.message = "已经被其他用户邀请"
         }
         //不能邀请自己
         else if (this.data.inviterOpenId === this.openId) {
-            this.response.code = -4;
+            this.response.code = 204;
             this.response.message = "不能邀请自己"
         }
         //不是会员
         else if (vip.code !== 1) {
-            this.response.code = -5;
+            this.response.code = 205;
             this.response.message = "不是会员"
         }
         //不是新会员
         else if (user.createTime > vip.data.gmt_create || user.task.member === true) {
-            this.response.code = -6;
+            this.response.code = 206;
             this.response.message = "不是新会员"
         }
         //已经是会员
         else if (this.data.urlBack !== true) {
-            this.response.code = -7;
+            this.response.code = 207;
             this.response.message = "已经是会员"
         }
         //超过限制
         else if (inviter.task.assist > 10) {
-            this.response.code = -8;
+            this.response.code = 208;
             this.response.message = "超过邀请限制"
         }
         //条件满足
@@ -335,9 +332,9 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                 "task.assist.count": _inviter.task.assist,
                 openId: inviter.openId
             }
-            this.response.code = await this.editUser(inviterOptions, inviterFilter);
+            this.response.success = !!await this.editUser(inviterOptions, inviterFilter);
             //成功
-            if (this.response.code > 0) {
+            if (this.response.success) {
                 user.inviter = {
                     nick: inviter.nick,
                     openId: inviter.openId,
@@ -346,6 +343,8 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                 let options = this.compareObj(_user, user);
                 this.response.code = await this.editUser(options);
                 await this.spm("assist", spmData,);
+            } else {
+                this.response.set501();
             }
         }
         await this.spm("assistAll");
@@ -368,9 +367,9 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                 let filter: any = {
                     lotteryCount: _user.lotteryCount
                 }
-                this.response.code = await this.editUser(options, filter);
+                this.response.success = !!await this.editUser(options, filter);
                 //抽奖成功
-                if (this.response.code > 0) {
+                if (this.response.success) {
                     let prizeList = activity.data.config.lotteryPrize.prizeList;
                     let awardIndex = Utils.random(prizeList.map(v => parseFloat(v.probability)));
                     //抽中的奖品
@@ -399,9 +398,9 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                                     ["data.grantTotal." + prize.id]: grantDone + 1
                                 }
                             }
-                            this.response.code = await activityService.edit(filter, options);
+                            this.response.success = !!await activityService.edit(filter, options);
                             //成功扣减库存
-                            if (this.response.code >= 1) {
+                            if (this.response.success) {
                                 let prizeService = this.getService(PrizeService);
                                 let sendPrize = new Prize(user, prize, "lottery");
                                 if (prize.type === "code") {
@@ -410,11 +409,20 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                                 prize._id = await prizeService.insertOne(sendPrize);
                                 this.response.data.prize = prize;
                                 this.response.data.award = true;
+                            } else {
+                                this.response.set501();
                             }
                         }
                     }
+                } else {
+                    this.response.set501();
                 }
+            } else {
+                this.response.message = '没有抽奖次数';
+                this.response.code = 202;
             }
+        } else {
+            this.response.set201();
         }
     }
 
@@ -578,43 +586,47 @@ export default class UserService extends BaseService<UserDao<User>, User> {
     }
 
     async normalTask(type) {
-        let {user, _user} = await this.baseData();
-        let filter;
-        switch (type) {
-            case 'follow':
-            case 'sign':
-            case 'member':
-                if (user.task[type] === false) {
-                    if (type === "member") {
-                        let vipStatus = await this.services.topService.vipStatus();
-                        //不是会员
-                        if (vipStatus.code !== 1) {
-                            this.response.message = '不是会员';
-                            this.response.code = 203;
-                            break;
+        let activity = this.globalActivity;
+        if (activity.code !== 1) {
+            this.response.set201();
+        } else {
+            let {user, _user} = await this.baseData();
+            let filter;
+            switch (type) {
+                case 'follow':
+                case 'sign':
+                case 'member':
+                    if (user.task[type] === false) {
+                        if (type === "member") {
+                            let vipStatus = await this.services.topService.vipStatus();
+                            //不是会员
+                            if (vipStatus.code !== 1) {
+                                this.response.message = '不是会员';
+                                this.response.code = 203;
+                                break;
+                            }
                         }
+                        //更改所属任务完成状态
+                        user.task[type] = true;
+                        filter = {
+                            ['task.' + type]: false
+                        }
+                    } else {
+                        this.response.message = '已经完成过此任务';
+                        this.response.code = 205;
                     }
-                    //更改所属任务完成状态
-                    user.task[type] = true;
-                    filter = {
-                        ['task.' + type]: false
-                    }
+                    break;
+                default:
+                    this.response.message = '无效的任务类型'
+                    this.response.code = 202;
+            }
+            if (filter) {
+                this.response.success = !!(await this.editUser(this.compareObj(_user, user), filter));
+                if (this.response.success) {
+                    await this.spm(type);
                 } else {
-                    this.response.message = '已经完成过此任务';
-                    this.response.code = 205;
+                    this.response.set501();
                 }
-                break;
-            default:
-                this.response.message = '无效的任务类型'
-                this.response.code = 202;
-        }
-        if (filter) {
-            this.response.success = !!(await this.editUser(this.compareObj(_user, user), filter));
-            if (this.response.success) {
-                await this.spm(type);
-            } else {
-                this.response.message = '未知错误'
-                this.response.code = 204;
             }
         }
     }
