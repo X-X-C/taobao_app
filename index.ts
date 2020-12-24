@@ -28,16 +28,8 @@ exports.task = async (context) => {
     app.config.globalActivity = true;
     let need = ['target'];
     return await app.run(async function () {
-        //活动进行中
-        if (app.globalActivity.code === 1) {
-            let userService = app.getService(UserService);
-            await userService.normalTask(this.target);
-        } else {
-            //不在活动时间内
-            app.response.success = false;
-            app.response.message = '不在活动时间内';
-            app.response.code = 201;
-        }
+        let userService = app.getService(UserService);
+        await userService.normalTask(this.target);
     }, need);
 }
 
