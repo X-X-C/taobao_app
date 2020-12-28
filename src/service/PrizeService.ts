@@ -28,7 +28,8 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
     async my() {
         let filter = {
             openId: this.openId,
-            activityId: this.activityId
+            activityId: this.activityId,
+            isShow: true
         }
         let list = await this.getAll(filter);
         this.response.data = {list};

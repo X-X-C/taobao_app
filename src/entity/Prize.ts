@@ -10,6 +10,7 @@ export default class Prize {
         this.prize = prize;
         this.prizeName = prize.name;
         this.prizeId = prize.id;
+        this.isShow = true;
         let time = new Time();
         this.time = time.common.base;
         this.date = time.format("YYYY/MM/DD");
@@ -21,6 +22,8 @@ export default class Prize {
     activityId: string;
     //用户名
     nick: string;
+    //是否展示奖品
+    isShow: boolean;
     //mixNick
     mixNick: string;
     //奖品名称
