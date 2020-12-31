@@ -1,5 +1,4 @@
 import BaseApp from "../base/App";
-import {activityData} from "../base/service/ActivityService";
 import ActivityService from "./service/ActivityService";
 
 export default class App extends BaseApp {
@@ -16,7 +15,6 @@ export default class App extends BaseApp {
         globalActivity: false
     }
 
-    globalActivity: activityData;
     activityService: ActivityService;
 
     //重写执行前方法
