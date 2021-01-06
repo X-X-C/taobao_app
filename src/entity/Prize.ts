@@ -13,7 +13,7 @@ export default class Prize {
         this.isShow = true;
         let time = new Time();
         this.time = time.common.base;
-        this.date = time.format("YYYY/MM/DD");
+        this.date = time.format("YYYY-MM-DD");
         this.type = type;
     }
 
