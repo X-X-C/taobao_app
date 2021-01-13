@@ -9,13 +9,12 @@ import Time from "../../base/utils/Time";
 import PrizeService from "./PrizeService";
 import Prize from "../entity/Prize";
 import MsgGenerate from "../utils/MsgGenerate";
+import BaseUserService from "./abstract/BaseUserService";
 
-export default class UserService extends BaseService<UserDao<User>, User> {
+export default class UserService extends BaseUserService {
     constructor(app: App) {
-        super(UserDao, app);
+        super(app);
     }
-
-    private user: User;
 
     get services() {
         return {
@@ -31,77 +30,6 @@ export default class UserService extends BaseService<UserDao<User>, User> {
             user,
             _user
         }
-    }
-
-    /**
-     * 获取用户
-     * @param openId
-     */
-    async getUser(openId: string = this.openId): Promise<User> {
-        //如果是获取当前用户,如果已经获取过了直接返回
-        if (this.user && openId === this.openId) {
-            return this.user;
-        } else {
-            let user = await super.get({
-                openId: openId || this.openId,
-                activityId: this.activityId
-            })
-            if (!user && openId === this.openId) {
-                user = new User();
-                user.activityId = this.activityId;
-                user.createTime = this.time().common.base;
-                user.nick = this.nick;
-                user.mixNick = this.mixNick;
-                user.openId = this.openId;
-                await this.add(user);
-            } else {
-                user = new User(user);
-            }
-            //如果获取的是当前用户，保存
-            if (openId === this.openId) {
-                this.user = user;
-            }
-            return user;
-        }
-    }
-
-    /**
-     * 修改用户
-     * @param options
-     * @param filter
-     */
-    async editUser(options: any, filter: any = {}): Promise<number> {
-        return await super.edit(
-            {
-                openId: this.openId,
-                activityId: this.activityId,
-                ...filter
-            },
-            options
-        );
-    }
-
-    async add(user: User): Promise<string> {
-        return await super.insertOne(user);
-    }
-
-    /**
-     * 更新用户头像
-     */
-    async updateUser() {
-        this.response.data = {
-            line: await this.editUser(
-                {
-                    $set: {
-                        avatar: this.data.avatar,
-                        nick: this.nick
-                    }
-                },
-                {
-                    avatar: false
-                }
-            )
-        };
     }
 
     /**
@@ -158,48 +86,6 @@ export default class UserService extends BaseService<UserDao<User>, User> {
         if (user.lastInitTime !== time.YYYYMMDD) {
             user.lastInitTime = time.YYYYMMDD;
         }
-    }
-
-    /**
-     * 从当前时间开始获取连续签到天数
-     * @param data
-     */
-    getSuccessiveDay(data) {
-        let day = data;
-        let successiveDay = 0;
-        while (day.length > successiveDay) {
-            let time = this.time();
-            let target = time.to(-successiveDay).YYYYMMDD;
-            if (day.indexOf(target) !== -1) {
-                successiveDay += 1;
-            } else {
-                break;
-            }
-        }
-        return successiveDay;
-    }
-
-    /**
-     * 获取所有天数里的最长连续天数
-     * @param data
-     */
-    getMaxSuccessiveDay(data) {
-        data = data.sort((a, b) => a > b ? 1 : -1);
-        let max = 0;
-        let tmpMax = 1;
-        for (let v of data) {
-            let time = new Time(v);
-            time = time.to(1).format("YYYY-MM-DD");
-            if (data.indexOf(time) !== -1) {
-                tmpMax += 1;
-            } else {
-                if (tmpMax > max) {
-                    max = tmpMax;
-                }
-                tmpMax = 1;
-            }
-        }
-        return max;
     }
 
     /**
@@ -629,5 +515,47 @@ export default class UserService extends BaseService<UserDao<User>, User> {
                 }
             }
         }
+    }
+
+    /**
+     * 从当前时间开始获取连续签到天数
+     * @param data
+     */
+    getSuccessiveDay(data) {
+        let day = data;
+        let successiveDay = 0;
+        while (day.length > successiveDay) {
+            let time = this.time();
+            let target = time.to(-successiveDay).YYYYMMDD;
+            if (day.indexOf(target) !== -1) {
+                successiveDay += 1;
+            } else {
+                break;
+            }
+        }
+        return successiveDay;
+    }
+
+    /**
+     * 获取所有天数里的最长连续天数
+     * @param data
+     */
+    getMaxSuccessiveDay(data) {
+        data = data.sort((a, b) => a > b ? 1 : -1);
+        let max = 0;
+        let tmpMax = 1;
+        for (let v of data) {
+            let time = new Time(v);
+            time = time.to(1).format("YYYY-MM-DD");
+            if (data.indexOf(time) !== -1) {
+                tmpMax += 1;
+            } else {
+                if (tmpMax > max) {
+                    max = tmpMax;
+                }
+                tmpMax = 1;
+            }
+        }
+        return max;
     }
 }
