@@ -10,7 +10,7 @@ import App from "../../base/App";
 import UserService from "./UserService";
 import Prize from "../entity/Prize";
 import PrizeService from "./PrizeService";
-import BaseActivityService from "../../base/service/ActivityService";
+import BaseActivityService from "../../base/service/BaseActivityService";
 
 export default class ActivityService extends BaseActivityService {
     constructor(app: App) {

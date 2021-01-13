@@ -6,15 +6,6 @@ export default class App extends BaseApp {
         super(context, apiName);
     }
 
-    config = {
-        //是否在请求结束后返回本次请求参数
-        returnParams: true,
-        //全局请求参数
-        needParams: [],
-        //是否启用全局活动
-        globalActivity: false
-    }
-
     activityService: ActivityService;
 
     //重写执行前方法
