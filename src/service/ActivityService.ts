@@ -30,7 +30,9 @@ export default class ActivityService extends BaseActivityService {
                 }
             }
             let options = {
-                "data.award": true
+                $set: {
+                    "data.award": true
+                }
             }
             code = await this.edit(filter, options);
             //成功更改开奖状态
