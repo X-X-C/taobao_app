@@ -106,6 +106,8 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
                     })
                 }
             }
+        } else {
+            this.response.set222("领取失败");
         }
     }
 
