@@ -1,6 +1,6 @@
-import App from "./src/App";
 import UserService from "./src/service/UserService";
 import PrizeService from "./src/service/PrizeService";
+import App from "./base/App";
 
 // @ts-ignore
 exports.main = async (context) => {

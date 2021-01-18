@@ -18,8 +18,8 @@ export default class ActivityService extends BaseActivityService {
     }
 
     async award() {
-        let code = -1;
-        let activity = await this.getActivity();
+        let code;
+        let activity = this.globalActivity;
         //如果活动结束，且还没有开过奖进入开奖逻辑
         if (activity.code === 2 && activity.data.data.award !== true) {
             //更改活动开奖状态
