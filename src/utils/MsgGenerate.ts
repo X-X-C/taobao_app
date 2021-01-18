@@ -10,10 +10,14 @@ export default {
      * @param time 时间
      */
     baseInfo(who, what, target, desc, time = new Time()) {
-        return `【${who}】在【${time.common.base}】${what} ${target ? `【${target}】` : ""}, ${desc}。`;
+        return `【${who}】在【${time.common.base}】${what} ${target ? `【${target}】` : ""}, ${JSON.stringify(desc)}。`;
     },
 
     assistDesc(who, target, desc) {
         return this.baseInfo(who, "助力", target, desc);
+    },
+
+    receiveDesc(who, prizeName, topResult) {
+        return this.baseInfo(who, "领取", prizeName, `领取【${!!topResult.code}】，详情：${topResult.data}`);
     }
 }

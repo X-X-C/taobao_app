@@ -73,7 +73,7 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
                     let {skuId, itemId} = prize[prize.type];
                     this.response.data = await topService.opentradeSpecialUsersMark(skuId, itemId);
                     await this.simpleSpm("_mark", {
-                        desc: MsgGenerate.receiveDesc(user, time, prize, this.response.data),
+                        desc: MsgGenerate.receiveDesc(user.nick, prize.name, this.response.data),
                         topResult: this.response.data.data
                     });
                 }
@@ -82,7 +82,7 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
                     let {addPointNum} = prize[prize.type];
                     this.response.data = await topService.taobaoCrmPointChange(addPointNum);
                     await this.simpleSpm("_point", {
-                        desc: MsgGenerate.receiveDesc(user, time, prize, this.response.data),
+                        desc: MsgGenerate.receiveDesc(user.nick, prize.name, this.response.data),
                         topResult: this.response.data.data
                     });
                 }
@@ -91,7 +91,7 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
                     let {ename} = prize[prize.type];
                     this.response.data = await topService.sendBenefit(ename);
                     await this.simpleSpm("_benefit", {
-                        desc: MsgGenerate.receiveDesc(user, time, prize, this.response.data),
+                        desc: MsgGenerate.receiveDesc(user.nick, prize.name, this.response.data),
                         topResult: this.response.data.data
                     });
                 }
@@ -102,7 +102,7 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
                         data: `修改了${this.response.code}条数据`
                     }
                     await this.simpleSpm("_receive", {
-                        desc: MsgGenerate.receiveDesc(user, time, prize, data)
+                        desc: MsgGenerate.receiveDesc(user.nick, prize.name, data),
                     })
                 }
             }
