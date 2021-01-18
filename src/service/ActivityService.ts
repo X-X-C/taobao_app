@@ -40,7 +40,7 @@ export default class ActivityService extends BaseActivityService {
                 let userService = this.getService(UserService);
                 let rankPrizeList = activity.data.config.rankPrizeList;
                 rankPrizeList = rankPrizeList.sort((a, b) => {
-                    return parseInt(a.condition.endNum) - parseInt(b.condition.endNum);
+                    return parseInt(b.condition.endNum) - parseInt(a.condition.endNum);
                 });
                 //需要开奖的数据
                 let rankList = await userService.rank(rankPrizeList[0].condition.endNum, 1);
