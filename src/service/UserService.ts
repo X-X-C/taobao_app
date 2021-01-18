@@ -1,5 +1,3 @@
-import BaseService from "../../base/service/abstract/BaseService";
-import UserDao from "../dao/UserDao";
 import User from "../entity/User";
 import App from "../../base/App";
 import ActivityService from "./ActivityService";
@@ -177,38 +175,31 @@ export default class UserService extends BaseUserService {
         }
         //邀请人不存在
         else if (!inviter) {
-            this.response.code = 202;
-            this.response.message = "邀请人不存在"
+            this.response.set222("邀请人不存在");
         }
         //当前用户已经被其他用户邀请了
         else if (user.inviter) {
-            this.response.code = 203;
-            this.response.message = "已经被其他用户邀请"
+            this.response.set222("已经被其他用户邀请");
         }
         //不能邀请自己
         else if (this.data.inviterOpenId === this.openId) {
-            this.response.code = 204;
-            this.response.message = "不能邀请自己"
+            this.response.set222("不能邀请自己");
         }
         //不是会员
         else if (vip.code !== 1) {
-            this.response.code = 205;
-            this.response.message = "不是会员"
+            this.response.set222("不是会员");
         }
         //不是新会员
         else if (user.createTime > vip.data.gmt_create || user.task.member === true) {
-            this.response.code = 206;
-            this.response.message = "不是新会员"
+            this.response.set222("不是新会员");
         }
         //已经是会员
         else if (this.data.urlBack !== true) {
-            this.response.code = 207;
-            this.response.message = "已经是会员"
+            this.response.set222("已经是会员");
         }
         //超过限制
         else if (inviter.task.assist > 10) {
-            this.response.code = 208;
-            this.response.message = "超过邀请限制"
+            this.response.set222("超过邀请限制");
         }
         //条件满足
         else {
@@ -228,13 +219,14 @@ export default class UserService extends BaseUserService {
                 }
                 let options = this.compareObj(_user, user);
                 this.response.code = await this.editUser(options);
-                await this.spm("assist", spmData,);
+                await this.spm("assist", spmData);
             } else {
                 this.response.set501();
             }
         }
-        await this.spm("assistAll");
-        spmData.desc = MsgGenerate.assistDesc(user, inviter, time.common.base, this.response.message, vip);
+        await this.spm("assistAll", spmData);
+        let msg = vip.code === 1 ? `首次入会时间【${vip.data.gmt_create}】` : "不是会员";
+        spmData.desc = MsgGenerate.assistDesc(user.nick, inviter.nick, this.response.message + msg);
     }
 
     async lottery() {
@@ -304,8 +296,7 @@ export default class UserService extends BaseUserService {
                     this.response.set501();
                 }
             } else {
-                this.response.message = '没有抽奖次数';
-                this.response.code = 202;
+                this.response.set222("没有抽奖次数");
             }
         } else {
             this.response.set201();
@@ -487,8 +478,7 @@ export default class UserService extends BaseUserService {
                             let vipStatus = await this.services.topService.vipStatus();
                             //不是会员
                             if (vipStatus.code !== 1) {
-                                this.response.message = '不是会员';
-                                this.response.code = 203;
+                                this.response.set222("不是会员");
                                 break;
                             }
                         }
@@ -498,13 +488,11 @@ export default class UserService extends BaseUserService {
                             ['task.' + type]: false
                         }
                     } else {
-                        this.response.message = '已经完成过此任务';
-                        this.response.code = 205;
+                        this.response.set222("已经完成过此任务");
                     }
                     break;
                 default:
-                    this.response.message = '无效的任务类型'
-                    this.response.code = 202;
+                    this.response.set222("无效的任务类型");
             }
             if (filter) {
                 this.response.success = !!(await this.editUser(this.compareObj(_user, user), filter));

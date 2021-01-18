@@ -1,16 +1,19 @@
+import Time from "../../base/utils/Time";
+
 export default {
     /**
-     * 奖品领取desc
-     * @param user
-     * @param time
-     * @param prize
-     * @param result
+     * 生成信息
+     * @param who 谁
+     * @param what 干什么
+     * @param desc 描述
+     * @param target 对谁
+     * @param time 时间
      */
-    receiveDesc(user, time, prize, result) {
-        return `【${user.nick}】在【${time}】领取【${prize.name}】，领取${result.code === 1 ? "成功。" : `失败，${JSON.stringify(result.data)}`}`
+    baseInfo(who, what, target, desc, time = new Time()) {
+        return `【${who}】在【${time.common.base}】${what} ${target ? `【${target}】` : ""}, ${desc}。`;
     },
 
-    assistDesc(user, inviter, time, msg, vipResult) {
-        return `【${user.nick}】在【${time}】被【${inviter.nick}】邀请，${msg}，${vipResult.code === 1 ? `首次入会时间【${vipResult.data.gmt_create}】` : "不是会员"}`
+    assistDesc(who, target, desc) {
+        return this.baseInfo(who, "助力", target, desc);
     }
 }
