@@ -67,7 +67,6 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
                 let topService = this.getService(TopService);
                 let userService = this.getService(UserService);
                 let user = await userService.getUser();
-                let time = this.time().common.base;
                 //尖货领取
                 if (prize.type === "goods") {
                     let {skuId, itemId} = prize[prize.type];
