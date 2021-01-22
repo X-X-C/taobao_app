@@ -4,7 +4,7 @@ import User from "../../entity/User";
 import App from "../../../base/App";
 
 export default abstract class BaseUserService extends BaseService<UserDao<User>, User> {
-    constructor(app: App) {
+    protected constructor(app: App) {
         super(UserDao, app);
     }
 
