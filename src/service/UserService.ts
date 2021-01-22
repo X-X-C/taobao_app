@@ -349,18 +349,18 @@ export default class UserService extends BaseUserService {
 
     async meRank() {
         let user = await this.getUser();
-        let data: any = {
+        this.response.data = {
             openId: user.openId,
             avatar: user.avatar,
             activityId: user.activityId,
             score: user.score,
             nick: user.nick,
-            rank: false
+            rank: "-"
         }
         if (this.response.data.score <= 0) {
-            return this.response.data;
+            return;
         }
-        data.rank = await this.count({
+        let rank = await this.count({
             activityId: this.activityId,
             score: {
                 $gt: user.score
@@ -396,8 +396,8 @@ export default class UserService extends BaseUserService {
                 }
             }
         ]
-        data.rank = data.rank + (await this.aggregate(pipe))[0].rank + 1;
-        return data;
+        rank = rank + (await this.aggregate(pipe))[0].rank + 1;
+        this.response.data.rank = rank;
     }
 
     async checkOrder(user: User) {
