@@ -5,7 +5,6 @@ import App from "./base/App";
 // @ts-ignore
 exports.main = async (context) => {
     const app = new App(context, "main");
-    app.config.globalActivity = true;
     return await app.run(async function () {
     });
 }
@@ -15,6 +14,7 @@ exports.main = async (context) => {
 exports.assist = async (context) => {
     const app = new App(context, "assist");
     app.config.globalActivity = true;
+    app.config.inspectionActivity = true;
     let need = ['sopenId']
     return await app.run(async function () {
         await app.getService(UserService).assist();
@@ -26,6 +26,7 @@ exports.assist = async (context) => {
 exports.task = async (context) => {
     const app = new App(context, "task");
     app.config.globalActivity = true;
+    app.config.inspectionActivity = true;
     let need = ['target'];
     return await app.run(async function () {
         let userService = app.getService(UserService);
@@ -69,6 +70,7 @@ exports.updateUser = async (context) => {
 exports.lottery = async (context) => {
     const app = new App(context, "lottery");
     app.config.globalActivity = true;
+    app.config.inspectionActivity = true;
     return await app.run(async function () {
         let userService = app.getService(UserService);
         await userService.lottery();

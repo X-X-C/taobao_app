@@ -1,4 +1,5 @@
 import Time from "../../base/utils/Time";
+import Utils from "../../base/utils/Utils";
 
 export default {
     /**
@@ -10,7 +11,7 @@ export default {
      * @param time 时间
      */
     baseInfo(who, what, target, desc, time = new Time()) {
-        return `【${who}】在【${time.common.base}】${what} ${target ? `【${target}】` : ""}, ${JSON.stringify(desc)}。`;
+        return `【${who}】在【${time.common.base}】${what} ${target ? `【${target}】` : ""}, ${Utils.toJson(desc)}。`;
     },
 
     assistDesc(who, target, desc) {
