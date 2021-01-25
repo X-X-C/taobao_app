@@ -30,7 +30,7 @@ export default class UserService extends BaseUserService {
         let activity = this.globalActivity;
         //获取用户
         let user = await this.getUser();
-        user._init;
+        user.optionsStart;
         //获取会员状态
         let vip = await this.services.topService.vipStatus();
         //活动已结束,开奖
@@ -56,7 +56,7 @@ export default class UserService extends BaseUserService {
                 this.init(user);
             }
             //更新用户
-            await this.editUser(user._options, filter);
+            await this.editUser(user.optionsEnd, filter);
         }
         //会员状态
         user.vipStatus = vip.code;
@@ -81,7 +81,7 @@ export default class UserService extends BaseUserService {
      */
     async gameStart() {
         let user = await this.getUser();
-        user._init;
+        user.optionsStart;
         this.response.data.gameNum = user._.gameNum;
         //有游戏次数
         if (user.gameNum > 0) {
@@ -93,7 +93,7 @@ export default class UserService extends BaseUserService {
                 gameNum: user._.gameNum
             }
             //减去游戏次数
-            this.response.success = !!await this.editUser(user._options, filter);
+            this.response.success = !!await this.editUser(user.optionsEnd, filter);
             //成功减去游戏次数
             if (this.response.success) {
                 this.response.data.gameNum = user.gameNum;
@@ -106,7 +106,7 @@ export default class UserService extends BaseUserService {
      */
     async gameEnd() {
         let user = await this.getUser();
-        user._init;
+        user.optionsStart;
         this.response.data.score = user._.score;
         //正常结算
         if (user.gameStatus === 1) {
@@ -121,7 +121,7 @@ export default class UserService extends BaseUserService {
             let filter = {
                 score: user._.score
             }
-            this.response.success = !!await this.editUser(user._options, filter);
+            this.response.success = !!await this.editUser(user.optionsEnd, filter);
             if (this.response.success) {
                 this.response.data.score = user.score;
             }
@@ -133,10 +133,10 @@ export default class UserService extends BaseUserService {
     async assist() {
         //当前用户信息
         let user = await this.getUser();
-        user._init;
+        user.optionsStart;
         //邀请人信息
         let inviter = await this.getUser(this.data.sopenId);
-        inviter._init;
+        inviter.optionsStart;
         //时间对象
         let time = this.time();
         //会员状态
@@ -190,7 +190,7 @@ export default class UserService extends BaseUserService {
                 "task.assist.count": inviter._.task.assist,
                 openId: inviter.openId
             }
-            this.response.success = !!await this.editUser(inviter._options, inviterFilter);
+            this.response.success = !!await this.editUser(inviter.optionsEnd, inviterFilter);
             //成功
             if (this.response.success) {
                 user.inviter = {
@@ -198,7 +198,7 @@ export default class UserService extends BaseUserService {
                     openId: inviter.openId,
                     time: time.common.base
                 }
-                this.response.code = await this.editUser(user._options);
+                this.response.code = await this.editUser(user.optionsEnd);
                 await this.spm("assist", spmData);
             } else {
                 this.response.set501();
@@ -212,7 +212,7 @@ export default class UserService extends BaseUserService {
     async lottery() {
         //当前用户信息
         let user = await this.getUser();
-        user._init;
+        user.optionsStart;
         let activityService = this.services.activityService;
         //获取活动
         let activity = this.globalActivity;
@@ -223,7 +223,7 @@ export default class UserService extends BaseUserService {
             let filter: any = {
                 lotteryCount: user._.lotteryCount
             }
-            this.response.success = !!await this.editUser(user._options, filter);
+            this.response.success = !!await this.editUser(user.optionsEnd, filter);
             //抽奖成功
             if (this.response.success) {
                 let prizeList = activity.data.config.lotteryPrize.prizeList;
@@ -439,7 +439,7 @@ export default class UserService extends BaseUserService {
 
     async normalTask(type) {
         let user = await this.getUser();
-        user._init;
+        user.optionsStart;
         let filter = {};
         switch (type) {
             case 'follow':
@@ -466,7 +466,7 @@ export default class UserService extends BaseUserService {
             default:
                 this.response.set222("无效的任务类型");
         }
-        this.response.success = !!(await this.editUser(user._options, filter));
+        this.response.success = !!(await this.editUser(user.optionsEnd, filter));
         if (this.response.success) {
             await this.spm(type);
         }
