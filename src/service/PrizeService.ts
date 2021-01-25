@@ -6,7 +6,6 @@ import TopService from "../../base/service/TopService";
 import Utils from "../../base/utils/Utils";
 import UserService from "./UserService";
 import MsgGenerate from "../utils/MsgGenerate";
-import BaseResult from "../../base/dto/BaseResult";
 
 export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
     constructor(app: App) {
@@ -61,9 +60,9 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
                     ext: baseInfo
                 }
             }
-            this.response.code = await this.edit(filter, options);
+            this.response.success = !!await this.edit(filter, options);
             //成功领取
-            if (this.response.code >= 1) {
+            if (this.response.success === true) {
                 let topService = this.getService(TopService);
                 let userService = this.getService(UserService);
                 let user = await userService.getUser();
@@ -96,12 +95,22 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
                 }
                 //其他情况
                 else {
-                    let data = {
+                    this.response.data = {
                         code: this.response.code,
                         data: `修改了${this.response.code}条数据`
                     }
                     await this.simpleSpm("_receive", {
-                        desc: MsgGenerate.receiveDesc(user.nick, prize.name, data),
+                        desc: MsgGenerate.receiveDesc(user.nick, prize.name, this.response.data),
+                    })
+                }
+
+                //成功领取
+                if (this.response.data.code > 0) {
+                    //更改真实领取状态
+                    await this.edit(filter, {
+                        $set: {
+                            realReceiveStatus: true
+                        }
                     })
                 }
             }
