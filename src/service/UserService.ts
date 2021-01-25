@@ -236,25 +236,7 @@ export default class UserService extends BaseUserService {
                     let grantDone = activity.data.data.grantTotal[prize.id] || 0;
                     //有剩余库存
                     if (grantDone < prize.stock) {
-                        filter = {
-                            _id: this.activityId,
-                            $or: [
-                                {
-                                    ["data.grantTotal." + prize.id]: {
-                                        $exists: false
-                                    },
-                                },
-                                {
-                                    ["data.grantTotal." + prize.id]: grantDone
-                                }
-                            ]
-                        }
-                        let options = {
-                            $set: {
-                                ["data.grantTotal." + prize.id]: grantDone + 1
-                            }
-                        }
-                        this.response.success = !!await activityService.edit(filter, options);
+                        this.response.success = !!await activityService.updateStock(prize.id, grantDone, grantDone + 1);
                         //成功扣减库存
                         if (this.response.success) {
                             let prizeService = this.getService(PrizeService);

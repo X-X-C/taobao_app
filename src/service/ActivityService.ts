@@ -66,4 +66,27 @@ export default class ActivityService extends BaseActivityService {
             }
         }
     }
+
+    //更新库存
+    async updateStock(prizeId, beforeStock, afterStock) {
+        let filter = {
+            _id: this.activityId,
+            $or: [
+                {
+                    ["data.grantTotal." + prizeId]: {
+                        $exists: false
+                    },
+                },
+                {
+                    ["data.grantTotal." + prizeId]: beforeStock
+                }
+            ]
+        }
+        let options = {
+            $set: {
+                ["data.grantTotal." + prizeId]: afterStock
+            }
+        }
+        return await this.edit(filter, options);
+    }
 }
