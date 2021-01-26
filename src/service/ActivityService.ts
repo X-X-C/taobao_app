@@ -56,7 +56,7 @@ export default class ActivityService extends BaseActivityService {
                     //如果当前用户存在奖品
                     if (prize) {
                         let sendPrize = new Prize(user, prize, "rank");
-                        sendPrize.ext.rank = user.rank;
+                        sendPrize.rank = user.rank;
                         winners.push(sendPrize);
                     }
                 }

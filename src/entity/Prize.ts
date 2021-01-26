@@ -38,6 +38,8 @@ export default class Prize {
     time;
     //暗号
     code;
+    //排行榜名次
+    rank: number;
     //获奖日期
     date;
     //获奖类型
