@@ -8,6 +8,7 @@ import PrizeService from "./PrizeService";
 import Prize from "../entity/Prize";
 import MsgGenerate from "../utils/MsgGenerate";
 import BaseUserService from "./abstract/BaseUserService";
+import BaseResult from "../../base/dto/BaseResult";
 
 export default class UserService extends BaseUserService {
     constructor(app: App) {
@@ -43,10 +44,6 @@ export default class UserService extends BaseUserService {
             //入会时间
             if (vip.code === 1 && !user.gmtCreate) {
                 user.gmtCreate = vip.data.gmt_create;
-                //如果是入会回调且是新会员
-                if (this.data.urlback === true && user.createTime <= user.gmtCreate) {
-                    await this.spm("newMember");
-                }
             }
             let filter = <User>{};
             //如果今天没有初始化过用户
@@ -422,7 +419,7 @@ export default class UserService extends BaseUserService {
     async normalTask(type) {
         let user = await this.getUser();
         user.optionsStart;
-        let filter = {};
+        let filter;
         switch (type) {
             case 'follow':
             case 'sign':
@@ -434,6 +431,11 @@ export default class UserService extends BaseUserService {
                         if (vipStatus.code !== 1) {
                             this.response.set222("不是会员");
                             break;
+                        } else {
+                            //埋点新会员
+                            if (user.gmtCreate <= vipStatus.data.gmt_create) {
+                                await this.spm("member");
+                            }
                         }
                     }
                     //更改所属任务完成状态
@@ -448,9 +450,14 @@ export default class UserService extends BaseUserService {
             default:
                 this.response.set222("无效的任务类型");
         }
-        this.response.success = !!(await this.editUser(user.optionsEnd, filter));
-        if (this.response.success) {
-            await this.spm(type);
+        if (this.response.code === BaseResult.STATUS_SUCCESS) {
+            this.response.success = !!(await this.editUser(user.optionsEnd, filter));
+            if (this.response.success) {
+                //排除
+                if (["member"].indexOf(type) === -1) {
+                    await this.spm(type);
+                }
+            }
         }
     }
 
