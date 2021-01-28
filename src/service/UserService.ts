@@ -183,7 +183,7 @@ export default class UserService extends BaseUserService {
         //条件满足
         else {
             inviter.task.assist += 1;
-            let inviterFilter = {
+            let inviterFilter = <User | other>{
                 "task.assist.count": inviter._.task.assist,
                 openId: inviter.openId
             }
@@ -217,7 +217,7 @@ export default class UserService extends BaseUserService {
         //有抽奖次数
         if (user.lotteryCount > 0) {
             user.lotteryCount -= 1;
-            let filter: any = {
+            let filter = <User>{
                 lotteryCount: user._.lotteryCount
             }
             this.response.success = !!await this.editUser(user.optionsEnd, filter);
