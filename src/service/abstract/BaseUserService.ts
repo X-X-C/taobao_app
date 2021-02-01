@@ -66,16 +66,20 @@ export default abstract class BaseUserService extends BaseService<UserDao<User>,
      * 更新用户头像
      */
     async updateUser() {
-        this.response.data = await this.editUser(
-            {
-                $set: {
-                    avatar: this.data.avatar,
-                    nick: this.nick
+        try {
+            this.response.data = await this.editUser(
+                {
+                    $set: {
+                        avatar: this.data.avatar,
+                        nick: this.nick
+                    }
+                },
+                {
+                    avatar: false
                 }
-            },
-            {
-                avatar: false
-            }
-        );
+            );
+        } catch (e) {
+
+        }
     }
 }
