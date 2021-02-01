@@ -164,7 +164,7 @@ export default class UserService extends BaseUserService {
             this.response.message = "已经被其他用户邀请";
         }
         //不能邀请自己
-        else if (this.data.inviterOpenId === this.openId) {
+        else if (inviter.openId === this.openId) {
             this.response.code = 204;
             this.response.message = "不能邀请自己";
         }
