@@ -32,7 +32,7 @@ export default abstract class BaseUserService extends BaseService<UserDao<User>,
                 user.openId = this.openId;
                 await this.add(user);
             } else {
-                user = new User(user);
+                user = new User().init(user);
             }
             //如果获取的是当前用户，保存
             if (openId === this.openId) {
