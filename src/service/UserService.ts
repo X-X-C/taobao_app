@@ -36,7 +36,11 @@ export default class UserService extends BaseUserService {
         let vip = await this.services.topService.vipStatus();
         //活动已结束,开奖
         if (activity.code === 2) {
-            await activityService.award();
+            try {
+                await activityService.award();
+            } catch (e) {
+
+            }
         }
         //活动进行中，初始化用户
         else if (activity.code === 1) {
