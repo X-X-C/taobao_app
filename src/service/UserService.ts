@@ -65,8 +65,9 @@ export default class UserService extends BaseUserService {
         }
         //会员状态
         user.vipStatus = vip.code;
+        user.delete_;
         //返回
-        this.response.data = {user};
+        this.response.data.user = user;
     }
 
     /**
