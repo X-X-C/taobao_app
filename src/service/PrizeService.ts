@@ -60,59 +60,57 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
                     ext: baseInfo
                 }
             }
-            this.response.success = !!await this.edit(filter, options);
+           await this.edit(filter, options);
             //成功领取
-            if (this.response.success === true) {
-                let topService = this.getService(TopService);
-                let userService = this.getService(UserService);
-                let user = await userService.getUser();
-                //尖货领取
-                if (prize.type === "goods") {
-                    let {skuId, itemId} = prize[prize.type];
-                    this.response.data = await topService.opentradeSpecialUsersMark(skuId, itemId);
-                    await this.simpleSpm("_mark", {
-                        desc: MsgGenerate.receiveDesc(user.nick, prize.name, this.response.data),
-                        topResult: this.response.data.data
-                    });
+            let topService = this.getService(TopService);
+            let userService = this.getService(UserService);
+            let user = await userService.getUser();
+            //尖货领取
+            if (prize.type === "goods") {
+                let {skuId, itemId} = prize[prize.type];
+                this.response.data = await topService.opentradeSpecialUsersMark(skuId, itemId);
+                await this.simpleSpm("_mark", {
+                    desc: MsgGenerate.receiveDesc(user.nick, prize.name, this.response.data),
+                    topResult: this.response.data.data
+                });
+            }
+            //积分领取
+            else if (prize.type === "point") {
+                let {addPointNum} = prize[prize.type];
+                this.response.data = await topService.taobaoCrmPointChange(addPointNum);
+                await this.simpleSpm("_point", {
+                    desc: MsgGenerate.receiveDesc(user.nick, prize.name, this.response.data),
+                    topResult: this.response.data.data
+                });
+            }
+            //权益领取
+            else if (prize.type === "benefit") {
+                let {ename} = prize[prize.type];
+                this.response.data = await topService.sendBenefit(ename);
+                await this.simpleSpm("_benefit", {
+                    desc: MsgGenerate.receiveDesc(user.nick, prize.name, this.response.data),
+                    topResult: this.response.data.data
+                });
+            }
+            //其他情况
+            else {
+                this.response.data = {
+                    code: this.response.code,
+                    data: `修改了${this.response.code}条数据`
                 }
-                //积分领取
-                else if (prize.type === "point") {
-                    let {addPointNum} = prize[prize.type];
-                    this.response.data = await topService.taobaoCrmPointChange(addPointNum);
-                    await this.simpleSpm("_point", {
-                        desc: MsgGenerate.receiveDesc(user.nick, prize.name, this.response.data),
-                        topResult: this.response.data.data
-                    });
-                }
-                //权益领取
-                else if (prize.type === "benefit") {
-                    let {ename} = prize[prize.type];
-                    this.response.data = await topService.sendBenefit(ename);
-                    await this.simpleSpm("_benefit", {
-                        desc: MsgGenerate.receiveDesc(user.nick, prize.name, this.response.data),
-                        topResult: this.response.data.data
-                    });
-                }
-                //其他情况
-                else {
-                    this.response.data = {
-                        code: this.response.code,
-                        data: `修改了${this.response.code}条数据`
-                    }
-                    await this.simpleSpm("_receive", {
-                        desc: MsgGenerate.receiveDesc(user.nick, prize.name, this.response.data),
-                    })
-                }
+                await this.simpleSpm("_receive", {
+                    desc: MsgGenerate.receiveDesc(user.nick, prize.name, this.response.data),
+                })
+            }
 
-                //成功领取
-                if (this.response.data.code > 0) {
-                    //更改真实领取状态
-                    await this.edit(filter, {
-                        $set: {
-                            realReceiveStatus: true
-                        }
-                    })
-                }
+            //成功领取
+            if (this.response.data.code > 0) {
+                //更改真实领取状态
+                await this.edit(filter, {
+                    $set: {
+                        realReceiveStatus: true
+                    }
+                })
             }
         } else {
             this.response.set222("领取失败");

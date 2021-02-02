@@ -22,9 +22,6 @@ export default class UserService extends BaseUserService {
         }
     }
 
-    /**
-     * 首次进入
-     */
     async enter() {
         let activityService = this.services.activityService;
         //获取活动
@@ -45,10 +42,6 @@ export default class UserService extends BaseUserService {
         //活动进行中，初始化用户
         else if (activity.code === 1) {
             let time = this.time().common;
-            //入会时间
-            if (vip.code === 1 && !user.gmtCreate) {
-                user.gmtCreate = vip.data.gmt_create;
-            }
             let filter = <User>{};
             //如果今天没有初始化过用户
             if (user.lastInitTime !== time.YYYYMMDD) {
@@ -70,10 +63,6 @@ export default class UserService extends BaseUserService {
         this.response.data.user = user;
     }
 
-    /**
-     * 初始化用户
-     * @private
-     */
     private init(user: User) {
         let time = this.time().common;
         //上次初始化时间
@@ -82,58 +71,44 @@ export default class UserService extends BaseUserService {
         }
     }
 
-    /**
-     * 游戏开奖
-     */
     async gameStart() {
         let user = await this.getUser();
         user.optionsStart;
-        this.response.data.gameNum = user._.gameNum;
-        //有游戏次数
-        if (user.gameNum > 0) {
-            //游戏状态改为游戏中
-            user.gameStatus = 1;
-            //游戏次数减一
-            user.gameNum -= 1;
-            let filter = {
-                gameNum: user._.gameNum
-            }
-            //减去游戏次数
-            this.response.success = !!await this.editUser(user.optionsEnd, filter);
-            //成功减去游戏次数
-            if (this.response.success) {
-                this.response.data.gameNum = user.gameNum;
-            }
+        if (user.gameNum <= 0) {
+            this.response.set222("没有游戏次数");
+            return;
         }
+        //游戏状态改为游戏中
+        user.gameStatus = 1;
+        //游戏次数减一
+        user.gameNum -= 1;
+        //减去游戏次数
+        await this.editUser(user.optionsEnd, {
+            gameNum: user._.gameNum
+        });
+        //成功减去游戏次数
+        this.response.data.gameNum = user.gameNum;
     }
 
-    /**
-     * 游戏结算
-     */
     async gameEnd() {
         let user = await this.getUser();
         user.optionsStart;
-        this.response.data.score = user._.score;
-        //正常结算
-        if (user.gameStatus === 1) {
-            let {add} = this.data;
-            let time = this.time();
-            //加分
-            user.score += add;
-            //更新获取分数时间
-            user.lastGetScoreTime = time.common.x;
-            //更新游戏状态
-            user.gameStatus = 0;
-            let filter = {
-                score: user._.score
-            }
-            this.response.success = !!await this.editUser(user.optionsEnd, filter);
-            if (this.response.success) {
-                this.response.data.score = user.score;
-            }
-        } else {
-            //不是在游戏中状态结算
+        if (user.gameStatus !== 1) {
+            this.response.set222("结算失败");
+            return;
         }
+        let {add} = this.data;
+        let time = this.time();
+        //加分
+        user.score += add;
+        //更新获取分数时间
+        user.lastGetScoreTime = time.common.x;
+        //更新游戏状态
+        user.gameStatus = 0;
+        await this.editUser(user.optionsEnd, {
+            score: user._.score
+        });
+        this.response.data.score = user.score;
     }
 
     async assist() {
@@ -192,23 +167,18 @@ export default class UserService extends BaseUserService {
         //条件满足
         else {
             inviter.task.assist += 1;
-            let inviterFilter = <User | other>{
+            await this.editUser(inviter.optionsEnd, {
                 "task.assist.count": inviter._.task.assist,
                 openId: inviter.openId
-            }
-            this.response.success = !!await this.editUser(inviter.optionsEnd, inviterFilter);
+            });
             //成功
-            if (this.response.success) {
-                user.inviter = {
-                    nick: inviter.nick,
-                    openId: inviter.openId,
-                    time: time.common.base
-                }
-                this.response.code = await this.editUser(user.optionsEnd);
-                await this.spm("assist", spmData);
-            } else {
-                this.response.set501();
+            user.inviter = {
+                nick: inviter.nick,
+                openId: inviter.openId,
+                time: time.common.base
             }
+            this.response.code = await this.editUser(user.optionsEnd);
+            await this.spm("assist", spmData);
         }
         let msg = vip.code === 1 ? `首次入会时间【${vip.data.gmt_create}】` : "不是会员";
         spmData.desc = MsgGenerate.assistDesc(user.nick, inviter.nick, this.response.message + msg);
@@ -223,46 +193,39 @@ export default class UserService extends BaseUserService {
         //获取活动
         let activity = this.globalActivity;
         this.response.data.award = false;
-        //有抽奖次数
-        if (user.lotteryCount > 0) {
-            user.lotteryCount -= 1;
-            let filter = <User>{
-                lotteryCount: user._.lotteryCount
-            }
-            this.response.success = !!await this.editUser(user.optionsEnd, filter);
-            //抽奖成功
-            if (this.response.success) {
-                let prizeList = activity.data.config.lotteryPrize.prizeList;
-                let awardIndex = Utils.random(prizeList.map(v => parseFloat(v.probability)));
-                //抽中的奖品
-                let prize = prizeList[awardIndex];
-                //不是未中奖
-                if (prize.type !== "noprize") {
-                    //查询库存
-                    let grantDone = activity.data.data.grantTotal[prize.id] || 0;
-                    //有剩余库存
-                    if (grantDone < prize.stock) {
-                        this.response.success = !!await activityService.updateStock(prize.id, grantDone, grantDone + 1);
-                        //成功扣减库存
-                        if (this.response.success) {
-                            let prizeService = this.getService(PrizeService);
-                            let sendPrize = new Prize(user, prize, "lottery");
-                            if (prize.type === "code") {
-                                sendPrize.code = await prizeService.generateCode();
-                            }
-                            prize._id = await prizeService.insertOne(sendPrize);
-                            this.response.data.prize = prize;
-                            this.response.data.award = true;
-                        } else {
-                            this.response.set501();
-                        }
-                    }
-                }
-            } else {
-                this.response.set501();
-            }
-        } else {
+
+        if (user.lotteryCount <= 0) {
             this.response.set222("没有抽奖次数");
+            return;
+        }
+        //有抽奖次数
+        user.lotteryCount -= 1;
+        await this.editUser(user.optionsEnd, {
+            lotteryCount: user._.lotteryCount
+        });
+        this.response.data.lotteryCount = user.lotteryCount;
+
+        let prizeList = activity.data.config.lotteryPrize.prizeList;
+        let awardIndex = Utils.random(prizeList.map(v => parseFloat(v.probability)));
+        //抽中的奖品
+        let prize = prizeList[awardIndex];
+        //不是未中奖
+        if (prize.type !== "noprize") {
+            //查询库存
+            let grantDone = activity.data.data.grantTotal[prize.id] || 0;
+            //有剩余库存
+            if (grantDone < prize.stock) {
+                await activityService.updateStock(prize.id, grantDone, grantDone + 1);
+                //成功扣减库存
+                let prizeService = this.getService(PrizeService);
+                let sendPrize = new Prize(user, prize, "lottery");
+                if (prize.type === "code") {
+                    sendPrize.code = await prizeService.generateCode();
+                }
+                prize._id = await prizeService.insertOne(sendPrize);
+                this.response.data.prize = prize;
+                this.response.data.award = true;
+            }
         }
     }
 
@@ -420,9 +383,9 @@ export default class UserService extends BaseUserService {
     }
 
     async userInfo() {
-        this.response.data = {
-            user: await this.getUser()
-        }
+        let user = await this.getUser();
+        user.vipStatus = (await this.services.topService.vipStatus()).code;
+        this.response.data.user = user;
     }
 
     async normalTask(type) {
@@ -433,47 +396,40 @@ export default class UserService extends BaseUserService {
             case 'follow':
             case 'sign':
             case 'member':
-                if (user.task[type] === false) {
-                    if (type === "member") {
-                        let vipStatus = await this.services.topService.vipStatus();
-                        //不是会员
-                        if (vipStatus.code !== 1) {
-                            this.response.set222("不是会员");
-                            break;
-                        } else {
-                            //埋点新会员
-                            if (user.gmtCreate <= vipStatus.data.gmt_create) {
-                                await this.spm("member");
-                            }
+                if (user.task[type] !== false) {
+                    this.response.set222("已经完成过此任务");
+                    return;
+                }
+                if (type === "member") {
+                    let vipStatus = await this.services.topService.vipStatus();
+                    //不是会员
+                    if (vipStatus.code !== 1) {
+                        this.response.set222("不是会员");
+                        return;
+                    } else {
+                        //埋点新会员
+                        if (user.gmtCreate <= vipStatus.data.gmt_create) {
+                            await this.spm("member");
                         }
                     }
-                    //更改所属任务完成状态
-                    user.task[type] = true;
-                    filter = {
-                        ['task.' + type]: false
-                    }
-                } else {
-                    this.response.set222("已经完成过此任务");
+                }
+                //更改所属任务完成状态
+                user.task[type] = true;
+                filter = {
+                    ['task.' + type]: false
                 }
                 break;
             default:
                 this.response.set222("无效的任务类型");
+                return;
         }
-        if (this.response.code === BaseResult.STATUS_SUCCESS) {
-            this.response.success = !!(await this.editUser(user.optionsEnd, filter));
-            if (this.response.success) {
-                //排除
-                if (["member"].indexOf(type) === -1) {
-                    await this.spm(type);
-                }
-            }
+        await this.editUser(user.optionsEnd, filter);
+        //排除
+        if (["member"].indexOf(type) === -1) {
+            await this.spm(type);
         }
     }
 
-    /**
-     * 从当前时间开始获取连续签到天数
-     * @param data
-     */
     getSuccessiveDay(data) {
         let day = data;
         let successiveDay = 0;
@@ -489,10 +445,6 @@ export default class UserService extends BaseUserService {
         return successiveDay;
     }
 
-    /**
-     * 获取所有天数里的最长连续天数
-     * @param data
-     */
     getMaxSuccessiveDay(data) {
         data = data.sort((a, b) => a > b ? 1 : -1);
         let max = 0;
@@ -511,4 +463,5 @@ export default class UserService extends BaseUserService {
         }
         return max;
     }
+
 }

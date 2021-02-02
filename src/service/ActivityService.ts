@@ -18,7 +18,6 @@ export default class ActivityService extends BaseActivityService {
     }
 
     async award() {
-        let code;
         let activity = this.globalActivity;
         //如果活动结束，且还没有开过奖进入开奖逻辑
         if (activity.code === 2 && activity.data.data.award !== true) {
@@ -34,36 +33,34 @@ export default class ActivityService extends BaseActivityService {
                     "data.award": true
                 }
             }
-            code = await this.edit(filter, options);
+            await this.edit(filter, options);
             //成功更改开奖状态
-            if (code === 1) {
-                let userService = this.getService(UserService);
-                let rankPrizeList = activity.data.config.rankPrizeList;
-                rankPrizeList = rankPrizeList.sort((a, b) => {
-                    return parseInt(b.condition.endNum) - parseInt(a.condition.endNum);
-                });
-                //需要开奖的数据
-                let rankList = await userService.rank(rankPrizeList[0].condition.endNum, 1);
-                //需要开奖的奖品
-                let winners = [];
-                for (let user of rankList) {
-                    let prize = rankPrizeList.find(p => {
-                        let {startNum, endNum} = p.condition;
-                        if (user.rank >= startNum && user.rank <= endNum) {
-                            return true;
-                        }
-                    });
-                    //如果当前用户存在奖品
-                    if (prize) {
-                        let sendPrize = new Prize(user, prize, "rank");
-                        sendPrize.rank = user.rank;
-                        winners.push(sendPrize);
+            let userService = this.getService(UserService);
+            let rankPrizeList = activity.data.config.rankPrizeList;
+            rankPrizeList = rankPrizeList.sort((a, b) => {
+                return parseInt(b.condition.endNum) - parseInt(a.condition.endNum);
+            });
+            //需要开奖的数据
+            let rankList = await userService.rank(rankPrizeList[0].condition.endNum, 1);
+            //需要开奖的奖品
+            let winners = [];
+            for (let user of rankList) {
+                let prize = rankPrizeList.find(p => {
+                    let {startNum, endNum} = p.condition;
+                    if (user.rank >= startNum && user.rank <= endNum) {
+                        return true;
                     }
+                });
+                //如果当前用户存在奖品
+                if (prize) {
+                    let sendPrize = new Prize(user, prize, "rank");
+                    sendPrize.rank = user.rank;
+                    winners.push(sendPrize);
                 }
-                let prizeService = this.getService(PrizeService);
-                //开奖
-                await prizeService.insertMany(winners);
             }
+            let prizeService = this.getService(PrizeService);
+            //开奖
+            await prizeService.insertMany(winners);
         }
     }
 
