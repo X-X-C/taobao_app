@@ -36,10 +36,6 @@ export default class Prize {
     prize: object;
     //获奖时间
     time;
-    //暗号
-    code;
-    //排行榜名次
-    rank: number;
     //获奖日期
     date;
     //获奖类型
@@ -50,6 +46,8 @@ export default class Prize {
     receiveStatus: boolean = false;
     //真实状态
     realReceiveStatus: boolean = false;
-    //额外参数
+    //保存信息
+    info: any = {}
+    //额外说明
     ext: any = {}
 }

@@ -57,10 +57,10 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
                 $set: {
                     receiveTime: this.time().common,
                     receiveStatus: true,
-                    ext: baseInfo
+                    info: baseInfo
                 }
             }
-           await this.edit(filter, options);
+            await this.edit(filter, options);
             //成功领取
             let topService = this.getService(TopService);
             let userService = this.getService(UserService);

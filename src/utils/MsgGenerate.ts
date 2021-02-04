@@ -11,7 +11,7 @@ export default {
      * @param time 时间
      */
     baseInfo(who, what, target, desc, time = new Time()) {
-        return `【${who}】在【${time.common.base}】${what} ${target ? `【${target}】` : ""}, ${Utils.toJson(desc)}。`;
+        return `【${who}】在【${time.common.base}】${what} ${target ? `【${target}】` : ""} ${desc ? "," + Utils.toJson(desc) : ""}。`;
     },
 
     assistDesc(who, target, desc) {

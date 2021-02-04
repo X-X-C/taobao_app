@@ -127,6 +127,7 @@ export default class UserService extends BaseUserService {
             user: user.baseInfo(),
             inviter: inviter.baseInfo(),
             vip,
+            code: 0,
             desc: "成功"
         }
         //邀请人不存在
@@ -182,6 +183,7 @@ export default class UserService extends BaseUserService {
         }
         let msg = vip.code === 1 ? `首次入会时间【${vip.data.gmt_create}】` : "不是会员";
         spmData.desc = MsgGenerate.assistDesc(user.nick, inviter.nick, this.response.message + msg);
+        spmData.code = this.response.code;
         await this.spm("assistAll", spmData);
     }
 
@@ -220,7 +222,7 @@ export default class UserService extends BaseUserService {
                 let prizeService = this.getService(PrizeService);
                 let sendPrize = new Prize(user, prize, "lottery");
                 if (prize.type === "code") {
-                    sendPrize.code = await prizeService.generateCode();
+                    sendPrize.ext.code = await prizeService.generateCode();
                 }
                 prize._id = await prizeService.insertOne(sendPrize);
                 this.response.data.prize = prize;
