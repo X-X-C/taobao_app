@@ -169,7 +169,7 @@ export default class UserService extends BaseUserService {
         else {
             inviter.task.assist += 1;
             await this.editUser(inviter.optionsEnd, {
-                "task.assist.count": inviter._.task.assist,
+                "task.assist": inviter._.task.assist,
                 openId: inviter.openId
             });
             //成功
