@@ -33,7 +33,7 @@ export default class Prize {
     //openId
     openId: string;
     //获奖人的中奖产品
-    prize: object;
+    prize: any;
     //获奖时间
     time;
     //获奖日期
@@ -50,4 +50,6 @@ export default class Prize {
     info: any = {}
     //额外说明
     ext: any = {}
+    //尝试领取次数
+    tryCount: number = 0;
 }
