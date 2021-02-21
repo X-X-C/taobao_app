@@ -79,6 +79,16 @@ exports.lottery = async (context) => {
 
 
 // @ts-ignore
+exports.spmMember = async (context) => {
+    const app = new App(context, "spmMember");
+    return await app.run(async function () {
+        let userService = app.getService(UserService);
+        await userService.spmMember();
+    });
+}
+
+
+// @ts-ignore
 exports.myPrize = async (context) => {
     const app = new App(context, "myPrize");
     return await app.run(async function () {
