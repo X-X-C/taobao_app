@@ -8,7 +8,8 @@ import PrizeService from "./PrizeService";
 import Prize from "../entity/Prize";
 import MsgGenerate from "../utils/MsgGenerate";
 import BaseUserService from "./abstract/BaseUserService";
-import BaseResult from "../../base/dto/BaseResult";
+
+const {random, deepClone} = Utils;
 
 export default class UserService extends BaseUserService {
     constructor(app: App) {
@@ -208,7 +209,7 @@ export default class UserService extends BaseUserService {
         this.response.data.lotteryCount = user.lotteryCount;
 
         let prizeList = activity.data.config.lotteryPrize.prizeList;
-        let awardIndex = Utils.random(prizeList.map(v => parseFloat(v.probability)));
+        let awardIndex = random(prizeList.map(v => parseFloat(v.probability)));
         //抽中的奖品
         let prize = prizeList[awardIndex];
         //不是未中奖
@@ -456,7 +457,7 @@ export default class UserService extends BaseUserService {
     }
 
     getMaxSuccessiveDay(days) {
-        let data = Utils.deepClone(days);
+        let data = deepClone(days);
         data = data.sort((a, b) => a > b ? 1 : -1);
         let max = 0;
         let tmpMax = 1;
