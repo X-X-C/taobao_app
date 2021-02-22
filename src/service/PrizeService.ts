@@ -73,12 +73,12 @@ export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
 
         let baseInfo = this.baseInfo();
         //实物奖品填写信息
-        if (prizeData.type === "item") {
+        if (prize.type === "item") {
             Object.assign(baseInfo, ext)
             baseInfo.desc = baseInfo.province + baseInfo.city + baseInfo.district + baseInfo.address;
         }
         //尖货领取
-        if (prize.type === "goods") {
+        else if (prize.type === "goods") {
             let {skuId, itemId} = prize[prize.type];
             this.response.data = await topService.opentradeSpecialUsersMark(skuId, itemId);
             await this.simpleSpm("_mark", {
