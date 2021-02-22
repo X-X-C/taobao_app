@@ -455,7 +455,8 @@ export default class UserService extends BaseUserService {
         return successiveDay;
     }
 
-    getMaxSuccessiveDay(data) {
+    getMaxSuccessiveDay(days) {
+        let data = Utils.deepClone(days);
         data = data.sort((a, b) => a > b ? 1 : -1);
         let max = 0;
         let tmpMax = 1;

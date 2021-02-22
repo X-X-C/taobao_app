@@ -44,8 +44,6 @@ export default class Prize {
     receiveTime: string = "";
     //领取状态
     receiveStatus: boolean = false;
-    //真实状态
-    realReceiveStatus: boolean = false;
     //保存信息
     info: any = {}
     //额外说明
