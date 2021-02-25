@@ -1,5 +1,4 @@
 import BaseService from "../../base/service/abstract/BaseService";
-import PrizeDao from "../dao/PrizeDao";
 import Prize from "../entity/Prize";
 import App from "../../base/App";
 import TopService from "../../base/service/TopService";
@@ -7,9 +6,9 @@ import Utils from "../../base/utils/Utils";
 import UserService from "./UserService";
 import MsgGenerate from "../utils/MsgGenerate";
 
-export default class PrizeService extends BaseService<PrizeDao<Prize>, Prize> {
+export default class PrizeService extends BaseService<Prize> {
     constructor(app: App) {
-        super(PrizeDao, app);
+        super("prizes", app);
     }
 
     baseInfo() {
