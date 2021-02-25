@@ -286,7 +286,7 @@ export default class UserService extends BaseUserService {
             nick: user.nick,
             rank: "-"
         }
-        if (this.response.data.score <= 0) {
+        if (user.score <= 0) {
             return;
         }
         let rank = await this.count({
@@ -409,11 +409,6 @@ export default class UserService extends BaseUserService {
                     if (vipStatus.code !== 1) {
                         this.response.set222("不是会员");
                         return;
-                    } else {
-                        //埋点新会员
-                        if (user.gmtCreate <= vipStatus.data.gmt_create) {
-                            await this.spm("member");
-                        }
                     }
                 }
                 //更改所属任务完成状态
@@ -427,10 +422,7 @@ export default class UserService extends BaseUserService {
                 return;
         }
         await this.editUser(user.optionsEnd, filter);
-        //排除
-        if (["member"].indexOf(type) === -1) {
-            await this.spm(type);
-        }
+        await this.spm(type);
     }
 
     async spmMember() {
