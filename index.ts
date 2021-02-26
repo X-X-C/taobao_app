@@ -15,10 +15,12 @@ exports.assist = async (context) => {
     const app = new App(context, "assist");
     app.config.globalActivity = true;
     app.config.inspectionActivity = true;
-    let need = ['sopenId']
+    app.runNeedParams = {
+        sopenId: "string"
+    }
     return await app.run(async function () {
         await app.getService(UserService).assist();
-    }, need);
+    });
 }
 
 
@@ -27,11 +29,13 @@ exports.task = async (context) => {
     const app = new App(context, "task");
     app.config.globalActivity = true;
     app.config.inspectionActivity = true;
-    let need = ['target'];
+    app.runNeedParams = {
+        target: "string"
+    }
     return await app.run(async function () {
         let userService = app.getService(UserService);
         await userService.normalTask(this.target);
-    }, need);
+    });
 }
 
 
@@ -100,10 +104,12 @@ exports.myPrize = async (context) => {
 // @ts-ignore
 exports.receivePrize = async (context) => {
     const app = new App(context, "receivePrize");
-    let need = ['prizeId'];
+    app.runNeedParams = {
+        prizeId: "string"
+    }
     return await app.run(async function () {
         let prizeService = app.getService(PrizeService);
         await prizeService.receive();
-    }, need);
+    });
 }
 
