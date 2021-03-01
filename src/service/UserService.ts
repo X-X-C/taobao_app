@@ -59,9 +59,8 @@ export default class UserService extends BaseUserService {
         }
         //会员状态
         user.vipStatus = vip.code;
-        user.delete_;
         //返回
-        this.response.data.user = user;
+        this.response.data.user = user.pure;
     }
 
     private init(user: User) {
@@ -388,7 +387,7 @@ export default class UserService extends BaseUserService {
     async userInfo() {
         let user = await this.getUser();
         user.vipStatus = (await this.services.topService.vipStatus()).code;
-        this.response.data.user = user;
+        this.response.data.user = user.pure;
     }
 
     async normalTask(type) {
