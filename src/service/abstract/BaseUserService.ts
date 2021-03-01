@@ -29,7 +29,7 @@ export default abstract class BaseUserService extends BaseService<User> {
                 user.nick = this.nick;
                 user.mixNick = this.mixNick;
                 user.openId = this.openId;
-                await this.add(user);
+                await this.add(user.pure);
             } else {
                 user = new User().init(user);
             }
