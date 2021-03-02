@@ -427,7 +427,7 @@ export default class UserService extends BaseUserService {
     async spmMember() {
         let user = await this.getUser();
         let vip = await this.services.topService.vipStatus();
-        if (vip.code === 1 && vip.data.gmt_create <= user.createTime) {
+        if (vip.code === 1 && vip.data.gmt_create >= user.createTime) {
             await this.spm("member");
         }
     }
