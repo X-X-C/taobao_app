@@ -1,6 +1,8 @@
-export default class User {
-    constructor(user?) {
-        Object.assign(this, user)
+import BaseEntity from "../../base/entity/abstract/BaseEntity";
+
+export default class User extends BaseEntity {
+    constructor() {
+        super();
     }
 
     //用户名

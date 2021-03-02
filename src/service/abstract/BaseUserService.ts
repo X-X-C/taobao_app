@@ -1,11 +1,10 @@
 import BaseService from "../../../base/service/abstract/BaseService";
-import UserDao from "../../dao/UserDao";
 import User from "../../entity/User";
 import App from "../../../base/App";
 
-export default abstract class BaseUserService extends BaseService<UserDao<User>, User> {
+export default abstract class BaseUserService extends BaseService<User> {
     protected constructor(app: App) {
-        super(UserDao, app);
+        super("users", app);
     }
 
     protected user: User;
@@ -32,7 +31,7 @@ export default abstract class BaseUserService extends BaseService<UserDao<User>,
                 user.openId = this.openId;
                 await this.add(user);
             } else {
-                user = new User(user);
+                user = new User().init(user);
             }
             //如果获取的是当前用户，保存
             if (openId === this.openId) {
