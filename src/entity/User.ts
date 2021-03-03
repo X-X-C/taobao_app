@@ -26,8 +26,6 @@ export default class User extends BaseEntity {
     lastInitTime: number | boolean = false;
     //会员状态
     vipStatus: number;
-    //入会时间
-    gmtCreate: string;
     /**
      * 通用字段
      */
@@ -69,6 +67,15 @@ export default class User extends BaseEntity {
             openId: this.openId,
             activityId: this.activityId,
             avatar: this.avatar
+        }
+    }
+
+    spmExt() {
+        return {
+            nick: this.nick,
+            openId: this.openId,
+            activityId: this.activityId,
+            mixNick: this.mixNick
         }
     }
 }
