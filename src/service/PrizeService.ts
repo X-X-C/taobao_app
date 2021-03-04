@@ -44,83 +44,71 @@ export default class PrizeService extends BaseService<Prize> {
             activityId: this.activityId
         }
         let prizeData = await this.get(filter);
-
         if (!prizeData) {
             this.response.set222("您未获得该奖品，领取失败");
             return;
         }
-
         if (prizeData.receiveStatus !== false) {
             this.response.set222("您已领取过该奖品，领取失败");
             return;
         }
-
         let prize = prizeData.prize;
-        await this.edit({
-            tryCount: prizeData.tryCount,
-            ...filter
-        }, {
-            $inc: {
-                tryCount: 1
-            }
-        })
-
-        //成功领取
-        let topService = this.getService(TopService);
-        let userService = this.getService(UserService);
-        let user = await userService.getUser();
-
         let baseInfo = this.baseInfo();
         //实物奖品填写信息
         if (prize.type === "item") {
             Object.assign(baseInfo, ext)
             baseInfo.desc = baseInfo.province + baseInfo.city + baseInfo.district + baseInfo.address;
         }
+        //更改领奖状态
+        let line = await this.edit({
+            ...filter,
+            receiveStatus: false
+        }, {
+            $set: {
+                receiveTime: this.time().common.base,
+                receiveStatus: true,
+                info: baseInfo
+            }
+        })
+        //其他类型奖品开始尝试发奖
+        let topService = this.getService(TopService);
+        let userService = this.getService(UserService);
+        let user = await userService.getUser();
         //尖货领取
         if (prize.type === "goods") {
             let {skuId, itemId} = prize[prize.type];
-            this.response.data = await topService.opentradeSpecialUsersMark(skuId, itemId);
+            let data = await topService.opentradeSpecialUsersMark(skuId, itemId);
             await this.simpleSpm("_mark", {
-                desc: MsgGenerate.receiveDesc(user.nick, prize.name, this.response.data),
-                topResult: this.response.data.data
+                desc: MsgGenerate.receiveDesc(user.nick, prize.name, data),
+                topResult: data
             });
         }
         //积分领取
         else if (prize.type === "point") {
             let {addPointNum} = prize[prize.type];
-            this.response.data = await topService.taobaoCrmPointChange(addPointNum);
+            let data = await topService.taobaoCrmPointChange(addPointNum);
             await this.simpleSpm("_point", {
-                desc: MsgGenerate.receiveDesc(user.nick, prize.name, this.response.data),
-                topResult: this.response.data.data
+                desc: MsgGenerate.receiveDesc(user.nick, prize.name, data),
+                topResult: data
             });
         }
         //权益领取
         else if (prize.type === "benefit") {
             let {ename} = prize[prize.type];
-            this.response.data = await topService.sendBenefit(ename);
+            let data = await topService.sendBenefit(ename);
             await this.simpleSpm("_benefit", {
-                desc: MsgGenerate.receiveDesc(user.nick, prize.name, this.response.data),
-                topResult: this.response.data.data
+                desc: MsgGenerate.receiveDesc(user.nick, prize.name, data),
+                topResult: data
             });
         }
         //其他情况
         else {
-            this.response.data = {
-                code: this.response.code,
-                data: `修改了${this.response.code}条数据`
+            let data = {
+                code: line,
+                data: `修改了${line}条数据`
             }
             await this.simpleSpm("_receive", {
-                desc: MsgGenerate.receiveDesc(user.nick, prize.name, this.response.data),
-            })
-        }
-        //成功领取
-        if (this.response.data.code > 0) {
-            await this.edit(filter, {
-                $set: {
-                    receiveTime: this.time().common,
-                    receiveStatus: true,
-                    info: baseInfo
-                }
+                desc: MsgGenerate.receiveDesc(user.nick, prize.name, data),
             })
         }
     }
