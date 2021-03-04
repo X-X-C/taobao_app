@@ -48,6 +48,4 @@ export default class Prize {
     info: any = {}
     //额外说明
     ext: any = {}
-    //尝试领取次数
-    tryCount: number = 0;
 }
