@@ -25,18 +25,15 @@ export default class UserService extends BaseUserService {
 
     async enter() {
         let activityService = this.services.activityService;
-        //获取活动
         let activity = this.globalActivity;
-        //获取用户
         let user = await this.getUser();
         user.optionsStart;
-        //获取会员状态
         let vip = await this.services.topService.vipStatus();
-        //活动已结束,开奖
+        //活动结束
         if (activity.code === 2) {
             try {
                 await activityService.award();
-            } catch (e) {
+            } catch {
 
             }
         }
@@ -50,12 +47,9 @@ export default class UserService extends BaseUserService {
                 //初始化用户信息
                 this.init(user);
             }
-            try {
-                //更新用户
-                await this.editUser(user.optionsEnd, filter);
-            } catch (e) {
-
-            }
+            //更新用户
+            this.setLooseEdit;
+            await this.editUser(user.optionsEnd, filter);
         }
         //会员状态
         user.vipStatus = vip.code;
@@ -335,17 +329,6 @@ export default class UserService extends BaseUserService {
             let {startTime, endTime} = activity.data;
             //检查订单
             let result = await this.services.topService.selectOrder(startTime, endTime);
-            //结果
-            let r = {
-                prepaid: {
-                    num: 0,
-                    data: []
-                },
-                buy: {
-                    num: 0,
-                    data: []
-                }
-            }
             if (result.total_results > 0) {
                 //大订单
                 let orders = result.trades.trade;
@@ -363,6 +346,7 @@ export default class UserService extends BaseUserService {
                         ) &&
                         (user.task.doneOrders.indexOf(order.tid) === -1)
                     ) {
+                        await this.simpleSpm("_order", order);
                         user.task.doneOrders.push(order.tid);
                         //如果是下定
                         if (order.step_trade_status === "FRONT_PAID_FINAL_NOPAID" ||
@@ -371,11 +355,9 @@ export default class UserService extends BaseUserService {
                         }
                         for (let goods of order.orders.order) {
                             if (prepaid) {
-                                r.prepaid.num += goods.num;
-                                r.prepaid.data.push(goods);
+                                //预定商品
                             } else {
-                                r.buy.num += goods.num;
-                                r.buy.data.push(goods);
+                                //其他商品
                             }
                         }
                     }

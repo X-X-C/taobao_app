@@ -29,7 +29,7 @@ export default abstract class BaseUserService extends BaseService<User> {
                 user.nick = this.nick;
                 user.mixNick = this.mixNick;
                 user.openId = this.openId;
-                await this.add(user.pure);
+                await this.insertOne(user.pure);
             } else {
                 user = new User().init(user);
             }
@@ -45,8 +45,9 @@ export default abstract class BaseUserService extends BaseService<User> {
      * 修改用户
      * @param options
      * @param filter
+     * @param ignore
      */
-    async editUser(options: any, filter: any = {}): Promise<number> {
+    async editUser(options, filter?): Promise<number> {
         return await super.edit(
             {
                 openId: this.openId,
@@ -57,28 +58,21 @@ export default abstract class BaseUserService extends BaseService<User> {
         );
     }
 
-    async add(user: User): Promise<string> {
-        return await super.insertOne(user);
-    }
-
     /**
      * 更新用户头像
      */
     async updateUser() {
-        try {
-            this.response.data = await this.editUser(
-                {
-                    $set: {
-                        avatar: this.data.avatar,
-                        nick: this.nick
-                    }
-                },
-                {
-                    avatar: false
+        this.setLooseEdit;
+        this.response.data = await this.editUser(
+            {
+                $set: {
+                    avatar: this.data.avatar,
+                    nick: this.nick
                 }
-            );
-        } catch (e) {
-
-        }
+            },
+            {
+                avatar: false
+            }
+        );
     }
 }
