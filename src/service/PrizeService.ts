@@ -5,6 +5,7 @@ import TopService from "../../base/service/TopService";
 import Utils from "../../base/utils/Utils";
 import UserService from "./UserService";
 import MsgGenerate from "../utils/MsgGenerate";
+import ErrorLogService from "../../base/service/ErrorLogService";
 
 export default class PrizeService extends BaseService<Prize> {
     constructor(app: App) {
@@ -53,62 +54,88 @@ export default class PrizeService extends BaseService<Prize> {
             return;
         }
         let prize = prizeData.prize;
-        let baseInfo = this.baseInfo();
-        //实物奖品填写信息
-        if (prize.type === "item") {
-            Object.assign(baseInfo, ext)
-            baseInfo.desc = baseInfo.province + baseInfo.city + baseInfo.district + baseInfo.address;
-        }
         //更改领奖状态
         let line = await this.edit({
             ...filter,
             receiveStatus: false
         }, {
             $set: {
-                receiveTime: this.time().common.base,
                 receiveStatus: true,
-                info: baseInfo
             }
         })
         //其他类型奖品开始尝试发奖
         let topService = this.getService(TopService);
         let userService = this.getService(UserService);
         let user = await userService.getUser();
-        //尖货领取
-        if (prize.type === "goods") {
-            let {skuId, itemId} = prize[prize.type];
-            let data = await topService.opentradeSpecialUsersMark(skuId, itemId);
-            await this.simpleSpm("_mark", {
-                desc: MsgGenerate.receiveDesc(user.nick, prize.name, data),
-                topResult: data
-            });
-        }
-        //积分领取
-        else if (prize.type === "point") {
-            let {addPointNum} = prize[prize.type];
-            let data = await topService.taobaoCrmPointChange(addPointNum);
-            await this.simpleSpm("_point", {
-                desc: MsgGenerate.receiveDesc(user.nick, prize.name, data),
-                topResult: data
-            });
-        }
-        //权益领取
-        else if (prize.type === "benefit") {
-            let {ename} = prize[prize.type];
-            let data = await topService.sendBenefit(ename);
-            await this.simpleSpm("_benefit", {
-                desc: MsgGenerate.receiveDesc(user.nick, prize.name, data),
-                topResult: data
-            });
-        }
-        //其他情况
-        else {
-            let data = {
-                code: line,
-                data: `修改了${line}条数据`
+        let result;
+        let baseInfo = this.baseInfo();
+        try {
+            //实物奖品填写信息
+            if (prize.type === "item") {
+                Object.assign(baseInfo, ext)
+                baseInfo.desc = baseInfo.province + baseInfo.city + baseInfo.district + baseInfo.address;
             }
-            await this.simpleSpm("_receive", {
-                desc: MsgGenerate.receiveDesc(user.nick, prize.name, data),
+            //尖货领取
+            if (prize.type === "goods") {
+                let {skuId, itemId} = prize[prize.type];
+                result = await topService.opentradeSpecialUsersMark(skuId, itemId);
+                await this.simpleSpm("_mark", {
+                    desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
+                    topResult: result
+                });
+            }
+            //积分领取
+            else if (prize.type === "point") {
+                let {addPointNum} = prize[prize.type];
+                result = await topService.taobaoCrmPointChange(addPointNum);
+                await this.simpleSpm("_point", {
+                    desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
+                    topResult: result
+                });
+            }
+            //权益领取
+            else if (prize.type === "benefit") {
+                let {ename} = prize[prize.type];
+                result = await topService.sendBenefit(ename);
+                await this.simpleSpm("_benefit", {
+                    desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
+                    topResult: result
+                });
+            }
+            //其他情况
+            else {
+                result = {
+                    code: line,
+                    data: `修改了${line}条数据`
+                }
+                await this.simpleSpm("_receive", {
+                    desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
+                })
+            }
+        } catch (e) {
+            await this.getService(ErrorLogService).add(e);
+        }
+        //领取成功
+        if (result?.code >= 1) {
+            await this.edit({
+                ...filter,
+                receiveStatus: true
+            }, {
+                $set: {
+                    receiveTime: this.time().common.base,
+                    info: baseInfo
+                }
+            })
+        }
+        //BACK
+        else {
+            await this.edit({
+                ...filter,
+                receiveStatus: true
+            }, {
+                $set: {
+                    receiveStatus: false
+                }
             })
         }
     }
