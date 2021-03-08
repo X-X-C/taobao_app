@@ -54,6 +54,12 @@ export default class PrizeService extends BaseService<Prize> {
             return;
         }
         let prize = prizeData.prize;
+        let baseInfo = this.baseInfo();
+        //实物奖品填写信息
+        if (prize.type === "item") {
+            Object.assign(baseInfo, ext)
+            baseInfo.desc = baseInfo.province + baseInfo.city + baseInfo.district + baseInfo.address;
+        }
         //更改领奖状态
         let line = await this.edit({
             ...filter,
@@ -61,6 +67,8 @@ export default class PrizeService extends BaseService<Prize> {
         }, {
             $set: {
                 receiveStatus: true,
+                receiveTime: this.time().common.base,
+                info: baseInfo
             }
         })
         //其他类型奖品开始尝试发奖
@@ -68,13 +76,7 @@ export default class PrizeService extends BaseService<Prize> {
         let userService = this.getService(UserService);
         let user = await userService.getUser();
         let result;
-        let baseInfo = this.baseInfo();
         try {
-            //实物奖品填写信息
-            if (prize.type === "item") {
-                Object.assign(baseInfo, ext)
-                baseInfo.desc = baseInfo.province + baseInfo.city + baseInfo.district + baseInfo.address;
-            }
             //尖货领取
             if (prize.type === "goods") {
                 let {skuId, itemId} = prize[prize.type];
@@ -118,23 +120,10 @@ export default class PrizeService extends BaseService<Prize> {
         //领取成功
         if (result?.code >= 1) {
             await this.edit({
-                ...filter,
-                receiveStatus: true
+                ...filter
             }, {
                 $set: {
-                    receiveTime: this.time().common.base,
-                    info: baseInfo
-                }
-            })
-        }
-        //BACK
-        else {
-            await this.edit({
-                ...filter,
-                receiveStatus: true
-            }, {
-                $set: {
-                    receiveStatus: false
+                    sendSuccess: true
                 }
             })
         }
