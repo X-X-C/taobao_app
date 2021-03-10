@@ -125,7 +125,7 @@ export default class UserService extends BaseUserService {
             desc: "成功"
         }
         //邀请人不存在
-        if (!inviter) {
+        if (!inviter.openId) {
             this.response.code = 202;
             this.response.message = "邀请人不存在";
         }
@@ -145,14 +145,9 @@ export default class UserService extends BaseUserService {
             this.response.message = "不是会员";
         }
         //不是新会员
-        else if (user.createTime > vip.data.gmt_create || user.task.member === true) {
+        else if (user.createTime > vip.data.gmt_create) {
             this.response.code = 206;
             this.response.message = "不是新会员";
-        }
-        //已经是会员
-        else if (this.data.urlback !== true) {
-            this.response.code = 207;
-            this.response.message = "已经是会员";
         }
         //超过限制
         else if (inviter.task.assist > 10) {
@@ -173,6 +168,7 @@ export default class UserService extends BaseUserService {
                 time: time.common.base
             }
             this.response.code = await this.editUser(user.optionsEnd);
+            this.response.message = MsgGenerate.baseInfo(user.nick, "助力", inviter.nick, "成功");
             await this.spm("assist", spmData);
         }
         let msg = vip.code === 1 ? `，首次入会时间【${vip.data.gmt_create}】` : "，不是会员";
