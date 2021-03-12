@@ -1,6 +1,7 @@
 import BaseService from "../../../base/service/abstract/BaseService";
 import User from "../../entity/User";
 import App from "../../../base/App";
+import MsgGenerate from "../../utils/MsgGenerate";
 
 export default abstract class BaseUserService extends BaseService<User> {
     protected constructor(app: App) {
@@ -47,7 +48,7 @@ export default abstract class BaseUserService extends BaseService<User> {
      * @param filter
      * @param ignore
      */
-    async editUser(options, filter?): Promise<number> {
+    async editUser(options, filter?: User | other): Promise<number> {
         return await super.edit(
             {
                 openId: this.openId,
@@ -75,4 +76,11 @@ export default abstract class BaseUserService extends BaseService<User> {
             }
         );
     }
+
+    async spmFrom(type, who, what, target, desc, ext) {
+        await this.simpleSpm(type, {
+            desc: MsgGenerate.baseInfo(who, what, target, desc)
+        }, ext);
+    }
+
 }

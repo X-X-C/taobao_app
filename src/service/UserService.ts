@@ -371,7 +371,6 @@ export default class UserService extends BaseUserService {
     async normalTask(type) {
         let user = await this.getUser();
         user.optionsStart;
-        let filter;
         switch (type) {
             case 'follow':
             case 'sign':
@@ -390,15 +389,12 @@ export default class UserService extends BaseUserService {
                 }
                 //更改所属任务完成状态
                 user.task[type] = true;
-                filter = {
-                    ['task.' + type]: false
-                }
                 break;
             default:
                 this.response.set222("无效的任务类型");
                 return;
         }
-        await this.editUser(user.optionsEnd, filter);
+        await this.editUser(user.optionsEnd, {});
         await this.spm(type);
     }
 

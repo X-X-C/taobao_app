@@ -1,20 +1,24 @@
 import User from "./User";
 import Time from "../../base/utils/Time";
+import BaseEntity from "../../base/entity/abstract/BaseEntity";
 
-export default class Prize {
-    constructor(user: User, prize: any, type: string) {
-        this.activityId = user.activityId;
-        this.openId = user.openId;
-        this.nick = user.nick;
-        this.mixNick = user.mixNick;
-        this.prize = prize;
-        this.prizeName = prize.name;
-        this.prizeId = prize.id;
-        this.isShow = true;
-        let time = new Time();
-        this.time = time.common.base;
-        this.date = time.format("YYYY-MM-DD");
-        this.type = type;
+export default class Prize extends BaseEntity {
+    constructor(user?: User, prize?: any, type?: string) {
+        super();
+        if (user) {
+            this.activityId = user.activityId;
+            this.openId = user.openId;
+            this.nick = user.nick;
+            this.mixNick = user.mixNick;
+            this.prize = prize;
+            this.prizeName = prize.name;
+            this.prizeId = prize.id;
+            this.isShow = true;
+            let time = new Time();
+            this.time = time.common.base;
+            this.date = time.format("YYYY-MM-DD");
+            this.type = type;
+        }
     }
 
     _id;

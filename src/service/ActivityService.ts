@@ -33,7 +33,11 @@ export default class ActivityService extends BaseActivityService {
                     "data.award": true
                 }
             }
-            await this.edit(filter, options);
+            this.setLooseEdit;
+            if (!await this.edit(filter, options)) {
+                await this.simpleSpm("multipleAward");
+                return;
+            }
             //成功更改开奖状态
             let userService = this.getService(UserService);
             let rankPrizeList = activity.data.config.rankPrizeList;

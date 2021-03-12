@@ -38,13 +38,13 @@ export default class PrizeService extends BaseService<Prize> {
      * 领取奖品
      */
     async receive(id?) {
-        let {prizeId, ext} = this.data;
+        let {prizeId} = this.data;
         let filter = {
             _id: id || prizeId,
             openId: this.openId,
             activityId: this.activityId
         }
-        let prizeData = await this.get(filter);
+        let prizeData = new Prize().init(await this.get(filter));
         if (!prizeData) {
             this.response.set222("您未获得该奖品，领取失败");
             return;
@@ -53,79 +53,70 @@ export default class PrizeService extends BaseService<Prize> {
             this.response.set222("您已领取过该奖品，领取失败");
             return;
         }
-        let prize = prizeData.prize;
-        let baseInfo = this.baseInfo();
-        //实物奖品填写信息
-        if (prize.type === "item") {
-            Object.assign(baseInfo, ext)
-            baseInfo.desc = baseInfo.province + baseInfo.city + baseInfo.district + baseInfo.address;
-        }
+        prizeData.optionsStart;
+        prizeData.receiveStatus = true;
+        prizeData.receiveTime = this.time().common.base;
         //更改领奖状态
-        let line = await this.edit({
+        await this.edit({
             ...filter,
             receiveStatus: false
-        }, {
-            $set: {
-                receiveStatus: true,
-                receiveTime: this.time().common.base,
-                info: baseInfo
-            }
-        })
+        }, prizeData.optionsEnd)
         //其他类型奖品开始尝试发奖
-        let topService = this.getService(TopService);
         let userService = this.getService(UserService);
-        let user = await userService.getUser();
-        let result;
         try {
-            //尖货领取
-            if (prize.type === "goods") {
-                let {skuId, itemId} = prize[prize.type];
-                result = await topService.opentradeSpecialUsersMark(skuId, itemId);
-                await this.simpleSpm("_mark", {
-                    desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
-                    topResult: result
-                });
-            }
-            //积分领取
-            else if (prize.type === "point") {
-                let {addPointNum} = prize[prize.type];
-                result = await topService.taobaoCrmPointChange(addPointNum);
-                await this.simpleSpm("_point", {
-                    desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
-                    topResult: result
-                });
-            }
-            //权益领取
-            else if (prize.type === "benefit") {
-                let {ename} = prize[prize.type];
-                result = await topService.sendBenefit(ename);
-                await this.simpleSpm("_benefit", {
-                    desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
-                    topResult: result
-                });
-            }
-            //其他情况
-            else {
-                result = {
-                    code: line,
-                    data: `修改了${line}条数据`
-                }
-                await this.simpleSpm("_receive", {
-                    desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
-                })
-            }
+            let user = await userService.getUser();
+            prizeData.optionsStart;
+            prizeData.sendSuccess = true;
+            await this.sendPrize(user, prizeData);
+            //领取成功
+            await this.edit({
+                ...filter
+            }, prizeData.optionsEnd)
         } catch (e) {
             await this.getService(ErrorLogService).add(e);
         }
-        //领取成功
-        if (result?.code >= 1) {
-            await this.edit({
-                ...filter
-            }, {
-                $set: {
-                    sendSuccess: true
-                }
-            })
+    }
+
+    async sendPrize(user, prizeBean: Prize, prize: configPrize = prizeBean.prize) {
+        let topService = this.getService(TopService);
+        let result;
+        //尖货领取
+        if (prize.type === "goods") {
+            let {skuId, itemId} = prize[prize.type];
+            result = await topService.opentradeSpecialUsersMark(skuId, itemId);
+            await this.simpleSpm("_mark", {
+                desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
+                topResult: result
+            });
+        }
+        //积分领取
+        else if (prize.type === "point") {
+            let {addPointNum} = prize[prize.type];
+            result = await topService.taobaoCrmPointChange(addPointNum);
+            await this.simpleSpm("_point", {
+                desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
+                topResult: result
+            });
+        }
+        //权益领取
+        else if (prize.type === "benefit") {
+            let {ename} = prize[prize.type];
+            result = await topService.sendBenefit(ename);
+            await this.simpleSpm("_benefit", {
+                desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
+                topResult: result
+            });
+        }
+        //实物奖品
+        else if (prize.type === "item") {
+            let {ext} = this.data;
+            let baseInfo = this.baseInfo();
+            Object.assign(baseInfo, ext)
+            baseInfo.desc = baseInfo.province + baseInfo.city + baseInfo.district + baseInfo.address;
+            prizeBean.info = baseInfo;
+            await this.simpleSpm("item", {
+                desc: MsgGenerate.receiveDesc(user.nick, prize.name, "成功")
+            });
         }
     }
 
@@ -145,5 +136,13 @@ export default class PrizeService extends BaseService<Prize> {
                 return code;
             }
         }
+    }
+
+    async checkPrizeDone(filter: Prize | other) {
+        return await this.count({
+            openId: this.openId,
+            activityId: this.activityId,
+            ...filter
+        });
     }
 }
