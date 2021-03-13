@@ -1,18 +1,10 @@
-/**
- * @param code
- * -1-->没有此活动
- * 0-->活动未开始
- * 1-->活动进行中
- * 2-->活动已结束
- * @param data 活动数据
- */
 import App from "../../base/App";
 import UserService from "./UserService";
 import Prize from "../entity/Prize";
 import PrizeService from "./PrizeService";
-import BaseActivityService from "../../base/service/BaseActivityService";
+import XActivityService from "../../base/service/XActivityService";
 
-export default class ActivityService extends BaseActivityService {
+export default class ActivityService extends XActivityService {
     constructor(app: App) {
         super(app);
     }

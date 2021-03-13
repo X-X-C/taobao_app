@@ -324,7 +324,10 @@ export default class UserService extends BaseUserService {
         if (activity.code === 1) {
             let {startTime, endTime} = activity.data;
             //检查订单
-            let result = await this.services.topService.selectOrder(startTime, endTime);
+            let result = await this.services.topService.selectOrder({
+                startTime,
+                endTime
+            });
             if (result.total_results > 0) {
                 //大订单
                 let orders = result.trades.trade;

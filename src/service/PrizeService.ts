@@ -5,11 +5,11 @@ import TopService from "../../base/service/TopService";
 import Utils from "../../base/utils/Utils";
 import UserService from "./UserService";
 import MsgGenerate from "../utils/MsgGenerate";
-import ErrorLogService from "../../base/service/ErrorLogService";
+import XErrorLogService from "../../base/service/XErrorLogService";
 
 export default class PrizeService extends BaseService<Prize> {
     constructor(app: App) {
-        super("prizes", app);
+        super(app, "prizes");
     }
 
     baseInfo() {
@@ -73,7 +73,7 @@ export default class PrizeService extends BaseService<Prize> {
                 ...filter
             }, prizeData.optionsEnd)
         } catch (e) {
-            await this.getService(ErrorLogService).add(e);
+            await this.getService(XErrorLogService).add(e);
         }
     }
 
@@ -83,7 +83,10 @@ export default class PrizeService extends BaseService<Prize> {
         //尖货领取
         if (prize.type === "goods") {
             let {skuId, itemId} = prize[prize.type];
-            result = await topService.opentradeSpecialUsersMark(skuId, itemId);
+            result = await topService.opentradeSpecialUsersMark({
+                skuId,
+                itemId
+            });
             await this.simpleSpm("_mark", {
                 desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
                 topResult: result
@@ -92,7 +95,9 @@ export default class PrizeService extends BaseService<Prize> {
         //积分领取
         else if (prize.type === "point") {
             let {addPointNum} = prize[prize.type];
-            result = await topService.taobaoCrmPointChange(addPointNum);
+            result = await topService.taobaoCrmPointChange({
+                num: addPointNum
+            });
             await this.simpleSpm("_point", {
                 desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
                 topResult: result
@@ -101,7 +106,9 @@ export default class PrizeService extends BaseService<Prize> {
         //权益领取
         else if (prize.type === "benefit") {
             let {ename} = prize[prize.type];
-            result = await topService.sendBenefit(ename);
+            result = await topService.sendBenefit({
+                ename
+            });
             await this.simpleSpm("_benefit", {
                 desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
                 topResult: result

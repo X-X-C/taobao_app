@@ -5,7 +5,7 @@ import MsgGenerate from "../../utils/MsgGenerate";
 
 export default abstract class BaseUserService extends BaseService<User> {
     protected constructor(app: App) {
-        super("users", app);
+        super(app, "users");
     }
 
     protected user: User;
