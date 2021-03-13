@@ -1,10 +1,11 @@
 import BaseService from "../../../base/service/abstract/BaseService";
 import User from "../../entity/User";
 import App from "../../../base/App";
+import MsgGenerate from "../../utils/MsgGenerate";
 
 export default abstract class BaseUserService extends BaseService<User> {
     protected constructor(app: App) {
-        super("users", app);
+        super(app, "users");
     }
 
     protected user: User;
@@ -29,7 +30,7 @@ export default abstract class BaseUserService extends BaseService<User> {
                 user.nick = this.nick;
                 user.mixNick = this.mixNick;
                 user.openId = this.openId;
-                await this.add(user);
+                await this.insertOne(user);
             } else {
                 user = new User().init(user);
             }
@@ -45,8 +46,9 @@ export default abstract class BaseUserService extends BaseService<User> {
      * 修改用户
      * @param options
      * @param filter
+     * @param ignore
      */
-    async editUser(options: any, filter: any = {}): Promise<number> {
+    async editUser(options, filter?: User | other): Promise<number> {
         return await super.edit(
             {
                 openId: this.openId,
@@ -57,14 +59,11 @@ export default abstract class BaseUserService extends BaseService<User> {
         );
     }
 
-    async add(user: User): Promise<string> {
-        return await super.insertOne(user);
-    }
-
     /**
      * 更新用户头像
      */
     async updateUser() {
+        this.setLooseEdit;
         this.response.data = await this.editUser(
             {
                 $set: {
@@ -77,4 +76,11 @@ export default abstract class BaseUserService extends BaseService<User> {
             }
         );
     }
+
+    async spmFrom(type, who, what, target, desc, ext) {
+        await this.simpleSpm(type, {
+            desc: MsgGenerate.baseInfo(who, what, target, desc)
+        }, ext);
+    }
+
 }

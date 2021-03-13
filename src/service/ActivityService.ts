@@ -1,7 +1,7 @@
 import App from "../../base/App";
-import BaseActivityService from "../../base/service/BaseActivityService";
+import XActivityService from "../../base/service/XActivityService";
 
-export default class ActivityService extends BaseActivityService {
+export default class ActivityService extends XActivityService {
     constructor(app: App) {
         super(app);
     }
