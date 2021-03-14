@@ -24,3 +24,7 @@ export default {
         return this.baseInfo(who, "领取", prizeName, `领取【${!!topResult.code ? "成功" : "失败"}】，详情：${toJson(topResult.data)}`);
     }
 }
+
+export function formatNum(number) {
+    return number > 0 ? "+" + number : number
+}

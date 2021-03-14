@@ -13,21 +13,24 @@ export default class ActivityService extends XActivityService {
         let activity = this.globalActivity;
         //如果活动结束，且还没有开过奖进入开奖逻辑
         if (activity.code === 2 && activity.data.data.award !== true) {
-            //更改活动开奖状态
-            let filter = {
-                _id: this.activityId,
-                "data.award": {
-                    $ne: true
-                }
-            }
-            let options = {
-                $set: {
-                    "data.award": true
-                }
-            }
             this.setLooseEdit;
-            if (!await this.edit(filter, options)) {
-                await this.simpleSpm("multipleAward");
+            let line = await this.edit(
+                {
+                    _id: this.activityId,
+                    "data.award": {
+                        $ne: true
+                    }
+                },
+                {
+                    $set: {
+                        "data.award": true
+                    }
+                }
+            )
+            if (line !== 1) {
+                await this.simpleSpm("failAward", {
+                    line
+                });
                 return;
             }
             //成功更改开奖状态

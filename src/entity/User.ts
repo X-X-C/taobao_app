@@ -79,3 +79,13 @@ export default class User extends BaseEntity {
         }
     }
 }
+
+export function task(key, name, reward, type: "normal" | "other" = "normal"): taskConfigType {
+    return {
+        [key]: {
+            name,
+            reward,
+            type
+        }
+    }
+}

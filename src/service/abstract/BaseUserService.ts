@@ -1,7 +1,7 @@
 import BaseService from "../../../base/service/abstract/BaseService";
 import User from "../../entity/User";
 import App from "../../../base/App";
-import MsgGenerate from "../../utils/MsgGenerate";
+import MsgGenerate, {formatNum} from "../../utils/MsgGenerate";
 
 export default abstract class BaseUserService extends BaseService<User> {
     protected constructor(app: App) {
@@ -77,10 +77,32 @@ export default abstract class BaseUserService extends BaseService<User> {
         );
     }
 
-    async spmFrom(type, who, what, target, desc, ext) {
+    async spmFrom(type, who, what, target?, desc?, ext?) {
         await this.simpleSpm(type, {
             desc: MsgGenerate.baseInfo(who, what, target, desc)
         }, ext);
+    }
+
+    async spmNum(user: User | other, origin: string, filed: keyof User | string, filedName: string, ext?) {
+        let changeNum = formatNum(user[filed] - user._[filed]);
+        await this.spmFrom("_" + filed, user.nick, origin, `${filedName}${changeNum}`, `剩余${filedName}${user[filed]}`, ext);
+    }
+
+
+    async spmLotteryCount(user: User | other, origin: string, ext?) {
+        await this.spmNum(user, origin, "lotteryCount", "抽奖次数", ext);
+    }
+
+    async spmGameNum(user: User | other, origin: string, ext?) {
+        await this.spmNum(user, origin, "gameNum", "游戏次数", ext);
+    }
+
+    async spmScore(user: User | other, origin: string, ext?) {
+        await this.spmNum(user, origin, "score", "分数", ext);
+    }
+
+    async spmLotteryResult(user: User | other, prize: configPrize, extSay?: string, ext?) {
+        await this.spmFrom("_lotteryResult", user.nick, "抽奖", `抽奖结果：${prize.name}${extSay ? "," + extSay : ""}`, `剩余抽奖次数${user.lotteryCount}`, ext);
     }
 
 }

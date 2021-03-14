@@ -8,6 +8,7 @@ import PrizeService from "./PrizeService";
 import Prize from "../entity/Prize";
 import MsgGenerate from "../utils/MsgGenerate";
 import BaseUserService from "./abstract/BaseUserService";
+import {taskConfig} from "../Config";
 
 const {random, deepClone} = Utils;
 
@@ -31,11 +32,7 @@ export default class UserService extends BaseUserService {
         let vip = await this.services.topService.vipStatus();
         //活动结束
         if (activity.code === 2) {
-            try {
-                await activityService.award();
-            } catch {
-
-            }
+            await activityService.award();
         }
         //活动进行中，初始化用户
         else if (activity.code === 1) {
@@ -80,6 +77,7 @@ export default class UserService extends BaseUserService {
         await this.editUser(user.optionsEnd, {
             gameNum: user._.gameNum
         });
+        await this.spmGameNum(user, "开始游戏");
         //成功减去游戏次数
         this.response.data.gameNum = user.gameNum;
     }
@@ -102,6 +100,7 @@ export default class UserService extends BaseUserService {
         await this.editUser(user.optionsEnd, {
             score: user._.score
         });
+        await this.spmScore(user, "游戏结算");
         this.response.data.score = user.score;
     }
 
@@ -121,7 +120,7 @@ export default class UserService extends BaseUserService {
             user: user.baseInfo(),
             inviter: inviter.baseInfo(),
             vip,
-            code: 0,
+            code: 200,
             desc: "成功"
         }
         //邀请人不存在
@@ -157,10 +156,12 @@ export default class UserService extends BaseUserService {
         //条件满足
         else {
             inviter.task.assist += 1;
+            inviter.gameNum += taskConfig.assist.reward;
             await this.editUser(inviter.optionsEnd, {
                 "task.assist": inviter._.task.assist,
                 openId: inviter.openId
             });
+            await this.spmGameNum(inviter, `成功邀请好友【${user.nick}】`);
             //成功
             user.inviter = {
                 nick: inviter.nick,
@@ -185,7 +186,6 @@ export default class UserService extends BaseUserService {
         //获取活动
         let activity = this.globalActivity;
         this.response.data.award = false;
-
         if (user.lotteryCount <= 0) {
             this.response.set222("没有抽奖次数");
             return;
@@ -195,30 +195,38 @@ export default class UserService extends BaseUserService {
         await this.editUser(user.optionsEnd, {
             lotteryCount: user._.lotteryCount
         });
+        await this.spmLotteryCount(user, "抽奖");
         this.response.data.lotteryCount = user.lotteryCount;
-
         let prizeList = activity.data.config.lotteryPrize.prizeList;
         let awardIndex = random(prizeList.map(v => parseFloat(v.probability)));
         //抽中的奖品
         let prize = prizeList[awardIndex];
+        let extSay = "";
         //不是未中奖
         if (prize.type !== "noprize") {
             //查询库存
             let grantDone = activity.data.data.grantTotal[prize.id] || 0;
             //有剩余库存
             if (grantDone < prize.stock) {
-                await activityService.updateStock(prize.id, grantDone, grantDone + 1);
-                //成功扣减库存
-                let prizeService = this.getService(PrizeService);
-                let sendPrize = new Prize(user, prize, "lottery");
-                if (prize.type === "code") {
-                    sendPrize.ext.code = await prizeService.generateCode();
+                try {
+                    await activityService.updateStock(prize.id, grantDone, grantDone + 1);
+                    //成功扣减库存
+                    let prizeService = this.getService(PrizeService);
+                    let sendPrize = new Prize(user, prize, "lottery");
+                    if (prize.type === "code") {
+                        sendPrize.ext.code = await prizeService.generateCode();
+                    }
+                    prize._id = await prizeService.insertOne(sendPrize);
+                    this.response.data.prize = prize;
+                    this.response.data.award = true;
+                } catch (e) {
+                    extSay = "并发掉了，重置为未中奖";
                 }
-                prize._id = await prizeService.insertOne(sendPrize);
-                this.response.data.prize = prize;
-                this.response.data.award = true;
+            } else {
+                extSay = "没有库存了，重置为未中奖";
             }
         }
+        await this.spmLotteryResult(user, prize, extSay);
     }
 
     async rank(size: number = this.data.size || 50, page: number = this.data.page || 1) {
@@ -374,38 +382,27 @@ export default class UserService extends BaseUserService {
     async normalTask(type) {
         let user = await this.getUser();
         user.optionsStart;
-        switch (type) {
-            case 'follow':
-            case 'sign':
-            case 'member':
-                if (user.task[type] !== false) {
-                    this.response.set222("已经完成过此任务");
-                    return;
-                }
-                if (type === "member") {
-                    let vipStatus = await this.services.topService.vipStatus();
-                    //不是会员
-                    if (vipStatus.code !== 1) {
-                        this.response.set222("不是会员");
-                        return;
-                    }
-                }
-                //更改所属任务完成状态
-                user.task[type] = true;
-                break;
-            default:
-                this.response.set222("无效的任务类型");
-                return;
+        let task = taskConfig[type];
+        if (!task || task.type !== "normal") {
+            this.response.set222("无效的任务类型");
+            return;
         }
+        if (user.task[type] !== false) {
+            this.response.set222("已经完成过此任务");
+            return;
+        }
+        //完成任务
+        user.task[type] = true;
         await this.editUser(user.optionsEnd, {});
         await this.spm(type);
+        await this.spmGameNum(user, task.name);
     }
 
     async spmMember() {
         let user = await this.getUser();
         let vip = await this.services.topService.vipStatus();
         if (vip.code === 1 && vip.data.gmt_create >= user.createTime) {
-            await this.spm("member");
+            await this.spm("newMember");
         }
     }
 
