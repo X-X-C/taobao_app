@@ -28,7 +28,6 @@ export default class UserService extends BaseUserService {
         let activityService = this.services.activityService;
         let activity = this.globalActivity;
         let user = await this.getUser();
-        user.optionsStart;
         let vip = await this.services.topService.vipStatus();
         //活动结束
         if (activity.code === 2) {
@@ -64,7 +63,6 @@ export default class UserService extends BaseUserService {
 
     async gameStart() {
         let user = await this.getUser();
-        user.optionsStart;
         if (user.gameNum <= 0) {
             this.response.set222("没有游戏次数");
             return;
@@ -84,7 +82,6 @@ export default class UserService extends BaseUserService {
 
     async gameEnd() {
         let user = await this.getUser();
-        user.optionsStart;
         if (user.gameStatus !== 1) {
             this.response.set222("结算失败");
             return;
@@ -107,7 +104,6 @@ export default class UserService extends BaseUserService {
     async assist() {
         //当前用户信息
         let user = await this.getUser();
-        user.optionsStart;
         //邀请人信息
         let inviter = await this.getUser(this.data.sopenId);
         inviter.optionsStart;
@@ -181,7 +177,6 @@ export default class UserService extends BaseUserService {
     async lottery() {
         //当前用户信息
         let user = await this.getUser();
-        user.optionsStart;
         let activityService = this.services.activityService;
         //获取活动
         let activity = this.globalActivity;
@@ -381,18 +376,21 @@ export default class UserService extends BaseUserService {
 
     async normalTask(type) {
         let user = await this.getUser();
-        user.optionsStart;
         let task = taskConfig[type];
         if (!task || task.type !== "normal") {
             this.response.set222("无效的任务类型");
             return;
         }
-        if (user.task[type] !== false) {
-            this.response.set222("已经完成过此任务");
-            return;
+        switch (type) {
+            case "follow":
+                if (user.task[type] !== false) {
+                    this.response.set222("已经完成过此任务");
+                    return;
+                }
+                //完成任务
+                user.task[type] = true;
+                break;
         }
-        //完成任务
-        user.task[type] = true;
         await this.editUser(user.optionsEnd, {});
         await this.spm(type);
         await this.spmGameNum(user, task.name);
