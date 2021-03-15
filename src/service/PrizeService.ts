@@ -66,8 +66,8 @@ export default class PrizeService extends BaseService<Prize> {
         try {
             let user = await userService.getUser();
             prizeData.optionsStart;
-            prizeData.sendSuccess = true;
-            await this.sendPrize(user, prizeData);
+            let result = await this.sendPrize(user, prizeData);
+            prizeData.sendSuccess = !!result.code;
             //领取成功
             await this.edit({
                 ...filter
@@ -79,7 +79,9 @@ export default class PrizeService extends BaseService<Prize> {
 
     async sendPrize(user, prizeBean: Prize, prize: configPrize = prizeBean.prize) {
         let topService = this.getService(TopService);
-        let result;
+        let result = <result>{
+            code: 1
+        };
         //尖货领取
         if (prize.type === "goods") {
             let {skuId, itemId} = prize[prize.type];
@@ -125,6 +127,7 @@ export default class PrizeService extends BaseService<Prize> {
                 desc: MsgGenerate.receiveDesc(user.nick, prize.name, "成功")
             });
         }
+        return result;
     }
 
     /**
