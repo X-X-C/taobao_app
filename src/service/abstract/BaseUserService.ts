@@ -33,8 +33,8 @@ export default abstract class BaseUserService extends BaseService<User> {
                 await this.insertOne(user.pure);
             } else {
                 user = new User().init(user);
-                user.optionsStart;
             }
+            user.optionsStart;
             //如果获取的是当前用户，保存
             if (openId === this.openId) {
                 this.user = user;
