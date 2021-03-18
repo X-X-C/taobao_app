@@ -26,6 +26,8 @@ export default class User extends BaseEntity {
     lastInitTime: number | boolean = false;
     //会员状态
     vipStatus: number;
+    //是否授权
+    isAuth: boolean;
     /**
      * 通用字段
      */
