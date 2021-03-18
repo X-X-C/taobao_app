@@ -371,6 +371,7 @@ export default class UserService extends BaseUserService {
     async userInfo() {
         let user = await this.getUser();
         user.vipStatus = (await this.services.topService.vipStatus()).code;
+        user.isAuth = !!this.context.userNick;
         this.response.data.user = user.pure;
     }
 
