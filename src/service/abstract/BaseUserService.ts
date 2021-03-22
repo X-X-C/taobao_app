@@ -34,7 +34,6 @@ export default abstract class BaseUserService extends BaseService<User> {
             } else {
                 user = new User().init(user);
             }
-            user.optionsStart;
             //如果获取的是当前用户，保存
             if (openId === this.openId) {
                 this.user = user;
@@ -64,8 +63,7 @@ export default abstract class BaseUserService extends BaseService<User> {
      * 更新用户头像
      */
     async updateUser() {
-        this.setLooseEdit;
-        this.response.data = await this.editUser(
+        this.response.data = await this.loosen.editUser(
             {
                 $set: {
                     avatar: this.data.avatar,
