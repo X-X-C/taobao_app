@@ -45,7 +45,7 @@ export default class PrizeService extends BaseService<Prize> {
             activityId: this.activityId
         }
         let prizeData = new Prize().init(await this.get(filter));
-        if (!prizeData) {
+        if (!prizeData._id) {
             this.response.set222("您未获得该奖品，领取失败");
             return;
         }
@@ -53,7 +53,6 @@ export default class PrizeService extends BaseService<Prize> {
             this.response.set222("您已领取过该奖品，领取失败");
             return;
         }
-        prizeData.optionsStart;
         prizeData.receiveStatus = true;
         prizeData.receiveTime = this.time().common.base;
         //更改领奖状态
@@ -65,14 +64,15 @@ export default class PrizeService extends BaseService<Prize> {
         let userService = this.getService(UserService);
         try {
             let user = await userService.getUser();
-            prizeData.optionsStart;
-            let result = await this.sendPrize(user, prizeData);
-            prizeData.sendSuccess = !!result.code;
+            await this.sendPrize(user, prizeData);
             //领取成功
             await this.edit({
                 ...filter
             }, prizeData.optionsEnd)
-        } catch (e) {
+        }
+            //报错了...回滚状态
+        catch (e) {
+            await this.edit(filter, prizeData.optionsBack)
             await this.getService(XErrorLogService).add(e);
         }
     }
@@ -126,6 +126,9 @@ export default class PrizeService extends BaseService<Prize> {
             await this.simpleSpm("item", {
                 desc: MsgGenerate.receiveDesc(user.nick, prize.name, "成功")
             });
+        }
+        if (result.code === 1) {
+            prizeBean.sendSuccess = true;
         }
         return result;
     }
