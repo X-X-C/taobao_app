@@ -44,8 +44,7 @@ export default class UserService extends BaseUserService {
                 this.init(user);
             }
             //更新用户
-            this.setLooseEdit;
-            await this.editUser(user.optionsEnd, filter);
+            await this.loosen.editUser(user.optionsEnd, filter);
         }
         //会员状态
         user.vipStatus = vip.code;

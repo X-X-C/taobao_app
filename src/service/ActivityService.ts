@@ -13,8 +13,7 @@ export default class ActivityService extends XActivityService {
         let activity = this.globalActivity;
         //如果活动结束，且还没有开过奖进入开奖逻辑
         if (activity.code === 2 && activity.data.data.award !== true) {
-            this.setLooseEdit;
-            let line = await this.edit(
+            let line = await this.loosen.edit(
                 {
                     _id: this.activityId,
                     "data.award": {
