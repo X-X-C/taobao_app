@@ -165,7 +165,7 @@ export default class UserService extends BaseUserService {
                 openId: inviter.openId,
                 time: time
             }
-            this.response.code = await this.editUser(user.optionsEnd);
+            await this.editUser(user.optionsEnd);
             await this.spm("assist");
         }
         let msg = vip.code === 1 ? `，首次入会时间【${vip.data.gmt_create}】` : "，不是会员";
