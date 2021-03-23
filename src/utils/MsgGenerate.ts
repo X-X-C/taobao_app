@@ -26,5 +26,5 @@ export default {
 }
 
 export function formatNum(number) {
-    return number > 0 ? "+" + number : number
+    return number >= 0 ? "+" + number : number
 }
