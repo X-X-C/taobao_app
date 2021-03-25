@@ -25,7 +25,7 @@ export default abstract class BaseUserService extends BaseService<User> {
             })
             if (!user && openId === this.openId) {
                 user = new User();
-                user.activityId = this.activityId;
+                user.activityId = this.activityId || this.globalActivity.data._id;
                 user.createTime = this.time().common.base;
                 user.nick = this.nick;
                 user.mixNick = this.mixNick;
