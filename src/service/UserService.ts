@@ -198,12 +198,11 @@ export default class UserService extends BaseUserService {
         let extSay = "";
         //不是未中奖
         if (prize.type !== "noprize") {
-            //查询库存
-            let grantDone = activity.data.data.grantTotal[prize.id] || 0;
+            let stockInfo = this.stockInfo(prize);
             //有剩余库存
-            if (grantDone < prize.stock) {
-                try {
-                    await activityService.updateStock(prize.id, grantDone, grantDone + 1);
+            if (stockInfo.restStock) {
+                let line = await activityService.loosen.updateStock(prize, stockInfo.done, 1);
+                if (line === 1) {
                     //成功扣减库存
                     let prizeService = this.getService(PrizeService);
                     let sendPrize = new Prize(user, prize, "lottery");
@@ -213,11 +212,11 @@ export default class UserService extends BaseUserService {
                     prize._id = await prizeService.insertOne(sendPrize);
                     this.response.data.prize = prize;
                     this.response.data.award = true;
-                } catch (e) {
-                    extSay = "并发掉了，重置为未中奖";
+                } else {
+                    extSay = "网络繁忙，重置为未中奖";
                 }
             } else {
-                extSay = "没有库存了，重置为未中奖";
+                extSay = "无库存，重置为未中奖";
             }
         }
         await this.spmLotteryResult(user, prize, extSay);

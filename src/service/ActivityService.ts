@@ -63,23 +63,32 @@ export default class ActivityService extends XActivityService {
     }
 
     //更新库存
-    async updateStock(prizeId, beforeStock, afterStock) {
-        return await this.edit({
+    async updateStock(prize: configPrize, beforeStock: number, changeCount: number) {
+        let field;
+        if (prize.dayStock === true) {
+            let time = this.time().common.YYYYMMDD;
+            field = `data.grantTotal.dayStock.${prize.id}.${time}`;
+        } else {
+            field = `data.grantTotal.${prize.id}`;
+        }
+        let filter = {
             _id: this.activityId,
             $or: [
                 {
-                    ["data.grantTotal." + prizeId]: {
+                    [field]: {
                         $exists: false
                     },
                 },
                 {
-                    ["data.grantTotal." + prizeId]: beforeStock
+                    [field]: beforeStock
                 }
             ]
-        }, {
+        }
+        let options = {
             $set: {
-                ["data.grantTotal." + prizeId]: afterStock
+                [field]: beforeStock + changeCount
             }
-        });
+        }
+        return await this.edit(filter, options);
     }
 }
