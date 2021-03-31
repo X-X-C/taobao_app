@@ -13,9 +13,9 @@ exports.main = async (context) => {
 // @ts-ignore
 exports.assist = async (context) => {
     const app = new App(context, "assist");
-    app.inspectionActivity;
+    app.runConfig.inspectionActivity;
     app.runNeedParams = {
-        sopenId: "string"
+        sopenId: "string",
     }
     return await app.run(async function () {
         await app.getService(UserService).assist();
@@ -26,7 +26,7 @@ exports.assist = async (context) => {
 // @ts-ignore
 exports.task = async (context) => {
     const app = new App(context, "task");
-    app.inspectionActivity;
+    app.runConfig.inspectionActivity;
     app.runNeedParams = {
         target: "string"
     }
@@ -40,7 +40,7 @@ exports.task = async (context) => {
 // @ts-ignore
 exports.enter = async (context) => {
     const app = new App(context, "enter");
-    app.setGlobalActivity;
+    app.runConfig.setGlobalActivity
     return await app.run(async function () {
         let userService = app.getService(UserService);
         await userService.enter();
@@ -71,7 +71,7 @@ exports.updateUser = async (context) => {
 // @ts-ignore
 exports.lottery = async (context) => {
     const app = new App(context, "lottery");
-    app.inspectionActivity;
+    app.runConfig.inspectionActivity;
     return await app.run(async function () {
         let userService = app.getService(UserService);
         await userService.lottery();

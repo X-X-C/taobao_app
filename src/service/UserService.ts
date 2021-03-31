@@ -408,7 +408,7 @@ export default class UserService extends BaseUserService {
         let successiveDay = 0;
         while (day.length > successiveDay) {
             let time = this.time();
-            let target = time.to(-successiveDay).YYYYMMDD;
+            let target = time.to(-successiveDay).common.YYYYMMDD;
             if (day.indexOf(target) !== -1) {
                 successiveDay += 1;
             } else {
