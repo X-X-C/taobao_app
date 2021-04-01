@@ -80,7 +80,8 @@ export default class PrizeService extends BaseService<Prize> {
     async sendPrize(user, prizeBean: Prize, prize: configPrize = prizeBean.prize) {
         let topService = this.getService(TopService);
         let result = <result>{
-            code: 1
+            code: 1,
+            data: "成功"
         };
         //尖货领取
         if (prize.type === "goods") {
@@ -89,10 +90,6 @@ export default class PrizeService extends BaseService<Prize> {
                 skuId,
                 itemId
             });
-            await this.simpleSpm("_mark", {
-                desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
-                topResult: result
-            });
         }
         //积分领取
         else if (prize.type === "point") {
@@ -100,20 +97,12 @@ export default class PrizeService extends BaseService<Prize> {
             result = await topService.taobaoCrmPointChange({
                 num: addPointNum
             });
-            await this.simpleSpm("_point", {
-                desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
-                topResult: result
-            });
         }
         //权益领取
         else if (prize.type === "benefit") {
             let {ename} = prize[prize.type];
             result = await topService.sendBenefit({
                 ename
-            });
-            await this.simpleSpm("_benefit", {
-                desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
-                topResult: result
             });
         }
         //实物奖品
@@ -123,13 +112,18 @@ export default class PrizeService extends BaseService<Prize> {
             Object.assign(baseInfo, ext)
             baseInfo.desc = baseInfo.province + baseInfo.city + baseInfo.district + baseInfo.address;
             prizeBean.info = baseInfo;
-            await this.simpleSpm("item", {
-                desc: MsgGenerate.receiveDesc(user.nick, prize.name, "成功")
-            });
         }
+
+        await this.simpleSpm("_receivePrize", {
+            desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
+            topResult: result,
+            prizeType: prize.type
+        });
+
         if (result.code === 1) {
             prizeBean.sendSuccess = true;
         }
+        
         return result;
     }
 
