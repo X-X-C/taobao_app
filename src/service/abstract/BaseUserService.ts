@@ -101,7 +101,7 @@ export default abstract class BaseUserService extends BaseService<User> {
     }
 
     async spmLotteryResult(user: User | other, prize: configPrize, extSay?: string, ext?) {
-        await this.spmFrom("_lotteryResult", user.nick, "抽奖", `抽奖结果：${prize.name}${extSay ? "," + extSay : ""}`, `剩余抽奖次数${user.lotteryCount}`, ext);
+        await this.spmFrom("_lotteryResult", user.nick, "抽奖", `抽奖结果：${prize.name}${extSay ? "，" + extSay : ""}`, `剩余抽奖次数${user.lotteryCount}`, ext);
     }
 
 }

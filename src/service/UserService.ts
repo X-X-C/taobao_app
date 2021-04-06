@@ -213,10 +213,10 @@ export default class UserService extends BaseUserService {
                     this.response.data.prize = prize;
                     this.response.data.award = true;
                 } else {
-                    extSay = "网络繁忙，重置为未中奖";
+                    extSay = "网络繁忙";
                 }
             } else {
-                extSay = "无库存，重置为未中奖";
+                extSay = "无库存";
             }
         }
         await this.spmLotteryResult(user, prize, extSay);
