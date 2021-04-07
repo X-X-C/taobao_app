@@ -13,15 +13,18 @@ export default abstract class BaseUserService extends BaseService<User> {
     /**
      * 获取用户
      * @param openId
+     * @param project
      */
-    async getUser(openId: string = this.openId): Promise<User> {
+    async getUser(openId: string = this.openId, project?: any): Promise<User> {
         //如果是获取当前用户,如果已经获取过了直接返回
         if (this.user && openId === this.openId) {
             return this.user;
         } else {
-            let user = await super.get({
+            let user = await this.get({
                 openId: openId || this.openId,
                 activityId: this.activityId
+            }, {
+                project
             })
             if (!user && openId === this.openId) {
                 user = new User();
