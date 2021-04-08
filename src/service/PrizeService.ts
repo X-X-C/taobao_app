@@ -66,7 +66,7 @@ export default class PrizeService extends BaseService<Prize> {
             let user = await userService.getUser();
             await this.sendPrize(user, prizeData);
             //领取成功
-            await this.edit({
+            await this.loosen.edit({
                 ...filter
             }, prizeData.optionsEnd)
         }
@@ -123,7 +123,7 @@ export default class PrizeService extends BaseService<Prize> {
         if (result.code === 1) {
             prizeBean.sendSuccess = true;
         }
-        
+
         return result;
     }
 
