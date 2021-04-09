@@ -2,7 +2,7 @@ import BaseEntity from "../../base/entity/abstract/BaseEntity";
 
 export default class User extends BaseEntity {
     constructor() {
-        super();
+        super(User);
     }
 
     //用户名

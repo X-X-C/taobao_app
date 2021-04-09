@@ -63,8 +63,7 @@ export default abstract class BaseUserService extends BaseService<User> {
      * 更新用户头像
      */
     async updateUser() {
-        this.setLooseEdit;
-        this.response.data = await this.editUser(
+        this.response.data = await this.loosen.editUser(
             {
                 $set: {
                     avatar: this.data.avatar,
