@@ -83,47 +83,56 @@ export default class PrizeService extends BaseService<Prize> {
             code: 1,
             data: "成功"
         };
-        //尖货领取
-        if (prize.type === "goods") {
-            let {skuId, itemId} = prize[prize.type];
-            result = await topService.opentradeSpecialUsersMark({
-                skuId,
-                itemId
-            });
-        }
-        //积分领取
-        else if (prize.type === "point") {
-            let {addPointNum} = prize[prize.type];
-            result = await topService.taobaoCrmPointChange({
-                num: addPointNum
-            });
-        }
-        //权益领取
-        else if (prize.type === "benefit") {
-            let {ename} = prize[prize.type];
-            result = await topService.sendBenefit({
-                ename
-            });
-        }
-        //实物奖品
-        else if (prize.type === "item") {
-            let {ext} = this.data;
-            let baseInfo = this.baseInfo();
-            Object.assign(baseInfo, ext)
-            baseInfo.desc = baseInfo.province + baseInfo.city + baseInfo.district + baseInfo.address;
-            prizeBean.info = baseInfo;
-        }
 
-        await this.simpleSpm("_receivePrize", {
-            desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
-            topResult: result,
-            prizeType: prize.type
-        });
-
+        try {
+//尖货领取
+            if (prize.type === "goods") {
+                let {skuId, itemId} = prize[prize.type];
+                result = await topService.opentradeSpecialUsersMark({
+                    skuId,
+                    itemId
+                });
+            }
+            //积分领取
+            else if (prize.type === "point") {
+                let {addPointNum} = prize[prize.type];
+                result = await topService.taobaoCrmPointChange({
+                    num: addPointNum
+                });
+            }
+            //权益领取
+            else if (prize.type === "benefit") {
+                let {ename} = prize[prize.type];
+                result = await topService.sendBenefit({
+                    ename
+                });
+            }
+            //实物奖品
+            else if (prize.type === "item") {
+                let {ext} = this.data;
+                let baseInfo = this.baseInfo();
+                Object.assign(baseInfo, ext)
+                baseInfo.desc = baseInfo.province + baseInfo.city + baseInfo.district + baseInfo.address;
+                prizeBean.info = baseInfo;
+            }
+        } catch (e) {
+            result = {
+                code: -1,
+                data: e
+            }
+        } finally {
+            await this.simpleSpm("_receivePrize", {
+                desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
+                topResult: result,
+                prizeType: prize.type
+            });
+        }
         if (result.code === 1) {
             prizeBean.sendSuccess = true;
         }
-
+        if (result.code === -1) {
+            throw result.data;
+        }
         return result;
     }
 
