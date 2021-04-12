@@ -21,7 +21,7 @@ export default {
     },
 
     receiveDesc(who, prizeName, topResult) {
-        return this.baseInfo(who, "领取", prizeName, `领取【${!!topResult.code ? "成功" : "失败"}】，详情：${toJson(topResult.data)}`);
+        return this.baseInfo(who, "领取", prizeName, `领取【${topResult.code === 1 ? "成功" : "失败"}】，详情：${toJson(topResult.data)}`);
     }
 }
 
