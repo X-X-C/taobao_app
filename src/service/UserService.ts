@@ -219,7 +219,9 @@ export default class UserService extends BaseUserService {
                 extSay = "无库存";
             }
         }
-        await this.spmLotteryResult(user, prize, extSay);
+        if (prize) {
+            await this.spmLotteryResult(user, prize, extSay);
+        }
     }
 
     async rank(size: number = this.data.size || 50, page: number = this.data.page || 1) {
