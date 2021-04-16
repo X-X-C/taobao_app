@@ -48,7 +48,7 @@ export default class UserService extends BaseUserService {
         }
         //会员状态
         user.vipStatus = vip.code;
-        user.isAuth = this.context.userNick;
+        user.isAuth = !!this.context.userNick;
         //返回
         this.response.data.user = user.pure;
     }
@@ -157,7 +157,7 @@ export default class UserService extends BaseUserService {
                 "task.assist": inviter._.task.assist,
                 openId: inviter.openId
             });
-            await this.spmGameNum(inviter, `成功邀请好友【${user.nick}】`);
+            await this.spmGameNum(inviter, `成功邀请好友【${user.nick}】`, inviter.spmExt());
             //成功
             user.inviter = {
                 nick: inviter.nick,
@@ -197,7 +197,7 @@ export default class UserService extends BaseUserService {
         let prize = prizeList[awardIndex];
         let extSay = "";
         //不是未中奖
-        if (prize.type !== "noprize") {
+        if (prize && prize.type !== "noprize") {
             let stockInfo = this.stockInfo(prize);
             //有剩余库存
             if (stockInfo.restStock) {

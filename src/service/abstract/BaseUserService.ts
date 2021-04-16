@@ -34,6 +34,7 @@ export default abstract class BaseUserService extends BaseService<User> {
                 user.mixNick = this.mixNick;
                 user.openId = this.openId;
                 await this.insertOne(user.pure);
+                user.optionsStart;
             } else {
                 user = new User().init(user);
             }

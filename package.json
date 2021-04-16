@@ -8,13 +8,14 @@
     },
     "sdkVersion": "*",
     "dependencies": {
-        "randombyweights": "*",
-        "xlsx": "*",
-        "moment-timezone": "*",
-        "gmtaobao": "*",
-        "qr-image": "*",
+        "aliyun-mdb-floatfix": "^1.0.3",
         "gm-spm": "*",
-        "uuid": "*"
+        "gmtaobao": "*",
+        "moment-timezone": "*",
+        "qr-image": "*",
+        "randombyweights": "*",
+        "uuid": "*",
+        "xlsx": "*"
     },
     "author": "",
     "license": "ISC"
