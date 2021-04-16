@@ -170,7 +170,7 @@ export default class UserService extends BaseUserService {
         let msg = vip.code === 1 ? `，首次入会时间【${vip.data.gmt_create}】` : "，不是会员";
         spmData.desc = MsgGenerate.assistDesc(user.nick, inviter.nick, this.response.message + msg);
         spmData.code = this.response.code;
-        await this.spm("assistAll", spmData);
+        await this.simpleSpm("assistAll", spmData);
     }
 
     async lottery() {
