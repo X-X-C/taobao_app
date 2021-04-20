@@ -29,12 +29,8 @@ export default class UserService extends BaseUserService {
         let activity = this.globalActivity;
         let user = await this.getUser();
         let vip = await this.services.topService.vipStatus();
-        //活动结束
-        if (activity.code === 2) {
-            await activityService.award();
-        }
         //活动进行中，初始化用户
-        else if (activity.code === 1) {
+        if (activity.code === 1) {
             let time = this.time().common;
             let filter = <User>{};
             //如果今天没有初始化过用户
@@ -45,6 +41,10 @@ export default class UserService extends BaseUserService {
             }
             //更新用户
             await this.loosen.editUser(user.optionsEnd, filter);
+        }
+        //活动已结束
+        else if (activity.code === 2) {
+            await activityService.award();
         }
         //会员状态
         user.vipStatus = vip.code;
@@ -108,7 +108,7 @@ export default class UserService extends BaseUserService {
         //邀请人信息
         let inviter = await this.getUser(sopenId);
         //时间对象
-        let time = this.time(shareTime).common.base;
+        let time = this.time(Number(shareTime)).common.base;
         //会员状态
         let vip = await this.services.topService.vipStatus();
         //记录值
