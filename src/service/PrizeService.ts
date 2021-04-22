@@ -154,11 +154,17 @@ export default class PrizeService extends BaseService<Prize> {
         }
     }
 
-    async checkPrizeDone(filter: Prize | other) {
-        return await this.count({
+    async allPrizeInfo(filter: Prize | other) {
+        return await this.getAll({
             openId: this.openId,
             activityId: this.activityId,
             ...filter
+        }, {
+            project: {
+                _id: 0,
+                prizeId: 1,
+                prizeType: "$prize.type"
+            }
         });
     }
 }
