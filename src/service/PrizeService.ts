@@ -75,6 +75,9 @@ export default class PrizeService extends BaseService<Prize> {
             await this.edit(filter, prizeData.optionsBack)
             await this.getService(XErrorLogService).add(e);
         }
+        if (prizeData.sendSuccess !== true) {
+            this.response.set222("发放失败");
+        }
     }
 
     async sendPrize(user, prizeBean: Prize, prize: configPrize = prizeBean.prize) {
