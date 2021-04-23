@@ -5,6 +5,7 @@ export default class User extends BaseEntity {
         super();
     }
 
+    [key: string]: any;
     /**
      * 基础字段
      */
@@ -63,20 +64,12 @@ export default class User extends BaseEntity {
         //剩余抽奖次数
     lotteryCount: number = 0;
 
-    baseInfo() {
+    get baseInfo() {
         return {
             nick: this.nick,
             openId: this.openId,
             activityId: this.activityId,
-            avatar: this.avatar
-        }
-    }
-
-    spmExt() {
-        return {
-            nick: this.nick,
-            openId: this.openId,
-            activityId: this.activityId,
+            avatar: this.avatar,
             mixNick: this.mixNick
         }
     }

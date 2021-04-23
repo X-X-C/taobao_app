@@ -113,8 +113,8 @@ export default class UserService extends BaseUserService {
         let vip = await this.services.topService.vipStatus();
         //记录值
         let spmData = {
-            user: user.baseInfo(),
-            inviter: inviter.baseInfo(),
+            user: user.baseInfo,
+            inviter: inviter.baseInfo,
             vip,
             code: 200,
             desc: "成功"
@@ -157,7 +157,7 @@ export default class UserService extends BaseUserService {
                 "task.assist": inviter._.task.assist,
                 openId: inviter.openId
             });
-            await this.spmGameNum(inviter, `成功邀请好友【${user.nick}】`, inviter.spmExt());
+            await this.spmGameNum(inviter, `成功邀请好友【${user.nick}】`, inviter.baseInfo);
             //成功
             user.inviter = {
                 nick: inviter.nick,
