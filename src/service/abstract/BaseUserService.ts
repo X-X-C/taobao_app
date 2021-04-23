@@ -87,8 +87,10 @@ export default abstract class BaseUserService extends BaseService<User> {
     }
 
     async spmNum(user: User | other, origin: string, filed: keyof User | string, filedName: string, ext?) {
-        let changeNum = formatNum(user[filed] - user._[filed]);
-        await this.spmFrom("_" + filed, user.nick, origin, `${filedName}${changeNum}`, `剩余${filedName}${user[filed]}`, ext);
+        let oldValue = user.getValueFromKey("_." + filed);
+        let newValue = user.getValueFromKey(filed);
+        let changeNum = formatNum(newValue - oldValue);
+        await this.spmFrom("_" + filed, user.nick, origin, `${filedName}${changeNum}`, `剩余${filedName}${newValue}`, ext);
     }
 
 
