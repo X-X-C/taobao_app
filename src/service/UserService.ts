@@ -167,8 +167,8 @@ export default class UserService extends BaseUserService {
             await this.editUser(user.optionsEnd);
             await this.spm("assist");
         }
-        let msg = vip.code === 1 ? `，首次入会时间【${vip.data.gmt_create}】` : "，不是会员";
-        spmData.desc = MsgGenerate.assistDesc(user.nick, inviter.nick, this.response.message + msg);
+        let msg = vip.code === 1 ? `，首次入会时间【${vip.data.gmt_create}】。` : "，不是会员。";
+        spmData.desc = MsgGenerate.assistDesc(user.nick, inviter.nick, this.response.message + msg + `分享时间【${time}】`);
         spmData.code = this.response.code;
         await this.simpleSpm("assistAll", spmData);
     }
