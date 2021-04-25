@@ -213,10 +213,10 @@ export default class UserService extends BaseUserService {
                     this.response.data.prize = prize;
                     this.response.data.award = true;
                 } else {
-                    extSay = "网络繁忙";
+                    extSay = "网络繁忙，未中奖";
                 }
             } else {
-                extSay = "无库存";
+                extSay = "无库存，未中奖";
             }
         }
         if (prize) {
