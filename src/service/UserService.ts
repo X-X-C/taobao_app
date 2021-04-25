@@ -157,7 +157,9 @@ export default class UserService extends BaseUserService {
                 "task.assist": inviter._.task.assist,
                 openId: inviter.openId
             });
-            await this.spmGameNum(inviter, `成功邀请好友【${user.nick}】`, inviter.baseInfo);
+            await this.spmGameNum(inviter, `成功邀请好友【${user.nick}】`, {
+                ext: inviter.baseInfo
+            });
             //成功
             user.inviter = {
                 nick: inviter.nick,

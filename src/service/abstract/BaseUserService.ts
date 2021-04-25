@@ -80,34 +80,61 @@ export default abstract class BaseUserService extends BaseService<User> {
         );
     }
 
-    async spmFrom(type, who, what, target?, desc?, ext?) {
+    async spmFrom(
+        {
+            type,
+            who,
+            what,
+            target = "",
+            desc = "",
+            ext = {},
+            extParams = {}
+        }
+    ) {
         await this.simpleSpm(type, {
-            desc: MsgGenerate.baseInfo(who, what, target, desc)
+            desc: MsgGenerate.baseInfo(who, what, target, desc),
+            ...extParams
         }, ext);
     }
 
-    async spmNum(user: User | other, origin: string, filed: keyof User | string, filedName: string, ext?) {
+    async spmNum(user: User | other, origin: string, filed: keyof User | string, filedName: string, ext?: spmExt) {
         let oldValue = user.getValueFromKey("_." + filed);
         let newValue = user.getValueFromKey(filed);
         let changeNum = formatNum(newValue - oldValue);
-        await this.spmFrom("_" + filed, user.nick, origin, `${filedName}${changeNum}`, `剩余${filedName}${newValue}`, ext);
+        await this.spmFrom({
+            type: "_" + filed,
+            who: user.nick,
+            what: origin,
+            target: `${filedName}${changeNum}`,
+            desc: `剩余${filedName}${newValue}`,
+            ext: ext?.ext,
+            extParams: ext?.extParams
+        });
     }
 
 
-    async spmLotteryCount(user: User | other, origin: string, ext?) {
+    async spmLotteryCount(user: User | other, origin: string, ext?: spmExt) {
         await this.spmNum(user, origin, "lotteryCount", "抽奖次数", ext);
     }
 
-    async spmGameNum(user: User | other, origin: string, ext?) {
+    async spmGameNum(user: User | other, origin: string, ext?: spmExt) {
         await this.spmNum(user, origin, "gameNum", "游戏次数", ext);
     }
 
-    async spmScore(user: User | other, origin: string, ext?) {
+    async spmScore(user: User | other, origin: string, ext?: spmExt) {
         await this.spmNum(user, origin, "score", "分数", ext);
     }
 
-    async spmLotteryResult(user: User | other, prize: configPrize, extSay?: string, ext?) {
-        await this.spmFrom("_lotteryResult", user.nick, "抽奖", `抽奖结果：${prize.name}${extSay ? "，" + extSay : ""}`, `剩余抽奖次数${user.lotteryCount}`, ext);
+    async spmLotteryResult(user: User | other, prize: configPrize, extSay?: string, ext?: spmExt) {
+        await this.spmFrom({
+            type: "_lotteryResult",
+            who: user.nick,
+            what: "抽奖",
+            target: `抽奖结果：${prize.name}${extSay ? "，" + extSay : ""}`,
+            desc: `剩余抽奖次数${user.lotteryCount}`,
+            ext: ext?.ext,
+            extParams: ext?.extParams
+        });
     }
 
 }

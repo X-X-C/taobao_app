@@ -5,3 +5,8 @@ interface taskConfigType {
         type: "normal" | "other"
     };
 }
+
+interface spmExt {
+    ext?: any,
+    extParams?: any
+}
