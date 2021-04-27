@@ -157,8 +157,8 @@ export default class PrizeService extends BaseService<Prize> {
         }
     }
 
-    async allPrizeInfo(filter: Prize | other) {
-        return await this.getAll({
+    async allPrizeInfo(filter: Prize | other = {}): Promise<{ prizeId: string, prizeType: string }[]> {
+        return <any>await this.getAll({
             openId: this.openId,
             activityId: this.activityId,
             ...filter
