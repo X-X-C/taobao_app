@@ -3,7 +3,6 @@ import App from "../../base/App";
 import ActivityService from "./ActivityService";
 import TopService from "../../base/service/TopService";
 import Utils from "../../base/utils/Utils";
-import Time from "../../base/utils/Time";
 import PrizeService from "./PrizeService";
 import Prize from "../entity/Prize";
 import MsgGenerate from "../utils/MsgGenerate";
@@ -37,7 +36,7 @@ export default class UserService extends BaseUserService {
             if (user.lastInitTime !== time.YYYYMMDD) {
                 filter.lastInitTime = user._.lastInitTime;
                 //初始化用户信息
-                this.init(user);
+                await this.init(user);
             }
             //更新用户
             await this.loosen.editUser(user.optionsEnd, filter);
@@ -53,7 +52,7 @@ export default class UserService extends BaseUserService {
         this.response.data.user = user.pure;
     }
 
-    private init(user: User) {
+    async init(user: User) {
         let time = this.time().common;
         //上次初始化时间
         if (user.lastInitTime !== time.YYYYMMDD) {
@@ -405,41 +404,6 @@ export default class UserService extends BaseUserService {
         if (vip.code === 1 && vip.data.gmt_create >= user.createTime) {
             await this.spm("newMember");
         }
-    }
-
-    getSuccessiveDay(data) {
-        let day = data;
-        let successiveDay = 0;
-        while (day.length > successiveDay) {
-            let time = this.time();
-            let target = time.to(-successiveDay).common.YYYYMMDD;
-            if (day.indexOf(target) !== -1) {
-                successiveDay += 1;
-            } else {
-                break;
-            }
-        }
-        return successiveDay;
-    }
-
-    getMaxSuccessiveDay(days) {
-        let data = deepClone(days);
-        data = data.sort((a, b) => a > b ? 1 : -1);
-        let max = 0;
-        let tmpMax = 1;
-        for (let v of data) {
-            let time = new Time(v);
-            time = time.to(1).format("YYYY-MM-DD");
-            if (data.indexOf(time) !== -1) {
-                tmpMax += 1;
-            } else {
-                if (tmpMax > max) {
-                    max = tmpMax;
-                }
-                tmpMax = 1;
-            }
-        }
-        return max;
     }
 
 }
