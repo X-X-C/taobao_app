@@ -1,4 +1,4 @@
-import App from "./base/App";
+import App from "./App";
 // @ts-ignore
 exports.main = async (context) => {
     const app = new App(context, "main");
