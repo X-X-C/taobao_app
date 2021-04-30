@@ -1,5 +1,4 @@
 import User from "../entity/User";
-import App from "../../base/App";
 import ActivityService from "./ActivityService";
 import TopService from "../../base/service/TopService";
 import Utils from "../../base/utils/Utils";
@@ -12,9 +11,6 @@ import {taskConfig} from "../Config";
 const {random, deepClone} = Utils;
 
 export default class UserService extends BaseUserService {
-    constructor(app: App) {
-        super(app);
-    }
 
     get services() {
         return {

@@ -1,13 +1,9 @@
-import App from "../../base/App";
 import UserService from "./UserService";
 import Prize from "../entity/Prize";
 import PrizeService from "./PrizeService";
 import XActivityService from "../../base/service/XActivityService";
 
 export default class ActivityService extends XActivityService {
-    constructor(app: App) {
-        super(app);
-    }
 
     async award() {
         let activity = this.globalActivity;

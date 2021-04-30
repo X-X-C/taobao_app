@@ -3,8 +3,8 @@ import User from "../../entity/User";
 import App from "../../../base/App";
 import MsgGenerate, {formatNum} from "../../utils/MsgGenerate";
 
-export default abstract class BaseUserService extends BaseService<User> {
-    protected constructor(app: App) {
+export default class BaseUserService extends BaseService<User> {
+    constructor(app: App) {
         super(app, "users");
     }
 
