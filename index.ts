@@ -2,16 +2,15 @@ import UserService from "./src/service/UserService";
 import PrizeService from "./src/service/PrizeService";
 import App from "./App";
 
-// @ts-ignore
-exports.main = async (context) => {
+
+export async function main(context) {
     const app = new App(context, "main");
     return await app.run(async function () {
     });
 }
 
 
-// @ts-ignore
-exports.assist = async (context) => {
+export async function assist(context) {
     const app = new App(context, "assist");
     app.before.inspectionActivity();
     app.runNeedParams = {
@@ -23,8 +22,7 @@ exports.assist = async (context) => {
 }
 
 
-// @ts-ignore
-exports.task = async (context) => {
+export async function task(context) {
     const app = new App(context, "task");
     app.before.inspectionActivity();
     app.runNeedParams = {
@@ -37,8 +35,7 @@ exports.task = async (context) => {
 }
 
 
-// @ts-ignore
-exports.enter = async (context) => {
+export async function enter(context) {
     const app = new App(context, "enter");
     app.before.globalActivity();
     return await app.run(async function () {
@@ -48,8 +45,7 @@ exports.enter = async (context) => {
 }
 
 
-// @ts-ignore
-exports.userInfo = async (context) => {
+export async function userInfo(context) {
     const app = new App(context, "userInfo");
     return await app.run(async function () {
         let userService = app.getService(UserService);
@@ -58,8 +54,7 @@ exports.userInfo = async (context) => {
 }
 
 
-// @ts-ignore
-exports.updateUser = async (context) => {
+export async function updateUser(context) {
     const app = new App(context, "updateUser");
     return await app.run(async function () {
         let userService = app.getService(UserService);
@@ -68,8 +63,7 @@ exports.updateUser = async (context) => {
 }
 
 
-// @ts-ignore
-exports.lottery = async (context) => {
+export async function lottery(context) {
     const app = new App(context, "lottery");
     app.before.inspectionActivity();
     return await app.run(async function () {
@@ -79,8 +73,7 @@ exports.lottery = async (context) => {
 }
 
 
-// @ts-ignore
-exports.spmMember = async (context) => {
+export async function spmMember(context) {
     const app = new App(context, "spmMember");
     return await app.run(async function () {
         let userService = app.getService(UserService);
@@ -89,8 +82,7 @@ exports.spmMember = async (context) => {
 }
 
 
-// @ts-ignore
-exports.myPrize = async (context) => {
+export async function myPrize(context) {
     const app = new App(context, "myPrize");
     return await app.run(async function () {
         let prizeService = app.getService(PrizeService);
@@ -98,8 +90,8 @@ exports.myPrize = async (context) => {
     });
 }
 
-// @ts-ignore
-exports.receivePrize = async (context) => {
+
+export async function receivePrize(context) {
     const app = new App(context, "receivePrize");
     app.runNeedParams = {
         prizeId: "string"
