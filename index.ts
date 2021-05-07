@@ -1,6 +1,7 @@
 import UserService from "./src/service/UserService";
 import PrizeService from "./src/service/PrizeService";
 import App from "./App";
+import Time from "./base/utils/Time";
 
 
 export async function main(context) {
@@ -101,4 +102,17 @@ export async function receivePrize(context) {
         await prizeService.receive();
     });
 }
+
+export async function getTime(context) {
+    const app = new App(context, "getTime");
+    return await app.run(async function () {
+        let time = new Time();
+        app.response.data = {
+            base: time.common.base,
+            x: time.common.x
+        }
+    });
+}
+
+
 
