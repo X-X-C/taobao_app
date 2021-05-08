@@ -97,13 +97,13 @@ export default class UserService extends BaseUserService {
     }
 
     async assist() {
-        let {sopenId, shareTime} = this.data;
+        let {sopenId} = this.data;
         //当前用户信息
         let user = await this.getUser();
         //邀请人信息
         let inviter = await this.getUser(sopenId);
         //时间对象
-        let time = this.time(Number(shareTime)).common.base;
+        let time = this.time().common.base;
         //会员状态
         let vip = await this.services.topService.vipStatus();
         //记录值
@@ -135,7 +135,7 @@ export default class UserService extends BaseUserService {
             this.response.message = "不是会员";
         }
         //不是新会员
-        else if (time > vip.data.gmt_create) {
+        else if (user.createTime > vip.data.gmt_create) {
             this.response.code = 206;
             this.response.message = "不是新会员";
         }
