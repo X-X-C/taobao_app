@@ -110,8 +110,8 @@ export default class PrizeService extends BaseService<Prize> {
                     ename
                 });
             }
-            //实物奖品
-            else if (prize.type === "item") {
+            //其他奖品
+            else {
                 let {ext} = this.data;
                 let baseInfo = this.baseInfo();
                 Object.assign(baseInfo, ext)
