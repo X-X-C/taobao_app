@@ -67,17 +67,18 @@ export default class BaseUserService extends BaseService<User> {
      * 更新用户头像
      */
     async updateUser() {
-        this.response.data = await this.loosen.editUser(
-            {
-                $set: {
-                    avatar: this.data.avatar,
-                    nick: this.nick
+        if (this.context.userNick) {
+            this.response.data = await this.loosen.editUser(
+                {
+                    $set: {
+                        avatar: this.data.avatar,
+                        nick: this.nick
+                    }
                 }
-            },
-            {
-                avatar: false
-            }
-        );
+            );
+        } else {
+            this.response.data = "用户没有授权";
+        }
     }
 
     async spmFrom(
