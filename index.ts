@@ -38,6 +38,7 @@ export async function task(context) {
 
 export async function enter(context) {
     const app = new App(context, "enter");
+    app.globalNeedParams = {};
     app.before.globalActivity();
     return await app.run(async function () {
         let userService = app.getService(UserService);
