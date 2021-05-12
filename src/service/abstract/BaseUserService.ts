@@ -50,7 +50,6 @@ export default class BaseUserService extends BaseService<User> {
      * 修改用户
      * @param options
      * @param filter
-     * @param ignore
      */
     async editUser(options, filter?: User | other): Promise<number> {
         return await super.edit(
@@ -99,9 +98,10 @@ export default class BaseUserService extends BaseService<User> {
     }
 
     async spmNum(user: User | other, origin: string, filed: keyof User | string, filedName: string, ext?: spmExt) {
-        let oldValue = user.getValueFromKey("_." + filed);
+        let oldValue = user.getValueFromKey("_tempThis." + filed);
         let newValue = user.getValueFromKey(filed);
         let changeNum = formatNum(newValue - oldValue);
+        user.tempThisCommit;
         await this.spmFrom({
             type: "_" + filed,
             who: user.nick,

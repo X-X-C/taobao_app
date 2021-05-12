@@ -13,6 +13,9 @@ export default class App extends XApp {
 }
 
 class Before extends XBefore {
-
-
+    // test() {
+    //     this.addBefore = async (app: App) => {
+    //         //...
+    //     }
+    // }
 }

@@ -28,7 +28,8 @@ export default class PrizeService extends BaseService<Prize> {
         let filter = {
             openId: this.openId,
             activityId: this.activityId,
-            isShow: true
+            isShow: true,
+            type: this.data.type
         }
         let list = await this.getAll(filter);
         this.response.data = {list};
@@ -62,21 +63,16 @@ export default class PrizeService extends BaseService<Prize> {
         }, prizeData.optionsEnd)
         //其他类型奖品开始尝试发奖
         let userService = this.getService(UserService);
-        try {
-            let user = await userService.getUser();
-            await this.sendPrize(user, prizeData);
+        let user = await userService.getUser();
+        await this.sendPrize(user, prizeData);
+        if (prizeData.sendSuccess !== true) {
+            await this.edit(filter, prizeData.optionsBack)
+            this.response.set222("发放失败");
+        } else {
             //领取成功
             await this.loosen.edit({
                 ...filter
             }, prizeData.optionsEnd)
-        }
-            //报错了...回滚状态
-        catch (e) {
-            await this.edit(filter, prizeData.optionsBack)
-            await this.getService(XErrorLogService).add(e);
-        }
-        if (prizeData.sendSuccess !== true) {
-            this.response.set222("发放失败");
         }
     }
 
@@ -86,9 +82,8 @@ export default class PrizeService extends BaseService<Prize> {
             code: 1,
             data: "成功"
         };
-
         try {
-//尖货领取
+            //尖货领取
             if (prize.type === "goods") {
                 let {skuId, itemId} = prize[prize.type];
                 result = await topService.opentradeSpecialUsersMark({
@@ -132,9 +127,8 @@ export default class PrizeService extends BaseService<Prize> {
         }
         if (result.code === 1) {
             prizeBean.sendSuccess = true;
-        }
-        if (result.code === -1) {
-            throw result.data;
+        } else {
+            await this.getService(XErrorLogService).add(result.data);
         }
         return result;
     }

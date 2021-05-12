@@ -7,8 +7,9 @@ import Prize from "../entity/Prize";
 import MsgGenerate from "../utils/MsgGenerate";
 import BaseUserService from "./abstract/BaseUserService";
 import {taskConfig} from "../Config";
+import ActivityInfoService from "../../base/service/ActivityInfoService";
 
-const {random, deepClone} = Utils;
+const {random} = Utils;
 
 export default class UserService extends BaseUserService {
 
@@ -58,7 +59,7 @@ export default class UserService extends BaseUserService {
 
     async gameStart() {
         let user = await this.getUser();
-        if (user.gameNum <= 0) {
+        if (!(user.gameNum > 0)) {
             this.response.set222("没有游戏次数");
             return;
         }
@@ -140,7 +141,7 @@ export default class UserService extends BaseUserService {
             this.response.message = "不是新会员";
         }
         //超过限制
-        else if (inviter.task.assist > 10) {
+        else if (!(inviter.task.assist < 10)) {
             this.response.code = 208;
             this.response.message = "超过邀请限制";
         }
@@ -171,35 +172,35 @@ export default class UserService extends BaseUserService {
     }
 
     async lottery() {
-        //当前用户信息
         let user = await this.getUser();
-        let activityService = this.services.activityService;
-        //获取活动
         let activity = this.globalActivity;
         this.response.data.award = false;
-        if (user.lotteryCount <= 0) {
+        if (!(user.lotteryCount > 0)) {
             this.response.set222("没有抽奖次数");
             return;
         }
-        //有抽奖次数
         user.lotteryCount -= 1;
         await this.editUser(user.optionsEnd, {
             lotteryCount: user._.lotteryCount
         });
         await this.spmLotteryCount(user, "抽奖");
-        this.response.data.lotteryCount = user.lotteryCount;
         let prizeList = activity.data.config.lotteryPrize.prizeList;
         let awardIndex = random(prizeList.map(v => parseFloat(v.probability)));
         //抽中的奖品
         let prize = prizeList[awardIndex];
         let extSay = "";
-        //不是未中奖
+        //初始化返回值
+        this.response.data.lotteryCount = user.lotteryCount;
+        this.response.data.prize = prizeList.find(v => v.type === "noprize");
         if (prize && prize.type !== "noprize") {
             let stockInfo = this.stockInfo(prize);
-            //有剩余库存
-            if (stockInfo.restStock) {
-                let line = await activityService.loosen.updateStock(prize, stockInfo.done, 1);
-                if (line === 1) {
+            if (!stockInfo.restStock) {
+                extSay = "无库存，未中奖";
+            } else {
+                let line = await this.getService(ActivityInfoService).updateStock(stockInfo, 1);
+                if (line !== 1) {
+                    extSay = "网络繁忙，未中奖";
+                } else {
                     //成功扣减库存
                     let prizeService = this.getService(PrizeService);
                     let sendPrize = new Prize(user, prize, "lottery");
@@ -209,11 +210,7 @@ export default class UserService extends BaseUserService {
                     prize._id = await prizeService.insertOne(sendPrize);
                     this.response.data.prize = prize;
                     this.response.data.award = true;
-                } else {
-                    extSay = "网络繁忙，未中奖";
                 }
-            } else {
-                extSay = "无库存，未中奖";
             }
         }
         if (prize) {
