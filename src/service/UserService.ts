@@ -197,7 +197,7 @@ export default class UserService extends BaseUserService {
             if (!stockInfo.restStock) {
                 extSay = "无库存，未中奖";
             } else {
-                let line = await this.getService(ActivityInfoService).updateStock(stockInfo, 1);
+                let line = await this.getService(ActivityInfoService).loosen.updateStock(stockInfo, 1);
                 if (line !== 1) {
                     extSay = "网络繁忙，未中奖";
                 } else {
