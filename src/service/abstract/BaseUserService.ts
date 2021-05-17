@@ -109,7 +109,11 @@ export default class BaseUserService extends BaseService<User> {
             target: `${filedName}${changeNum}`,
             desc: `剩余${filedName}${newValue}`,
             ext: ext?.ext,
-            extParams: ext?.extParams
+            extParams: {
+                origin,
+                changeNum,
+                ...ext?.extParams
+            }
         });
     }
 

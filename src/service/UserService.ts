@@ -166,7 +166,7 @@ export default class UserService extends BaseUserService {
             await this.spm("assist");
         }
         let msg = vip.code === 1 ? `，首次入会时间【${vip.data.gmt_create}】。` : "，不是会员。";
-        spmData.desc = MsgGenerate.assistDesc(user.nick, inviter.nick, this.response.message + msg + `分享时间【${time}】`);
+        spmData.desc = MsgGenerate.assistDesc(user.nick, inviter.nick, this.response.message + msg + `首次进入小程序时间【${user.createTime}】`);
         spmData.code = this.response.code;
         await this.simpleSpm("assistAll", spmData);
     }
