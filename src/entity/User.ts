@@ -72,6 +72,10 @@ export default class User extends BaseEntity {
     * 2 - 邀请入会*/
     memberType = 0;
 
+    get showData(){
+        return this.pure;
+    }
+
     get baseInfo() {
         return {
             nick: this.nick,

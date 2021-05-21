@@ -46,7 +46,8 @@ export default class UserService extends BaseUserService {
         user.vipStatus = vip.code;
         user.isAuth = !!this.context.userNick;
         //返回
-        this.response.data.user = user.pure;
+        this.response.data.user = user.showData;
+        await this.spmPv();
     }
 
     async init(user: User) {
@@ -366,7 +367,7 @@ export default class UserService extends BaseUserService {
         let user = await this.getUser();
         user.vipStatus = (await this.services.topService.vipStatus()).code;
         user.isAuth = !!this.context.userNick;
-        this.response.data.user = user.pure;
+        this.response.data.user = user.showData;
     }
 
     async normalTask(type) {
