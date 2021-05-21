@@ -77,6 +77,9 @@ export async function lottery(context) {
 
 export async function spmMember(context) {
     const app = new App(context, "spmMember");
+    app.runNeedParams = {
+        type: "string"
+    }
     return await app.run(async function () {
         let userService = app.getService(UserService);
         await userService.spmMember();

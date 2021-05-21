@@ -6,6 +6,7 @@ export default class User extends BaseEntity {
     }
 
     [key: string]: any;
+
     /**
      * 基础字段
      */
@@ -63,6 +64,13 @@ export default class User extends BaseEntity {
      */
         //剩余抽奖次数
     lotteryCount: number = 0;
+
+    /*
+    * 会员类型
+    * 0 - 未确定会员身份
+    * 1 - 自主入会
+    * 2 - 邀请入会*/
+    memberType = 0;
 
     get baseInfo() {
         return {

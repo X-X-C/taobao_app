@@ -393,9 +393,24 @@ export default class UserService extends BaseUserService {
 
     async spmMember() {
         let user = await this.getUser();
+        let {type} = this.data;
         let vip = await this.services.topService.vipStatus();
         if (vip.code === 1 && vip.data.gmt_create >= user.createTime) {
-            await this.spm("newMember");
+            if (user.memberType === 0) {
+                if (type === "self") {
+                    user.memberType = 1;
+                } else if (type === "assist") {
+                    user.memberType = 2;
+                }
+                await this.editUser(user.optionsEnd);
+            }
+            if (user.memberType === 1) {
+                //new member
+                await this.spm("newMember");
+            } else if (user.memberType === 2) {
+                //assist member
+                await this.spm("assistMember");
+            }
         }
     }
 
