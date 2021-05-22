@@ -1,7 +1,10 @@
 import BaseService from "../../../base/service/abstract/BaseService";
 import User from "../../entity/User";
 import App from "../../../base/App";
-import MsgGenerate, {formatNum} from "../../utils/MsgGenerate";
+import Utils from "../../../base/utils/Utils";
+import MsgGenerate from "../../utils/MsgGenerate";
+
+let {formatNum} = Utils;
 
 export default class BaseUserService extends BaseService<User> {
     constructor(app: App) {
