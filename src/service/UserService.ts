@@ -149,14 +149,14 @@ export default class UserService extends BaseUserService {
         //条件满足
         else {
             inviter.task.assist += 1;
-            inviter.gameNum += taskConfig.assist.reward;
+            // inviter.gameNum += taskConfig.assist.reward;
             await this.editUser(inviter.optionsEnd, {
                 "task.assist": inviter._.task.assist,
                 openId: inviter.openId
             });
-            await this.spmGameNum(inviter, `成功邀请好友【${user.nick}】`, {
-                ext: inviter.baseInfo
-            });
+            // await this.spmGameNum(inviter, `成功邀请好友【${user.nick}】`, {
+            //     ext: inviter.baseInfo
+            // });
             //成功
             user.inviter = {
                 nick: inviter.nick,
@@ -389,7 +389,7 @@ export default class UserService extends BaseUserService {
         }
         await this.editUser(user.optionsEnd, {});
         await this.spm(type);
-        await this.spmGameNum(user, task.name);
+        // await this.spmGameNum(user, task.name);
     }
 
     async spmMember() {
