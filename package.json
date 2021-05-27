@@ -4,7 +4,9 @@
     "description": "-",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "doc": "apidoc -i ./ -o test/doc/out -e node_modules -e .*.js",
+        "docm": "apidoc-markdown -p ./test/doc/out  -o ./test/doc/doc.md -t ./test/doc/template.md"
     },
     "sdkVersion": "*",
     "dependencies": {
