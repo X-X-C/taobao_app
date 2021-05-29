@@ -13,6 +13,7 @@ export async function main(context) {
  * @api {app} enter 获取初始信息
  * @apiDescription 获取初始信息
  * @apiSuccessExample
+ * {}
  */
 
 export async function enter(context) {
