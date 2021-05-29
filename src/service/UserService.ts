@@ -192,7 +192,7 @@ export default class UserService extends BaseUserService {
         let extSay = "";
         //初始化返回值
         this.response.data.lotteryCount = user.lotteryCount;
-        this.response.data.prize = prizeList.find(v => v.type === "noprize");
+        this.response.data.prize = new Prize(user, prizeList.find(v => v.type === "noprize"), "lottery");
         if (prize && prize.type !== "noprize") {
             let stockInfo = this.stockInfo(prize);
             if (!stockInfo.restStock) {
@@ -208,8 +208,8 @@ export default class UserService extends BaseUserService {
                     if (prize.type === "code") {
                         sendPrize.ext.code = await prizeService.generateCode();
                     }
-                    prize._id = await prizeService.insertOne(sendPrize);
-                    this.response.data.prize = prize;
+                    sendPrize._id = await prizeService.insertOne(sendPrize);
+                    this.response.data.prize = sendPrize;
                     this.response.data.award = true;
                 }
             }

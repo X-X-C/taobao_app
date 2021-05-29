@@ -39,9 +39,9 @@ export default class PrizeService extends BaseService<Prize> {
      * 领取奖品
      */
     async receive(id?) {
-        let {prizeId} = this.data;
+        let {receiveId} = this.data;
         let filter = {
-            _id: id || prizeId,
+            _id: id || receiveId,
             openId: this.openId,
             activityId: this.activityId
         }

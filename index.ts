@@ -131,8 +131,8 @@ export async function assist(context) {
     "data": {
         //是否中奖
         "award": true,
+        //与我的奖品里的单个奖品格式相同
         "prize": {
-            //...奖品信息
         },
         //剩余抽奖次数
         "lotteryCount": 1
@@ -253,7 +253,8 @@ export async function myPrize(context) {
 /**
  * @api {app} receivePrize 领取奖品
  * @apiDescription 领取奖品
- * @apiParam {object} ext 领奖信息，示例如下
+ * @apiParam {string} receiveId 领奖ID，奖品里的**_id**
+ * @apiParam {object} [ext] 领奖填写的额外信息，示例如下
  * @apiParamExample ext
  * {
     //省
@@ -282,7 +283,7 @@ export async function myPrize(context) {
 export async function receivePrize(context) {
     const app = new App(context, "receivePrize");
     app.runNeedParams = {
-        prizeId: "string"
+        receiveId: "string"
     }
     return await app.run(async function () {
         let prizeService = app.getService(PrizeService);
