@@ -70,7 +70,7 @@ export default class BaseUserService extends BaseService<User> {
      */
     async updateUser() {
         if (this.context.userNick) {
-            this.response.data = await this.loosen.editUser(
+            this.response.data.line = await this.loosen.editUser(
                 {
                     $set: {
                         avatar: this.data.avatar,
@@ -79,7 +79,8 @@ export default class BaseUserService extends BaseService<User> {
                 }
             );
         } else {
-            this.response.data = "用户没有授权";
+            this.response.message = "用户没有授权";
+            this.response.success = true;
         }
     }
 
