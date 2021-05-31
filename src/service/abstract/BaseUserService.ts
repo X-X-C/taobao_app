@@ -81,7 +81,7 @@ export default class BaseUserService extends BaseService<User> {
             );
         } else {
             this.response.message = "用户没有授权";
-            this.response.success = true;
+            this.response.success = false;
         }
     }
 
