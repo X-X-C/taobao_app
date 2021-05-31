@@ -70,10 +70,11 @@ export default class BaseUserService extends BaseService<User> {
      */
     async updateUser() {
         if (this.context.userNick) {
+            let {avatar} = this.data;
             this.response.data.line = await this.loosen.editUser(
                 {
                     $set: {
-                        avatar: this.data.avatar,
+                        avatar,
                         nick: this.nick
                     }
                 }
