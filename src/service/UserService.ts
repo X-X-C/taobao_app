@@ -8,7 +8,7 @@ import MsgGenerate from "../utils/MsgGenerate";
 import BaseUserService from "./abstract/BaseUserService";
 import {taskConfig} from "../Config";
 import ActivityInfoService from "../../base/service/ActivityInfoService";
-import {exp} from "../../base/utils/Annotation";
+import {exp, ignoreGlobalParam} from "../../base/utils/Annotation";
 
 const {random} = Utils;
 
@@ -29,6 +29,7 @@ export default class UserService extends BaseUserService {
      * {}
      */
     @exp()
+    @ignoreGlobalParam()
     async enter() {
         let activityService = this.services.activityService;
         let activity = this.globalActivity;

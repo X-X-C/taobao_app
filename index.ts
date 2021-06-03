@@ -10,6 +10,9 @@ for (let entry of Object.entries(XApp.exports)) {
     exports[entry[0]] = async (context) => {
         const app = new App(context, entry[0]);
         app.runNeedParams = entry[1].params || {};
+        if (!entry[1].needGlobalParam) {
+            app.globalNeedParams = {};
+        }
         return await app.run(async function () {
             await app.getService(entry[1].constructor)[entry[0]]();
         });
