@@ -5,7 +5,7 @@ export default class App extends XApp {
         super(context, apiName);
         this.before = new Before(this);
         this.globalNeedParams = {
-            // activityId: "string"
+            activityId: "string"
         }
     }
 
