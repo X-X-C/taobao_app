@@ -8,6 +8,7 @@ import MsgGenerate from "../utils/MsgGenerate";
 import BaseUserService from "./abstract/BaseUserService";
 import {taskConfig} from "../Config";
 import ActivityInfoService from "../../base/service/ActivityInfoService";
+import {exp} from "../../base/utils/Annotation";
 
 const {random} = Utils;
 
@@ -20,6 +21,14 @@ export default class UserService extends BaseUserService {
         }
     }
 
+
+    /**
+     * @api {app} enter 获取初始信息
+     * @apiDescription 获取初始信息
+     * @apiSuccessExample
+     * {}
+     */
+    @exp()
     async enter() {
         let activityService = this.services.activityService;
         let activity = this.globalActivity;
@@ -58,6 +67,24 @@ export default class UserService extends BaseUserService {
         }
     }
 
+    /**
+     * @api {app} gameStart 开始游戏
+     * @apiDescription 开始游戏
+     * @apiSuccessExample
+     * {
+   	//200-成功
+    //201-不在活动时间内
+    //222-失败
+    "code": 200,
+    "data": {
+        //剩余游戏次数
+        "gameNum": 0
+    },
+    "success": true,
+    "message": "成功"
+}
+     */
+    @exp()
     async gameStart() {
         let user = await this.getUser();
         if (!(user.gameNum > 0)) {
@@ -77,6 +104,25 @@ export default class UserService extends BaseUserService {
         this.response.data.gameNum = user.gameNum;
     }
 
+    /**
+     * @api {app} gameEnd 结束游戏
+     * @apiDescription 结束游戏
+     * @apiParam {number} add 新增分数
+     * @apiSuccessExample
+     * {
+    //200-成功
+    //201-不在活动时间内
+    //222-失败
+    "code": 200,
+    "data": {
+        //剩余分数
+        "score": 10000
+    },
+    "success": true,
+    "message": "成功"
+}
+     */
+    @exp({add: "number"})
     async gameEnd() {
         let user = await this.getUser();
         if (user.gameStatus !== 1) {
@@ -98,6 +144,28 @@ export default class UserService extends BaseUserService {
         this.response.data.score = user.score;
     }
 
+    /**
+     * @api {app} assist 助力
+     * @apiDescription 助力
+     * @apiParam {string} sopenId 邀请者openId
+     * @apiSuccessExample
+     * {
+    //200 成功
+    //201 不在活动时间内
+    //202 邀请人不存在
+    //203 已经被其他用户邀请
+    //204 不能邀请自己
+    //205 不是会员
+    //206 不是新会员
+    //208 超过邀请限制
+    "code": 202,
+    "data": {},
+    //是否成功邀请
+    "success": true,
+    "message": "邀请人不存在"
+}
+     */
+    @exp({sopenId: "string"})
     async assist() {
         let {sopenId} = this.data;
         //当前用户信息
@@ -172,6 +240,28 @@ export default class UserService extends BaseUserService {
         await this.simpleSpm("assistAll", spmData);
     }
 
+    /**
+     * @api {app} lottery 抽奖
+     * @apiDescription 抽奖
+     * @apiSuccessExample
+     * {
+    //200-成功
+    //201-不在活动时间内
+    "code": 200,
+    "data": {
+        //是否中奖
+        "award": true,
+        //与我的奖品里的单个奖品格式相同
+        "prize": {
+        },
+        //剩余抽奖次数
+        "lotteryCount": 1
+    },
+    "success": true,
+    "message": "成功"
+}
+     */
+    @exp()
     async lottery() {
         let user = await this.getUser();
         let activity = this.globalActivity;
@@ -219,7 +309,7 @@ export default class UserService extends BaseUserService {
         }
     }
 
-    async rank(size: number = this.data.size || 50, page: number = this.data.page || 1) {
+    async rankData(size: number = this.data.size || 50, page: number = this.data.page || 1) {
         let pipe = [
             {
                 $match: {
@@ -263,6 +353,58 @@ export default class UserService extends BaseUserService {
         return list;
     }
 
+    /**
+     * @api {app} rank 排行榜
+     * @apiDescription 排行榜
+     * @apiParam {number} [page] 页数
+     * @apiParam {number} [size] 每页显示条数
+     * @apiSuccessExample
+     *{
+    "code": 200,
+    "data": {
+        "list": [
+            {
+                "nick": "牧**",
+                //分数
+                "score": 10000,
+                "activityId": "608775329897b453554c72fe",
+                "openId": "AAHvNcpFANgOFJhVCORYvt7O",
+                //排名
+                "rank": 1,
+                //头像
+                "avatar": false
+            }
+        ]
+    },
+    "success": true,
+    "message": "成功"
+}
+     */
+    @exp()
+    async rank(page = this.data.page, size = this.data.size) {
+        let list = await this.rankData(size, page);
+        this.response.data.list = list.map(v => v);
+    }
+
+    /**
+     * @api {app} meRank 我的排名
+     * @apiDescription 我的排名
+     * @apiSuccessExample
+     * {
+    "code": 200,
+    "data": {
+        "nick": "牧**",
+        "activityId": "608775329897b453554c72fe",
+        "score": 10000,
+        "openId": "AAHvNcpFANgOFJhVCORYvt7O",
+        "rank": 1,
+        "avatar": false
+    },
+    "success": true,
+    "message": "成功"
+}
+     */
+    @exp()
     async meRank() {
         let user = await this.getUser();
         this.response.data = {
@@ -363,6 +505,14 @@ export default class UserService extends BaseUserService {
         }
     }
 
+
+    /**
+     * @api {app} userInfo 获取用户信息
+     * @apiDescription 获取用户信息
+     * @apiSuccessExample
+     * //同enter里的用户信息
+     */
+    @exp()
     async userInfo() {
         let user = await this.getUser();
         user.vipStatus = (await this.services.topService.vipStatus()).code;
@@ -370,7 +520,25 @@ export default class UserService extends BaseUserService {
         this.response.data.user = user.showData;
     }
 
-    async normalTask(type) {
+    /**
+     * @api {app} task 完成任务
+     * @apiDescription 完成任务
+     * @apiParam {string} target 任务类型，可选值`follow`关注店铺,`member`加入会员
+     * @apiSuccessExample
+     * {
+    //200-成功
+    //201-不在活动时间内
+    //222-失败
+    "code": 200,
+    "data": {
+    },
+    "success": true,
+    "message": "成功"
+}
+     */
+    @exp()
+    async task() {
+        let {type} = this.data;
         let user = await this.getUser();
         let task = taskConfig[type];
         if (!task || task.type !== "normal") {
@@ -392,6 +560,20 @@ export default class UserService extends BaseUserService {
         // await this.spmGameNum(user, task.name);
     }
 
+    /**
+     * @api {app} spmMember 埋点会员
+     * @apiDescription 埋点会员
+     * @apiParam {string} type 埋点会员类型，可选值`self`自主入会，`assist`助力入会。
+     * @apiSuccessExample
+     * {
+    "data": {
+    },
+    "success": true,
+    "message": "成功",
+    "code": 200
+}
+     */
+    @exp({type: "string"})
     async spmMember() {
         let user = await this.getUser();
         let {type} = this.data;
@@ -413,6 +595,28 @@ export default class UserService extends BaseUserService {
                 await this.spm("assistMember");
             }
         }
+    }
+
+    /**
+     * @api {app} getTime 获取服务器时间
+     * @apiDescription 获取服务器时间
+     * @apiSuccessExample
+     * {
+    "code": 200,
+    "data": {
+        //时间戳
+        "x": 1622170025121,
+        //时间
+        "base": "2021-05-28 10:47:05"
+    },
+    "success": true,
+    "message": "成功",
+    "params": {}
+}
+     */
+    @exp()
+    getTime() {
+        this.response.data = this.time().common;
     }
 
 }

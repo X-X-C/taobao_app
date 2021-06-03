@@ -26,7 +26,7 @@ export default class ActivityService extends XActivityService {
             rankPrizeList = rankPrizeList.sort((a, b) => {
                 return parseInt(b.condition.endNum) - parseInt(a.condition.endNum);
             });
-            let rankList = await userService.rank(rankPrizeList[0].condition.endNum, 1);
+            let rankList = await userService.rankData(rankPrizeList[0].condition.endNum, 1);
             let winners = [];
             for (let user of rankList) {
                 let prize = rankPrizeList.find(p => {

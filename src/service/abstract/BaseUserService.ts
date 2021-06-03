@@ -3,6 +3,7 @@ import User from "../../entity/User";
 import App from "../../../base/App";
 import Utils from "../../../base/utils/Utils";
 import MsgGenerate from "../../utils/MsgGenerate";
+import {exp} from "../../../base/utils/Annotation";
 
 let {formatNum} = Utils;
 
@@ -65,9 +66,21 @@ export default class BaseUserService extends BaseService<User> {
         );
     }
 
+
     /**
-     * 更新用户头像
+     * @api {app} updateUser 更新用户信息
+     * @apiDescription 更新用户信息
+     * @apiParam {string} [avatar] 用户头像
+     * @apiSuccessExample
+     * {
+    "data": {
+    },
+    "success": true,
+    "message": "成功",
+    "code": 200
+}
      */
+    @exp()
     async updateUser() {
         if (this.context.userNick) {
             let {avatar} = this.data;

@@ -6,6 +6,7 @@ import Utils from "../../base/utils/Utils";
 import UserService from "./UserService";
 import MsgGenerate from "../utils/MsgGenerate";
 import XErrorLogService from "../../base/service/XErrorLogService";
+import {exp} from "../../base/utils/Annotation";
 
 export default class PrizeService extends BaseService<Prize> {
     constructor(app: App) {
@@ -24,7 +25,76 @@ export default class PrizeService extends BaseService<Prize> {
         }
     }
 
-    async my() {
+    /**
+     * @api {app} myPrize 我的奖品
+     * @apiDescription 我的奖品
+     * @apiParam {string} [type] 奖品类型，可选值`lottery`,如果不传则默认查询全部奖品
+     * @apiSuccessExample
+     * {
+    "code": 200,
+    "data": {
+        "list": [
+            {   //领取状态
+                "receiveStatus": false,
+                //奖品类型
+                "type": "lottery",
+                //奖品详情
+                "prize": {
+                    "item": {
+                        "imageUrl": "",
+                        "url": ""
+                    },
+                    "grantTotal": 0,
+                    "code": {
+                        "imageUrl": ""
+                    },
+                    "coupon": {
+                        "imageUrl": "",
+                        "links": {
+                            "url": ""
+                        }
+                    },
+                    "probability": "100",
+                    "noprize": {
+                        "imageUrl": ""
+                    },
+                    "goods": {
+                        "itemId": "",
+                        "imageUrl": "",
+                        "skuId": "0"
+                    },
+                    "type": "coupon",
+                    "benefit": {
+                        "orderUrl": "",
+                        "ename": "",
+                        "amount": "0",
+                        "benefit_name": "",
+                        "prize_id": "",
+                        "imageUrl": "",
+                        "prize_quantity": ""
+                    },
+                    "point": {
+                        "addPointNum": 0,
+                        "imageUrl": "",
+                        "url": ""
+                    },
+                    "name": "抽奖奖品1",
+                    "realCanReceiveNum": 0,
+                    "id": "280dd553-8a5b-4cdf-8c94-8e1111d69b0a_lottery_1",
+                    "stock": 99
+                },
+                "prizeName": "抽奖奖品1",
+                //*****用于领奖的prizeId*****
+                "_id": "5fe42b9b67f137b8f8523f89"
+            }
+        ]
+    },
+    "success": true,
+    "message": "成功"
+}
+     */
+    @exp()
+    async myPrize() {
         let filter = {
             openId: this.openId,
             activityId: this.activityId,
@@ -34,11 +104,38 @@ export default class PrizeService extends BaseService<Prize> {
         let list = await this.getAll(filter);
         this.response.data = {list};
     }
-
     /**
-     * 领取奖品
+     * @api {app} receivePrize 领取奖品
+     * @apiDescription 领取奖品
+     * @apiParam {string} receiveId 领奖ID，奖品里的**_id**
+     * @apiParam {object} [ext] 领奖填写的额外信息，示例如下
+     * @apiParamExample ext
+     * {
+    //省
+    "province": "",
+    //市
+    "city": "",
+    //区
+    "district": "",
+    //姓名
+    "name": "",
+    //电话
+    "tel": "",
+    //地址
+    "address": ""
+}
+     * @apiSuccessExample
+     * {
+    //200-成功
+    //222-失败
+    "code": 200,
+    "data": {},
+    "success": true,
+    "message": "成功"
+}
      */
-    async receive(id?) {
+    @exp({receiveId: "string"})
+    async receivePrize(id?) {
         let {receiveId} = this.data;
         let filter = {
             _id: id || receiveId,
