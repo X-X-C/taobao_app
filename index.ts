@@ -4,7 +4,7 @@ import PrizeService from "./src/service/PrizeService";
 import SpmService from "./src/service/SpmService";
 import {XApp} from "./base/App";
 
-[UserService, PrizeService, SpmService].forEach(v => v.init);
+const services = [UserService, PrizeService, SpmService];
 for (let entry of Object.entries(XApp.exports)) {
     // @ts-ignore
     exports[entry[0]] = async (context) => {
