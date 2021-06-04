@@ -1,8 +1,8 @@
 import App from "./App";
-import XApp from "./base/App";
 import UserService from "./src/service/UserService";
 import PrizeService from "./src/service/PrizeService";
 import SpmService from "./src/service/SpmService";
+import {XApp} from "./base/App";
 
 [UserService, PrizeService, SpmService].forEach(v => v.init);
 for (let entry of Object.entries(XApp.exports)) {
@@ -13,6 +13,7 @@ for (let entry of Object.entries(XApp.exports)) {
         if (!entry[1].needGlobalParam) {
             app.globalNeedParams = {};
         }
+        entry[1].before.forEach(v => v.call(app.before))
         return await app.run(async function () {
             await app.getService(entry[1].constructor)[entry[0]]();
         });

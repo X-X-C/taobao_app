@@ -3,7 +3,8 @@ import User from "../../entity/User";
 import App from "../../../base/App";
 import Utils from "../../../base/utils/Utils";
 import MsgGenerate from "../../utils/MsgGenerate";
-import {exp} from "../../../base/utils/Annotation";
+import {before, exp} from "../../../base/utils/Annotation";
+import {Before} from "../../../App";
 
 let {formatNum} = Utils;
 
@@ -80,6 +81,7 @@ export default class BaseUserService extends BaseService<User> {
     "code": 200
 }
      */
+    @before(Before.prototype.auth)
     @exp()
     async updateUser() {
         if (this.context.userNick) {

@@ -1,4 +1,4 @@
-import XApp, {XBefore} from "./base/App";
+import {XApp, XBefore} from "./base/App";
 
 export default class App extends XApp {
     constructor(context, apiName) {
@@ -12,7 +12,7 @@ export default class App extends XApp {
     before: Before;
 }
 
-class Before extends XBefore {
+export class Before extends XBefore {
     // test() {
     //     this.addBefore = async (app: App) => {
     //         //...

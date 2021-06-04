@@ -8,7 +8,8 @@ import MsgGenerate from "../utils/MsgGenerate";
 import BaseUserService from "./abstract/BaseUserService";
 import {taskConfig} from "../Config";
 import ActivityInfoService from "../../base/service/ActivityInfoService";
-import {exp, ignoreGlobalParam} from "../../base/utils/Annotation";
+import {before, exp, ignoreGlobalParam} from "../../base/utils/Annotation";
+import {Before} from "../../App";
 
 const {random} = Utils;
 
@@ -28,8 +29,9 @@ export default class UserService extends BaseUserService {
      * @apiSuccessExample
      * {}
      */
-    @exp()
+    @before(Before.prototype.globalActivity)
     @ignoreGlobalParam()
+    @exp()
     async enter() {
         let activityService = this.services.activityService;
         let activity = this.globalActivity;
@@ -85,6 +87,7 @@ export default class UserService extends BaseUserService {
     "message": "成功"
 }
      */
+    @before(Before.prototype.inspectionActivity)
     @exp()
     async gameStart() {
         let user = await this.getUser();
@@ -123,6 +126,7 @@ export default class UserService extends BaseUserService {
     "message": "成功"
 }
      */
+    @before(Before.prototype.inspectionActivity)
     @exp({add: "number"})
     async gameEnd() {
         let user = await this.getUser();
@@ -166,6 +170,7 @@ export default class UserService extends BaseUserService {
     "message": "邀请人不存在"
 }
      */
+    @before(Before.prototype.inspectionActivity)
     @exp({sopenId: "string"})
     async assist() {
         let {sopenId} = this.data;
@@ -262,6 +267,7 @@ export default class UserService extends BaseUserService {
     "message": "成功"
 }
      */
+    @before(Before.prototype.inspectionActivity)
     @exp()
     async lottery() {
         let user = await this.getUser();
@@ -537,6 +543,7 @@ export default class UserService extends BaseUserService {
     "message": "成功"
 }
      */
+    @before(Before.prototype.inspectionActivity)
     @exp()
     async task() {
         let {type} = this.data;
