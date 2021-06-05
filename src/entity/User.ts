@@ -23,6 +23,7 @@ export default class User extends BaseEntity {
             nick: this.nick,
             openId: this.openId,
             activityId: this.activityId,
+            mixNick: this.mixNick,
             avatar: this.avatar
         }
     }
