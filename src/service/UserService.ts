@@ -267,7 +267,10 @@ export default class UserService extends BaseUserService {
     "message": "成功"
 }
      */
-    @before(Before.prototype.inspectionActivity)
+    @before(
+        Before.prototype.inspectionActivity,
+        Before.prototype.globalActivityInfo
+    )
     @exp()
     async lottery() {
         let user = await this.getUser();
