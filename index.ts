@@ -4,7 +4,8 @@ import PrizeService from "./src/service/PrizeService";
 import SpmService from "./src/service/SpmService";
 import {XApp} from "./base/App";
 
-const services = [UserService, PrizeService, SpmService];
+//必须显式使用才会编译出导入模块...
+const modules = [UserService, PrizeService, SpmService];
 for (let entry of Object.entries(XApp.exports)) {
     // @ts-ignore
     exports[entry[0]] = async (context) => {
