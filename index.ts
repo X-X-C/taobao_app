@@ -5,7 +5,6 @@ import SpmService from "./src/service/SpmService";
 import {XApp} from "./base/App";
 
 // tsconfig.json配置 importsNotUsedAsValues 的值可以控制没被使用的导入语句将会被如何处理
-//显式使用避免麻烦
 const modules = [UserService, PrizeService, SpmService];
 for (let entry of Object.entries(XApp.exports)) {
     // @ts-ignore
