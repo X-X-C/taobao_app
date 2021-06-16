@@ -10,4 +10,5 @@ const modules = [
     PrizeService,
     SpmService
 ];
+// @ts-ignore
 XApp.initExpose(App, exports);
