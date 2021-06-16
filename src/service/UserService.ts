@@ -30,7 +30,7 @@ export default class UserService extends BaseUserService {
      * {}
      */
     @before(Before.prototype.globalActivityInfo)
-    @ignoreGlobalParam()
+    @ignoreGlobalParam
     @exp()
     async enter() {
         let activityService = this.services.activityService;
@@ -625,7 +625,7 @@ export default class UserService extends BaseUserService {
     "params": {}
 }
      */
-    @ignoreGlobalParam()
+    @ignoreGlobalParam
     @exp()
     getTime() {
         this.response.data = this.time().common;
