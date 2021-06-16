@@ -9,7 +9,7 @@ export default class ActivityService extends XActivityService {
     async award() {
         let activity = this.globalActivity;
         //如果活动结束，且还没有开过奖进入开奖逻辑
-        if (activity.code === 2 && activity.data.data.award !== true) {
+        if (activity.code === 2 && activity.activityInfo.award !== true) {
             let line = await this.getService(ActivityInfoService).loosen.award();
             if (line !== 1) {
                 //失败

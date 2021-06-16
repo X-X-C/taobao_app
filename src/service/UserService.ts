@@ -29,7 +29,7 @@ export default class UserService extends BaseUserService {
      * @apiSuccessExample
      * {}
      */
-    @before(Before.prototype.globalActivity)
+    @before(Before.prototype.globalActivityInfo)
     @ignoreGlobalParam()
     @exp()
     async enter() {
@@ -625,6 +625,7 @@ export default class UserService extends BaseUserService {
     "params": {}
 }
      */
+    @ignoreGlobalParam()
     @exp()
     getTime() {
         this.response.data = this.time().common;
