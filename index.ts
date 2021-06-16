@@ -5,5 +5,9 @@ import {XApp} from "./base/App";
 import App from "./App";
 
 // tsconfig.json配置 importsNotUsedAsValues 的值可以控制没被使用的导入语句将会被如何处理
-[UserService, PrizeService, SpmService];
-exports = XApp.initExpose(App);
+const modules = [
+    UserService,
+    PrizeService,
+    SpmService
+];
+XApp.initExpose(App, exports);
