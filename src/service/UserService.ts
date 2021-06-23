@@ -533,7 +533,7 @@ export default class UserService extends BaseUserService {
     /**
      * @api {app} task 完成任务
      * @apiDescription 完成任务
-     * @apiParam {string} target 任务类型，可选值`follow`关注店铺,`member`加入会员
+     * @apiParam {string} type 任务类型，可选值`follow`关注店铺,`member`加入会员
      * @apiSuccessExample
      * {
     //200-成功
