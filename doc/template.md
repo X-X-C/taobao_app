@@ -28,9 +28,18 @@
 <%}}%>
 <%}%>
 ### 返回值
-
 ```json
 <%if(g.success){_%><%-g.success.examples[0].content_%><%}%>
 ```
-
 <%}%><% }) -%>
+## 接口名称：spm
+### 接口说明
+埋点
+### 云函数
+spm
+### 埋点类型
+```
+自主入会人数 - 调用spmMember接口
+```
+### 请求实例
+https://www.yuque.com/ggikb6/kn8z1d/avrvek#gkbK3

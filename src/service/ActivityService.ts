@@ -12,10 +12,7 @@ export default class ActivityService extends XActivityService {
         if (activity.code === 2 && activity.activityInfo.award !== true) {
             let line = await this.getService(ActivityInfoService).loosen.award();
             if (line !== 1) {
-                //失败
-                await this.simpleSpm("failAward", {
-                    line
-                });
+                this.simpleSpm("failAward").extData({line});
                 return;
             }
             let userService = this.getService(UserService);

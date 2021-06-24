@@ -1,4 +1,4 @@
-import {task} from "./entity/User";
+import {task} from "../entity/User";
 
 export default {}
 

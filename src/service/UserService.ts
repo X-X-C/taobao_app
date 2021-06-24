@@ -6,10 +6,10 @@ import PrizeService from "./PrizeService";
 import Prize from "../entity/Prize";
 import MsgGenerate from "../utils/MsgGenerate";
 import BaseUserService from "./abstract/BaseUserService";
-import {taskConfig} from "../Config";
 import ActivityInfoService from "../../base/service/ActivityInfoService";
 import {before, exp, ignoreGlobalParam} from "../../base/utils/Annotation";
-import {Before} from "../../App";
+import {Before} from "../config/Before";
+import {taskConfig} from "../config/Config";
 
 const {random} = Utils;
 
@@ -103,7 +103,7 @@ export default class UserService extends BaseUserService {
         await this.editUser(user.optionsEnd, {
             gameNum: user._.gameNum
         });
-        await this.spmGameNum(user, "开始游戏");
+        this.spmGameNum(user, "开始游戏");
         //成功减去游戏次数
         this.response.data.gameNum = user.gameNum;
     }
@@ -145,7 +145,7 @@ export default class UserService extends BaseUserService {
         await this.editUser(user.optionsEnd, {
             score: user._.score
         });
-        await this.spmScore(user, "游戏结算");
+        this.spmScore(user, "游戏结算");
         this.response.data.score = user.score;
     }
 
@@ -174,63 +174,36 @@ export default class UserService extends BaseUserService {
     @exp({sopenId: "string"})
     async assist() {
         let {sopenId} = this.data;
-        //当前用户信息
         let user = await this.getUser();
-        //邀请人信息
         let inviter = await this.getUser(sopenId);
-        //时间对象
         let time = this.time().common.base;
-        //会员状态
         let vip = await this.services.topService.vipStatus();
-        //记录值
-        let spmData = {
-            user: user.baseInfo,
-            inviter: inviter.baseInfo,
-            vip,
-            code: 200,
-            desc: "成功"
-        }
-        //邀请人不存在
         if (!inviter.openId) {
             this.response.code = 202;
             this.response.message = "邀请人不存在";
-        }
-        //当前用户已经被其他用户邀请了
-        else if (user.inviter) {
+        } else if (user.inviter) {
             this.response.code = 203;
             this.response.message = "已经被其他用户邀请";
-        }
-        //不能邀请自己
-        else if (inviter.openId === this.openId) {
+        } else if (inviter.openId === this.openId) {
             this.response.code = 204;
             this.response.message = "不能邀请自己";
-        }
-        //不是会员
-        else if (vip.code !== 1) {
+        } else if (vip.code !== 1) {
             this.response.code = 205;
             this.response.message = "不是会员";
-        }
-        //不是新会员
-        else if (user.createTime > vip.data.gmt_create) {
+        } else if (user.createTime > vip.data.gmt_create) {
             this.response.code = 206;
             this.response.message = "不是新会员";
-        }
-        //超过限制
-        else if (!(inviter.task.assist < 10)) {
+        } else if (!(inviter.task.assist < 10)) {
             this.response.code = 208;
             this.response.message = "超过邀请限制";
-        }
-        //条件满足
-        else {
+        } else {
             inviter.task.assist += 1;
             // inviter.gameNum += taskConfig.assist.reward;
             await this.editUser(inviter.optionsEnd, {
                 "task.assist": inviter._.task.assist,
                 openId: inviter.openId
             });
-            // await this.spmGameNum(inviter, `成功邀请好友【${user.nick}】`, {
-            //     ext: inviter.baseInfo
-            // });
+            // this.spmGameNum(inviter, `成功邀请好友【${user.nick}】`).cover(inviter.baseInfo);
             //成功
             user.inviter = {
                 nick: inviter.nick,
@@ -241,9 +214,13 @@ export default class UserService extends BaseUserService {
             await this.spm("assist");
         }
         let msg = vip.code === 1 ? `，首次入会时间【${vip.data.gmt_create}】。` : "，不是会员。";
-        spmData.desc = MsgGenerate.assistDesc(user.nick, inviter.nick, this.response.message + msg + `首次进入小程序时间【${user.createTime}】`);
-        spmData.code = this.response.code;
-        await this.simpleSpm("assistAll", spmData);
+        await this.simpleSpm("assistAll").extData({
+            vip,
+            user: user.baseInfo,
+            inviter: inviter.baseInfo,
+            code: this.response.code,
+            desc: MsgGenerate.assistDesc(user.nick, inviter.nick, this.response.message + msg + `首次进入小程序时间【${user.createTime}】`)
+        });
     }
 
     /**
@@ -284,7 +261,7 @@ export default class UserService extends BaseUserService {
         await this.editUser(user.optionsEnd, {
             lotteryCount: user._.lotteryCount
         });
-        await this.spmLotteryCount(user, "抽奖");
+        this.spmLotteryCount(user, "抽奖");
         let prizeList = activity.data.config.lotteryPrize.prizeList;
         let awardIndex = random(prizeList.map(v => parseFloat(v.probability)));
         //抽中的奖品
@@ -315,7 +292,7 @@ export default class UserService extends BaseUserService {
             }
         }
         if (prize) {
-            await this.spmLotteryResult(user, prize, extSay);
+            this.spmLotteryResult(user, prize, extSay);
         }
     }
 
@@ -495,7 +472,7 @@ export default class UserService extends BaseUserService {
                         ) &&
                         (user.task.doneOrders.indexOf(order.tid) === -1)
                     ) {
-                        await this.simpleSpm("_order", order);
+                        this.simpleSpm("_order").extData({order});
                         user.task.doneOrders.push(order.tid);
                         //如果是下定
                         if (order.step_trade_status === "FRONT_PAID_FINAL_NOPAID" ||
@@ -568,7 +545,7 @@ export default class UserService extends BaseUserService {
         }
         await this.editUser(user.optionsEnd, {});
         await this.spm(type);
-        // await this.spmGameNum(user, task.name);
+        //  this.spmGameNum(user, task.name);
     }
 
     /**

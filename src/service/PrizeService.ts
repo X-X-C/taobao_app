@@ -104,6 +104,7 @@ export default class PrizeService extends BaseService<Prize> {
         let list = await this.getAll(filter);
         this.response.data = {list};
     }
+
     /**
      * @api {app} receivePrize 领取奖品
      * @apiDescription 领取奖品
@@ -216,7 +217,7 @@ export default class PrizeService extends BaseService<Prize> {
                 data: e
             }
         } finally {
-            await this.simpleSpm("_receivePrize", {
+            this.simpleSpm("_receivePrize").extData({
                 desc: MsgGenerate.receiveDesc(user.nick, prize.name, result),
                 topResult: result,
                 prizeType: prize.type

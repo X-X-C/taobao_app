@@ -1,10 +1,10 @@
 import BaseService from "../../../base/service/abstract/BaseService";
 import User from "../../entity/User";
-import App from "../../../base/App";
 import Utils from "../../../base/utils/Utils";
 import MsgGenerate from "../../utils/MsgGenerate";
 import {before, exp} from "../../../base/utils/Annotation";
-import {Before} from "../../../App";
+import App from "../../../base/App";
+import {Before} from "../../config/Before";
 
 let {formatNum} = Utils;
 
@@ -100,65 +100,50 @@ export default class BaseUserService extends BaseService<User> {
         }
     }
 
-    async spmFrom(
-        {
-            type,
-            who,
-            what,
-            target = "",
-            desc = "",
-            ext = {},
-            extParams = {}
-        }
-    ) {
-        await this.simpleSpm(type, {
-            desc: MsgGenerate.baseInfo(who, what, target, desc),
-            ...extParams
-        }, ext);
+    spmFrom({type, who, what, target = "", desc = ""}) {
+        return this.simpleSpm(type)
+            .extData({
+                desc: MsgGenerate.baseInfo(who, what, target, desc)
+            })
     }
 
-    async spmNum(user: User | other, origin: string, filed: keyof User | string, filedName: string, ext?: spmExt) {
+    spmNum(user: User | other, origin: string, filed: keyof User | string, filedName: string) {
         let oldValue = user.getValueFromKey("_tempThis." + filed);
         let newValue = user.getValueFromKey(filed);
         let changeNum = formatNum(newValue - oldValue);
         user.tempThisCommit;
-        await this.spmFrom({
+        return this.spmFrom({
             type: "_" + filed,
             who: user.nick,
             what: origin,
             target: `${filedName}${changeNum}`,
             desc: `剩余${filedName}${newValue}`,
-            ext: ext?.ext,
-            extParams: {
-                origin,
-                changeNum,
-                ...ext?.extParams
-            }
-        });
+        }).extData({
+            origin,
+            changeNum,
+        })
     }
 
 
-    async spmLotteryCount(user: User | other, origin: string, ext?: spmExt) {
-        await this.spmNum(user, origin, "lotteryCount", "抽奖次数", ext);
+    spmLotteryCount(user: User | other, origin: string) {
+        return this.spmNum(user, origin, "lotteryCount", "抽奖次数");
     }
 
-    async spmGameNum(user: User | other, origin: string, ext?: spmExt) {
-        await this.spmNum(user, origin, "gameNum", "游戏次数", ext);
+    spmGameNum(user: User | other, origin: string) {
+        return this.spmNum(user, origin, "gameNum", "游戏次数");
     }
 
-    async spmScore(user: User | other, origin: string, ext?: spmExt) {
-        await this.spmNum(user, origin, "score", "分数", ext);
+    spmScore(user: User | other, origin: string) {
+        return this.spmNum(user, origin, "score", "分数");
     }
 
-    async spmLotteryResult(user: User | other, prize: configPrize, extSay?: string, ext?: spmExt) {
-        await this.spmFrom({
+    spmLotteryResult(user: User | other, prize: configPrize, extSay?: string) {
+        return this.spmFrom({
             type: "_lotteryResult",
             who: user.nick,
             what: "抽奖",
             target: `抽奖结果：${prize.name}${extSay ? "，" + extSay : ""}`,
             desc: `剩余抽奖次数${user.lotteryCount}`,
-            ext: ext?.ext,
-            extParams: ext?.extParams
         });
     }
 
