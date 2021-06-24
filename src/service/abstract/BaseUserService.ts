@@ -3,12 +3,12 @@ import User from "../../entity/User";
 import Utils from "../../../base/utils/Utils";
 import MsgGenerate from "../../utils/MsgGenerate";
 import {before, exp} from "../../../base/utils/Annotation";
-import App from "../../../base/App";
 import {Before} from "../../config/Before";
+import App from "../../../App";
 
 let {formatNum} = Utils;
 
-export default class BaseUserService extends BaseService<User> {
+export default class BaseUserService extends BaseService<User, App> {
     constructor(app: App) {
         super(app, "users");
     }
