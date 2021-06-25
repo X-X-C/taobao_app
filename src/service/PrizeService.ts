@@ -187,21 +187,21 @@ export default class PrizeService extends BaseService<Prize> {
                 result = await topService.opentradeSpecialUsersMark({
                     skuId,
                     itemId
-                });
+                }).opentradeSpecialUsersMarkInvoke();
             }
             //积分领取
             else if (prize.type === "point") {
                 let {addPointNum} = prize[prize.type];
                 result = await topService.taobaoCrmPointChange({
                     num: addPointNum
-                });
+                }).taobaoCrmPointChangeInvoke();
             }
             //权益领取
             else if (prize.type === "benefit") {
                 let {ename} = prize[prize.type];
                 result = await topService.sendBenefit({
                     ename
-                });
+                }).sendBenefitInvoke();
             }
             //其他奖品
             else {

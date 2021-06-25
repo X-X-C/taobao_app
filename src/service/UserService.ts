@@ -30,13 +30,13 @@ export default class UserService extends BaseUserService {
      * {}
      */
     @before(Before.prototype.globalActivityInfo)
-    @ignoreGlobalParam
+    @ignoreGlobalParam()
     @exp()
     async enter() {
         let activityService = this.services.activityService;
         let activity = this.globalActivity;
         let user = await this.getUser();
-        let vip = await this.services.topService.vipStatus();
+        let vip = await this.services.topService.vipStatus().vipStatusInvoke();
         //活动进行中，初始化用户
         if (activity.code === 1) {
             let time = this.time().common;
@@ -177,7 +177,7 @@ export default class UserService extends BaseUserService {
         let user = await this.getUser();
         let inviter = await this.getUser(sopenId);
         let time = this.time().common.base;
-        let vip = await this.services.topService.vipStatus();
+        let vip = await this.services.topService.vipStatus().vipStatusInvoke();
         if (!inviter.openId) {
             this.response.code = 202;
             this.response.message = "邀请人不存在";
@@ -454,7 +454,7 @@ export default class UserService extends BaseUserService {
             let result = await this.services.topService.selectOrder({
                 startTime,
                 endTime
-            });
+            }).invoke();
             if (result.total_results > 0) {
                 //大订单
                 let orders = result.trades.trade;
@@ -502,7 +502,7 @@ export default class UserService extends BaseUserService {
     @exp()
     async userInfo() {
         let user = await this.getUser();
-        user.vipStatus = (await this.services.topService.vipStatus()).code;
+        user.vipStatus = (await this.services.topService.vipStatus().vipStatusInvoke()).code;
         user.isAuth = !!this.context.userNick;
         this.response.data.user = user.showData;
     }
@@ -565,7 +565,7 @@ export default class UserService extends BaseUserService {
     async spmMember() {
         let user = await this.getUser();
         let {type} = this.data;
-        let vip = await this.services.topService.vipStatus();
+        let vip = await this.services.topService.vipStatus().vipStatusInvoke();
         if (vip.code === 1 && vip.data.gmt_create >= user.createTime) {
             if (user.memberType === 0) {
                 if (type === "self") {
@@ -602,7 +602,7 @@ export default class UserService extends BaseUserService {
     "params": {}
 }
      */
-    @ignoreGlobalParam
+    @ignoreGlobalParam()
     @exp()
     getTime() {
         this.response.data = this.time().common;
