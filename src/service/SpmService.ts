@@ -4,6 +4,14 @@ import {exp} from "../../base/utils/Annotation";
 export default class SpmService extends XSpmService {
 
 
+    /**
+     * @api {app} taskInfo 任务明细
+     * @apiDescription 任务明细
+     * @apiParam {number} [page] 页码
+     * @apiParam {number} [size] 每页大小
+     * @apiSuccessExample
+     * {}
+     */
     @exp()
     async taskInfo() {
         let list = await this.pageList({
