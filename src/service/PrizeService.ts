@@ -1,14 +1,14 @@
 import BaseService from "../../base/service/abstract/BaseService";
 import Prize from "../entity/Prize";
-import App from "../../base/App";
 import TopService from "../../base/service/TopService";
 import Utils from "../../base/utils/Utils";
 import UserService from "./UserService";
 import MsgGenerate from "../utils/MsgGenerate";
 import XErrorLogService from "../../base/service/XErrorLogService";
 import {exp} from "../../base/utils/Annotation";
+import App from "../../App";
 
-export default class PrizeService extends BaseService<Prize> {
+export default class PrizeService extends BaseService<Prize, App> {
     constructor(app: App) {
         super(app, "prizes");
     }

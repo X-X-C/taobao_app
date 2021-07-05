@@ -3,8 +3,9 @@ import Prize from "../entity/Prize";
 import PrizeService from "./PrizeService";
 import XActivityService from "../../base/service/XActivityService";
 import ActivityInfoService from "../../base/service/ActivityInfoService";
+import App from "../../App";
 
-export default class ActivityService extends XActivityService {
+export default class ActivityService extends XActivityService<App> {
 
     async award() {
         let activity = this.globalActivity;

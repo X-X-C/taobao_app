@@ -1,7 +1,8 @@
 import XSpmService from "../../base/service/XSpmService";
 import {exp} from "../../base/utils/Annotation";
+import App from "../../App";
 
-export default class SpmService extends XSpmService {
+export default class SpmService extends XSpmService<App> {
 
 
     /**
