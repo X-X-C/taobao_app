@@ -214,7 +214,7 @@ export default class UserService extends BaseUserService {
             await this.spm("assist");
         }
         let msg = vip.code === 1 ? `，首次入会时间【${vip.data.gmt_create}】。` : "，不是会员。";
-        await this.simpleSpm("assistAll").extData({
+        this.simpleSpm("assistAll").extData({
             vip,
             user: user.baseInfo,
             inviter: inviter.baseInfo,
@@ -264,23 +264,21 @@ export default class UserService extends BaseUserService {
         this.spmLotteryCount(user, "抽奖");
         let prizeList = activity.data.config.lotteryPrize.prizeList;
         let awardIndex = random(prizeList.map(v => parseFloat(v.probability)));
-        //抽中的奖品
         let prize = prizeList[awardIndex];
-        let extSay = "";
-        //初始化返回值
         this.response.data.lotteryCount = user.lotteryCount;
         this.response.data.prize = new Prize(user, prizeList.find(v => v.type === "noprize"), "lottery");
+        this.response.message = "成功抽奖";
+        let prizeService = this.getService(PrizeService);
         if (prize && prize.type !== "noprize") {
             let stockInfo = this.stockInfo(prize);
             if (!stockInfo.restStock) {
-                extSay = "无库存，未中奖";
+                this.response.message = "无库存，未中奖";
             } else {
                 let line = await this.getService(ActivityInfoService).loosen.updateStock(stockInfo, 1);
                 if (line !== 1) {
-                    extSay = "网络繁忙，未中奖";
+                    this.response.message = "网络繁忙，未中奖";
                 } else {
                     //成功扣减库存
-                    let prizeService = this.getService(PrizeService);
                     let sendPrize = new Prize(user, prize, "lottery");
                     if (prize.type === "code") {
                         sendPrize.ext.code = await prizeService.generateCode();
@@ -291,9 +289,12 @@ export default class UserService extends BaseUserService {
                 }
             }
         }
-        if (prize) {
-            this.spmLotteryResult(user, prize, extSay);
+        if (!prize) {
+            prize = {
+                name: "没有奖品可中，未中奖"
+            } as configPrize;
         }
+        this.spmLotteryResult(user, prize, this.response.message);
     }
 
     async rankData(size: number = this.data.size || 50, page: number = this.data.page || 1) {
