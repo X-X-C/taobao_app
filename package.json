@@ -5,9 +5,9 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "doc": "apidoc -i ./ -o ../doc -f src/.*.ts",
-        "docm": "apidoc-markdown -p ../doc  -o ../doc/doc.md -t doc/template.md",
-        "docr": "apidoc-markdown -p ../doc  -o ../doc/run-ex.md -t doc/run.md"
+        "doc": "apidoc -i ./ -o ../doc/app -f src/.*.ts",
+        "docm": "apidoc-markdown -p ../doc/app  -o ../doc/app/doc.md -t doc/template.md",
+        "docr": "apidoc-markdown -p ../doc/app  -o ../doc/app/run.md -t doc/run.md"
     },
     "sdkVersion": "*",
     "dependencies": {
