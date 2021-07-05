@@ -84,20 +84,15 @@ export default class BaseUserService extends BaseService<User, App> {
     @before(Before.prototype.auth)
     @exp()
     async updateUser() {
-        if (this.context.userNick) {
-            let {avatar} = this.data;
-            this.response.data.line = await this.loosen.editUser(
-                {
-                    $set: {
-                        avatar,
-                        nick: this.nick
-                    }
+        let {avatar} = this.data;
+        this.response.data.line = await this.loosen.editUser(
+            {
+                $set: {
+                    avatar,
+                    nick: this.nick
                 }
-            );
-        } else {
-            this.response.message = "用户没有授权";
-            this.response.success = false;
-        }
+            }
+        );
     }
 
     spmFrom({type, who, what, target = "", desc = ""}) {
