@@ -273,10 +273,7 @@ export default class UserService extends BaseUserService {
         if (prize && prize.type !== "noprize") {
             let stockInfo = this.stockInfo(prize);
             if (!stockInfo.restStock) {
-                this.response.message = joinMsg([
-                    `无库存，未中奖，已发库存：${stockInfo.done}`,
-                    trulyMsg(stockInfo.dayDone, `当日已发库存：${stockInfo.dayDone}`)
-                ])
+                this.response.message = `无库存，未中奖`;
             } else {
                 let line = await this.getService(ActivityInfoService).loosen.updateStock(stockInfo, 1);
                 if (line !== 1) {
@@ -292,6 +289,10 @@ export default class UserService extends BaseUserService {
                     this.response.data.award = true;
                 }
             }
+            this.response.message += joinMsg([
+                `已发库存：${stockInfo.done}`,
+                trulyMsg(stockInfo.dayDone, `当日已发库存：${stockInfo.dayDone}`)
+            ])
         }
         if (!prize) {
             prize = {
