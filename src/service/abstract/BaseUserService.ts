@@ -5,6 +5,7 @@ import MsgGenerate from "../../utils/MsgGenerate";
 import {before, exp} from "../../../base/utils/Annotation";
 import {Before} from "../../config/Before";
 import App from "../../../App";
+import {joinMsg} from "../../../base/utils/XMsgGenerate";
 
 let {formatNum} = Utils;
 
@@ -137,8 +138,8 @@ export default class BaseUserService extends BaseService<User, App> {
             type: "_lotteryResult",
             who: user.nick,
             what: "抽奖",
-            target: `抽奖结果：${prize.name}${extSay ? "，" + extSay : ""}`,
-            desc: `剩余抽奖次数${user.lotteryCount}`,
+            target: joinMsg([`抽奖结果：${prize.name}`, extSay]),
+            desc: joinMsg([`剩余抽奖次数${user.lotteryCount}`]),
         });
     }
 
