@@ -272,7 +272,7 @@ export default class UserService extends BaseUserService {
         if (prize && prize.type !== "noprize") {
             let stockInfo = this.stockInfo(prize);
             if (!stockInfo.restStock) {
-                this.response.message = "无库存，未中奖";
+                this.response.message = `无库存，未中奖，已发库存：${stockInfo.done}${stockInfo.dayStock ? `当日已发库存：${stockInfo.dayDone}` : ""}`;
             } else {
                 let line = await this.getService(ActivityInfoService).loosen.updateStock(stockInfo, 1);
                 if (line !== 1) {
