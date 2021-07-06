@@ -272,6 +272,10 @@ export default class UserService extends BaseUserService {
         let prizeService = this.getService(PrizeService);
         if (prize && prize.type !== "noprize") {
             let stockInfo = this.stockInfo(prize);
+            extMsg.push(joinMsg([
+                `已发总库存：${stockInfo.done}`,
+                trulyMsg(stockInfo.dayDone, `当日已发库存：${stockInfo.dayDone}`)
+            ]));
             if (!stockInfo.restStock) {
                 extMsg.push(`无库存，未中奖`);
             } else {
@@ -289,10 +293,6 @@ export default class UserService extends BaseUserService {
                     this.response.data.award = true;
                 }
             }
-            extMsg.push(joinMsg([
-                `已发总库存：${stockInfo.done}`,
-                trulyMsg(stockInfo.dayDone, `当日已发库存：${stockInfo.dayDone}`)
-            ]));
         }
         if (!prize) {
             prize = {
