@@ -268,16 +268,16 @@ export default class UserService extends BaseUserService {
         let prize = prizeList[awardIndex];
         this.response.data.lotteryCount = user.lotteryCount;
         this.response.data.prize = new Prize(user, prizeList.find(v => v.type === "noprize"), "lottery");
-        this.response.message = "成功抽奖";
+        let extMsg = [];
         let prizeService = this.getService(PrizeService);
         if (prize && prize.type !== "noprize") {
             let stockInfo = this.stockInfo(prize);
             if (!stockInfo.restStock) {
-                this.response.message = `无库存，未中奖`;
+                extMsg.push(`无库存，未中奖`);
             } else {
                 let line = await this.getService(ActivityInfoService).loosen.updateStock(stockInfo, 1);
                 if (line !== 1) {
-                    this.response.message = "网络繁忙，未中奖";
+                    extMsg.push("网络繁忙，未中奖");
                 } else {
                     //成功扣减库存
                     let sendPrize = new Prize(user, prize, "lottery");
@@ -289,17 +289,17 @@ export default class UserService extends BaseUserService {
                     this.response.data.award = true;
                 }
             }
-            this.response.message += joinMsg([
-                `已发库存：${stockInfo.done}`,
+            extMsg.push(joinMsg([
+                `已发总库存：${stockInfo.done}`,
                 trulyMsg(stockInfo.dayDone, `当日已发库存：${stockInfo.dayDone}`)
-            ])
+            ]));
         }
         if (!prize) {
             prize = {
                 name: "没有奖品可中，未中奖"
             } as configPrize;
         }
-        this.spmLotteryResult(user, prize, this.response.message);
+        this.spmLotteryResult(user, prize, joinMsg(extMsg));
     }
 
     async rankData(size: number = this.data.size || 50, page: number = this.data.page || 1) {
