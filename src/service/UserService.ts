@@ -10,7 +10,7 @@ import ActivityInfoService from "../../base/service/ActivityInfoService";
 import {before, exp, ignoreGlobalParam} from "../../base/utils/Annotation";
 import {Before} from "../config/Before";
 import {taskConfig} from "../config/Config";
-import {joinMsg} from "../../base/utils/XMsgGenerate";
+import {joinMsg, trulyMsg} from "../../base/utils/XMsgGenerate";
 
 const {random} = Utils;
 
@@ -275,7 +275,7 @@ export default class UserService extends BaseUserService {
             if (!stockInfo.restStock) {
                 this.response.message = joinMsg([
                     `无库存，未中奖，已发库存：${stockInfo.done}`,
-                    stockInfo.dayDone ? `当日已发库存：${stockInfo.dayDone}` : ""
+                    trulyMsg(stockInfo.dayDone, `当日已发库存：${stockInfo.dayDone}`)
                 ])
             } else {
                 let line = await this.getService(ActivityInfoService).loosen.updateStock(stockInfo, 1);
