@@ -10,7 +10,6 @@ import ActivityInfoService from "../../base/service/ActivityInfoService";
 import {before, exp, ignoreGlobalParam} from "../../base/utils/Annotation";
 import {Before} from "../config/Before";
 import {taskConfig} from "../config/Config";
-import {joinMsg, trulyMsg} from "../../base/utils/XMsgGenerate";
 
 const {random} = Utils;
 
@@ -268,20 +267,16 @@ export default class UserService extends BaseUserService {
         let prize = prizeList[awardIndex];
         this.response.data.lotteryCount = user.lotteryCount;
         this.response.data.prize = new Prize(user, prizeList.find(v => v.type === "noprize"), "lottery");
-        let extMsg = [];
         let prizeService = this.getService(PrizeService);
+        this.response.message = "抽奖成功";
         if (prize && prize.type !== "noprize") {
             let stockInfo = this.stockInfo(prize);
-            extMsg.push(joinMsg([
-                `已发总库存：${stockInfo.done}`,
-                trulyMsg(stockInfo.dayDone, `当日已发库存：${stockInfo.dayDone}`)
-            ]));
             if (!stockInfo.restStock) {
-                extMsg.push(`无库存，未中奖`);
+                this.response.message = `无库存，未中奖`;
             } else {
                 let line = await this.getService(ActivityInfoService).loosen.updateStock(stockInfo, 1);
                 if (line !== 1) {
-                    extMsg.push("网络繁忙，未中奖");
+                    this.response.message = "网络繁忙，未中奖";
                 } else {
                     //成功扣减库存
                     let sendPrize = new Prize(user, prize, "lottery");
@@ -294,12 +289,7 @@ export default class UserService extends BaseUserService {
                 }
             }
         }
-        if (!prize) {
-            prize = {
-                name: "没有奖品可中，未中奖"
-            } as configPrize;
-        }
-        this.spmLotteryResult(user, prize, joinMsg(extMsg));
+        this.spmLotteryResult(user, prize, this.response.message);
     }
 
     async rankData(size: number = this.data.size || 50, page: number = this.data.page || 1) {

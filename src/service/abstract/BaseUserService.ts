@@ -5,7 +5,7 @@ import MsgGenerate from "../../utils/MsgGenerate";
 import {before, exp} from "../../../base/utils/Annotation";
 import {Before} from "../../config/Before";
 import App from "../../../App";
-import {joinMsg} from "../../../base/utils/XMsgGenerate";
+import {joinMsg, trulyMsg} from "../../../base/utils/XMsgGenerate";
 
 let {formatNum} = Utils;
 
@@ -134,12 +134,24 @@ export default class BaseUserService extends BaseService<User, App> {
     }
 
     spmLotteryResult(user: User | other, prize: configPrize, extSay?: string) {
+        let stockMsg = [];
+        if (prize && prize.type !== "noprize") {
+            let stockInfo = this.stockInfo(prize);
+            stockMsg.push(
+                `已发总库存：${stockInfo.done}`,
+                trulyMsg(stockInfo.dayDone, `当日已发库存：${stockInfo.dayDone}`),
+            );
+        }
         return this.spmFrom({
             type: "_lotteryResult",
             who: user.nick,
             what: "抽奖",
-            target: joinMsg([`抽奖结果：${prize.name}`, extSay]),
-            desc: joinMsg([`剩余抽奖次数${user.lotteryCount}`]),
+            target: joinMsg(
+                `抽奖结果：${prize?.name || "无奖品"}`,
+                ...stockMsg,
+                extSay
+            ),
+            desc: joinMsg(`剩余抽奖次数${user.lotteryCount}`),
         });
     }
 
