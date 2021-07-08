@@ -253,6 +253,7 @@ export default class PrizeService extends BaseService<Prize, App> {
         return <any>await this.getAll({
             openId: this.openId,
             activityId: this.activityId,
+            isShow: true,
             ...filter
         }, {
             project: {
